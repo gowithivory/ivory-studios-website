@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Keep private/portal pages out of the index
+Disallow: /dashboard.html
+Disallow: /login.html
+Disallow: /signup.html
+
+Sitemap: https://ivorystudios.io/sitemap.xml

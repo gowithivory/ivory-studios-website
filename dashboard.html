@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Dashboard — Ivory Studios</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="portal-body">
+
+<header class="portal-nav">
+  <a href="index.html" class="nav-logo">IVORY<span class="logo-accent">STUDIOS</span></a>
+  <div class="portal-nav-right">
+    <span class="portal-whoami">
+      <span id="portal-user">…</span>
+      <span id="portal-role" class="portal-rolechip">Client</span>
+    </span>
+    <button id="logout-btn" class="btn-ghost btn-sm">Log out</button>
+  </div>
+</header>
+
+<main class="portal-main">
+  <div class="container">
+    <div id="portal-root"><div class="spinner"></div></div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module" src="js/portal.js"></script>
+</body>
+</html>
