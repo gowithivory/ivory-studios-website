@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Private client-portal pages
+Disallow: /dashboard
+Disallow: /login
+Disallow: /signup
+Disallow: /reset-password
+
+Sitemap: https://ivorystudios.io/sitemap.xml

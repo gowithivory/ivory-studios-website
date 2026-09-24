@@ -1,0 +1,16 @@
+# Only the public site is deployed. Everything below stays out of production.
+.claude
+.env*
+.DS_Store
+._*
+_retired
+content
+docs
+scripts
+supabase
+server.js
+package.json
+package-lock.json
+README.md
+DEPLOY.bat
+node_modules

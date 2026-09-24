@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Create Account — Ivory Studios</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+</head>
+<body class="auth-body">
+
+<a href="/" class="auth-logo">IVORY<span>STUDIOS</span></a>
+
+<main class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-eyebrow">Client Portal</div>
+    <h1 class="auth-title">Create your account</h1>
+    <p class="auth-lead">Start a project and follow it through every phase.</p>
+
+    <form id="signup-form" novalidate>
+      <label class="field">
+        <span>Full name</span>
+        <input id="su-name" type="text" autocomplete="name" placeholder="Jane Doe" required>
+      </label>
+      <label class="field">
+        <span>Email</span>
+        <input id="su-email" type="email" autocomplete="email" placeholder="you@company.com" required>
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input id="su-pass" type="password" autocomplete="new-password" placeholder="At least 8 characters" required>
+      </label>
+      <button type="submit" class="btn-primary full-w">Create Account</button>
+      <div id="auth-note" class="auth-note" style="display:none"></div>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a href="/login">Log in →</a></p>
+  </div>
+</main>
+
+<script src="/assets/js/vendor/supabase.min.js"></script>
+<script type="module" src="/assets/js/auth.js"></script>
+  <!-- Vercel Analytics + Speed Insights -->
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+</body>
+</html>

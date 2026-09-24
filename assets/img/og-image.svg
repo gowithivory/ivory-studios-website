@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c0b09"/>
+      <stop offset="1" stop-color="#080706"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="0%" r="70%">
+      <stop offset="0" stop-color="#c8a46e" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#c8a46e" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <!-- subtle grid -->
+  <g stroke="#201e1a" stroke-width="1">
+    <path d="M0 158 H1200 M0 316 H1200 M0 474 H1200 M200 0 V630 M400 0 V630 M600 0 V630 M800 0 V630 M1000 0 V630"/>
+  </g>
+  <text x="80" y="250" font-family="Syne, Arial, sans-serif" font-weight="800" font-size="40"
+        letter-spacing="6" fill="#8a8175">IVORY<tspan fill="#f0e6d3">STUDIOS</tspan></text>
+  <text x="78" y="360" font-family="Syne, Arial, sans-serif" font-weight="800" font-size="92"
+        fill="#f0e6d3">Websites that</text>
+  <text x="78" y="460" font-family="Syne, Arial, sans-serif" font-weight="800" font-size="92"
+        fill="#f0e6d3">convert.</text>
+  <text x="84" y="540" font-family="Inter, Arial, sans-serif" font-weight="400" font-size="28"
+        fill="#8a8175">Premium web design &amp; development · Cairo · Worldwide</text>
+  <circle cx="1095" cy="120" r="9" fill="#c8a46e"/>
+</svg>

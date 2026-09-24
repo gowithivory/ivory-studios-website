@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Client Login — Ivory Studios</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="auth-body">
+
+<a href="/" class="auth-logo">IVORY<span>STUDIOS</span></a>
+
+<main class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-eyebrow">Client Portal</div>
+    <h1 class="auth-title">Welcome back</h1>
+    <p class="auth-lead">Log in to track your projects and requests.</p>
+
+    <form id="login-form" novalidate>
+      <label class="field">
+        <span>Email</span>
+        <input id="li-email" type="email" autocomplete="email" placeholder="you@company.com" required>
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input id="li-pass" type="password" autocomplete="current-password" placeholder="••••••••" required>
+      </label>
+      <button type="submit" class="btn-primary full-w">Log In</button>
+      <div id="auth-note" class="auth-note" style="display:none"></div>
+    </form>
+
+    <p class="auth-switch">Forgot your password? <a href="/reset-password">Reset it →</a></p>
+    <p class="auth-switch">New here? <a href="/signup">Create an account →</a></p>
+  </div>
+</main>
+
+<script src="/assets/js/vendor/supabase.min.js"></script>
+<script type="module" src="/assets/js/auth.js"></script>
+  <!-- Vercel Analytics + Speed Insights -->
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+</body>
+</html>
