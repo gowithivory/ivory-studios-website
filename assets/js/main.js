@@ -1,13 +1,13 @@
-/* ═══════════════════════════════════════════════════════════
+/*
    Ivory Studios — main.js
    Cursor · Loader · Nav · Scroll reveal · Counter · Tilt · Magnetic
-   ═══════════════════════════════════════════════════════════ */
+   */
 
 // Honour the OS "reduce motion" setting — skips the heavier effects
 // (custom cursor, 3D tilt, magnetic, count-up) for comfort + low-end devices.
 const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ─── Page loader ──────────────────────────────────────────────
+/* Page loader
    Driven by a fixed timer, not window.load — so a slow image or the
    Calendly embed can never leave the loader (or the hero) stuck. */
 function startLoader() {
@@ -22,7 +22,7 @@ function startLoader() {
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startLoader);
 else startLoader();
 
-/* ─── Hero title reveal ─────────────────────────────────────── */
+/* Hero title reveal */
 function triggerHeroText() {
   document.querySelectorAll('.ht-line').forEach(el => {
     const delay = parseInt(el.dataset.delay || 0);
@@ -34,7 +34,7 @@ function triggerHeroText() {
   });
 }
 
-/* ─── Custom cursor ─────────────────────────────────────────── */
+/* Custom cursor */
 (function initCursor() {
   const dot  = document.getElementById('cursor-dot');
   const ring = document.getElementById('cursor-ring');
@@ -89,7 +89,7 @@ function triggerHeroText() {
   document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
 })();
 
-/* ─── Nav scroll behaviour ──────────────────────────────────── */
+/* Nav scroll behaviour */
 (function initNav() {
   const nav = document.getElementById('nav');
   if (!nav) return;
@@ -98,7 +98,7 @@ function triggerHeroText() {
   onScroll();
 })();
 
-/* ─── Mobile menu ───────────────────────────────────────────── */
+/* Mobile menu */
 (function initMobileMenu() {
   const ham  = document.getElementById('nav-ham');
   const menu = document.getElementById('mobile-menu');
@@ -119,7 +119,7 @@ function triggerHeroText() {
   });
 })();
 
-/* ─── Calendly popup ────────────────────────────────────────────
+/* Calendly popup
    Any element with [data-calendly] opens the booking popup. If the widget
    hasn't loaded (blocked / offline) the link falls through to /contact. */
 document.addEventListener('click', e => {
@@ -129,7 +129,7 @@ document.addEventListener('click', e => {
   window.Calendly.initPopupWidget({ url: 'https://calendly.com/ammar-ivorystudios/30min' });
 });
 
-/* ─── Scroll reveal — robust by design ──────────────────────────
+/* Scroll reveal — robust by design
    Content must NEVER stay invisible. We layer three mechanisms:
    1) IntersectionObserver (efficient, animates on scroll),
    2) a passive scroll fallback (covers devices/cases where IO is slow
@@ -175,7 +175,7 @@ document.addEventListener('click', e => {
   setTimeout(() => els.forEach(show), 4000);          // absolute safety net
 })();
 
-/* ─── Animated counters ─────────────────────────────────────── */
+/* Animated counters */
 (function initCounters() {
   const els = document.querySelectorAll('.stat-num[data-target]');
   if (!els.length) return;
@@ -206,7 +206,7 @@ document.addEventListener('click', e => {
   els.forEach(el => io.observe(el));
 })();
 
-/* ─── Portfolio card 3D tilt ────────────────────────────────── */
+/* Portfolio card 3D tilt */
 (function initTilt() {
   if (REDUCE_MOTION || !window.matchMedia('(pointer: fine)').matches) return;
   document.querySelectorAll('.tilt-card').forEach(card => {
@@ -222,7 +222,7 @@ document.addEventListener('click', e => {
   });
 })();
 
-/* ─── Magnetic buttons ──────────────────────────────────────── */
+/* Magnetic buttons */
 (function initMagnetic() {
   if (REDUCE_MOTION || !window.matchMedia('(pointer: fine)').matches) return;
   document.querySelectorAll('.magnetic').forEach(btn => {
@@ -238,7 +238,7 @@ document.addEventListener('click', e => {
   });
 })();
 
-/* ─── Smooth anchor scrolling ───────────────────────────────── */
+/* Smooth anchor scrolling */
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
     const href = a.getAttribute('href');
@@ -251,7 +251,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 
-/* ─── Marquee pause on hover ────────────────────────────────── */
+/* Marquee pause on hover */
 const marquee = document.querySelector('.marquee-wrap');
 const track   = document.querySelector('.marquee-track');
 if (marquee && track) {
@@ -259,7 +259,7 @@ if (marquee && track) {
   marquee.addEventListener('mouseleave', () => track.style.animationPlayState = 'running');
 }
 
-/* ─── Lazy image fade-in ─────────────────────────────────────── */
+/* Lazy image fade-in */
 (function initImageFade() {
   const applyFade = img => {
     img.style.transition = 'opacity .5s ease, filter .5s ease';

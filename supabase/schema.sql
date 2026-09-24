@@ -1,13 +1,9 @@
--- ════════════════════════════════════════════════════════════
 --  Ivory Studios — Production schema (hardened)
 --  Paste into Supabase → SQL Editor → Run.  Safe to re-run (idempotent).
 --  Free tier is enough. See supabase/SETUP.md for the 5-minute walkthrough.
--- ════════════════════════════════════════════════════════════
 
 
--- ══════════════════════════════════════════════════════════════
 --  TABLES
--- ══════════════════════════════════════════════════════════════
 
 create table if not exists public.profiles (
   id          uuid        primary key references auth.users(id) on delete cascade,
@@ -68,9 +64,7 @@ create table if not exists public.newsletter (
   created_at  timestamptz not null default now()
 );
 
--- ══════════════════════════════════════════════════════════════
 --  INDEXES
--- ══════════════════════════════════════════════════════════════
 
 create index if not exists idx_profiles_role        on public.profiles(role);
 create index if not exists idx_requests_user        on public.project_requests(user_id);
@@ -81,9 +75,7 @@ create index if not exists idx_updates_created_by   on public.request_updates(cr
 create index if not exists idx_contact_created      on public.contact_submissions(created_at desc);
 create index if not exists idx_contact_email        on public.contact_submissions(email, created_at desc);
 
--- ══════════════════════════════════════════════════════════════
 --  FUNCTIONS
--- ══════════════════════════════════════════════════════════════
 
 create or replace function public.set_updated_at()
 returns trigger language plpgsql
@@ -179,9 +171,7 @@ begin
 end;
 $$;
 
--- ══════════════════════════════════════════════════════════════
 --  TRIGGERS
--- ══════════════════════════════════════════════════════════════
 
 drop trigger if exists trg_profiles_updated       on public.profiles;
 drop trigger if exists trg_requests_updated       on public.project_requests;
@@ -203,9 +193,7 @@ create trigger trg_contact_flood before insert on public.contact_submissions
 create trigger on_auth_user_created after insert on auth.users
   for each row execute function public.handle_new_user();
 
--- ══════════════════════════════════════════════════════════════
 --  ROW LEVEL SECURITY
--- ══════════════════════════════════════════════════════════════
 
 alter table public.profiles            enable row level security;
 alter table public.project_requests    enable row level security;
@@ -265,10 +253,8 @@ drop policy if exists "newsletter_update_own"   on public.newsletter;
 create policy "newsletter_insert_anon"  on public.newsletter for insert to anon, authenticated with check (status = 'active');
 create policy "newsletter_select_admin" on public.newsletter for select to authenticated using (public.is_admin());
 
--- ══════════════════════════════════════════════════════════════
 --  ADMIN VIEW  (security_invoker → RLS of the *caller* applies; without it the view
 --  runs as its owner and would leak every client's requests to anyone)
--- ══════════════════════════════════════════════════════════════
 
 drop view if exists public.admin_requests_view;
 create view public.admin_requests_view
@@ -281,9 +267,7 @@ select
 from public.project_requests r
 join public.profiles p on p.id = r.user_id;
 
--- ══════════════════════════════════════════════════════════════
 --  PRIVILEGES  (defence in depth: RLS is the gate, grants are the fence)
--- ══════════════════════════════════════════════════════════════
 
 revoke all on all tables    in schema public from anon, authenticated;
 revoke all on all functions in schema public from anon, authenticated, public;
@@ -299,10 +283,8 @@ grant select on public.admin_requests_view to authenticated;
 -- Signed-in users evaluate these inside policies and guard triggers; anon never does.
 grant execute on function public.is_admin(), public.is_privileged_role() to authenticated;
 
--- ══════════════════════════════════════════════════════════════
 --  MAKE YOURSELF ADMIN — run once, AFTER you have signed up on the site:
 --
 --    update public.profiles set role = 'admin' where email = 'ammar@ivorystudios.io';
 --
 --  (Runs as the SQL-editor role, which is allowed to change roles; clients cannot.)
--- ══════════════════════════════════════════════════════════════

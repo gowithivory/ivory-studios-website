@@ -1,8 +1,8 @@
-/* ───────────────────────────────────────────────────────────
+/*
    Portfolio source of truth.
    Both the home grid and project.html read from here, so a case
    study only ever gets written once. Add a project = add an entry.
-─────────────────────────────────────────────────────────────── */
+*/
 
 export default {
 
@@ -121,7 +121,7 @@ export default {
     ],
   },
 
-  /* ─── Concept Lab ─────────────────────────────────────────────
+  /* Concept Lab
      Self-initiated demonstration concepts — NOT client work. They show
      the industries we're ready to build for and the standard we'd ship
      at. Every metric on these pages is an illustrative target and is

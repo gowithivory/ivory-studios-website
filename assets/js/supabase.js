@@ -1,4 +1,4 @@
-/* ───────────────────────────────────────────────────────────
+/*
    Supabase client (free tier is enough for this site)
    ---------------------------------------------------------------
    1. Create a project at https://supabase.com
@@ -8,7 +8,7 @@
 
    SECURITY: only ever paste the ANON key here. The service_role
    key bypasses row-level security and must NEVER live in front-end code.
-─────────────────────────────────────────────────────────────── */
+*/
 
 const SUPABASE_URL  = 'https://jsqybmwsjcunjyjijlgt.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzcXlibXdzamN1bmp5amlqbGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NzQyMzYsImV4cCI6MjA5NzM1MDIzNn0.we09QNNZIBSo9mAtU0iaGFclPpFMbOgV73MFK14yD50';

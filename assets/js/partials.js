@@ -1,10 +1,10 @@
-/* ───────────────────────────────────────────────────────────
+/*
    Progressive enhancements for the static nav/footer (which are baked
    into every page by scripts/build.mjs, so crawlers and no-JS visitors
    get the full markup).
    1) Swap "Client Login" → "Dashboard" when a Supabase session exists.
    2) Service pages: inject the shared Process + social-proof section.
-─────────────────────────────────────────────────────────────── */
+*/
 (function () {
   const hasSession = (() => {
     try {

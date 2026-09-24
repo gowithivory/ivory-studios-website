@@ -1,9 +1,9 @@
-/* ───────────────────────────────────────────────────────────
+/*
    Client portal.
    Clients: see their own requests, submit new ones, watch phases.
    Admin (Ammar): sees every request, advances phases, posts updates.
    What you can read/write is enforced by RLS — this is just the UI.
-─────────────────────────────────────────────────────────────── */
+*/
 import { supabase, isConfigured, friendly } from './supabase.js';
 
 const $   = s => document.querySelector(s);
@@ -72,7 +72,7 @@ async function init() {
   isAdmin ? renderAdmin() : renderClient();
 }
 
-/* ─── Client view ───────────────────────────────────────────── */
+/* Client view */
 async function renderClient() {
   const root = $('#portal-root');
   root.innerHTML = `
@@ -150,7 +150,7 @@ function clientCard(r, updates) {
     </div>`;
 }
 
-/* ─── New-request form ───────────────────────────────────────── */
+/* New-request form */
 function toggleRequestForm() {
   const panel = $('#new-req-panel');
   if (!panel.hidden) { panel.hidden = true; panel.innerHTML = ''; return; }
@@ -245,7 +245,7 @@ async function submitRequest(e) {
   loadClientRequests();
 }
 
-/* ─── Admin view ────────────────────────────────────────────── */
+/* Admin view */
 async function renderAdmin() {
   const root = $('#portal-root');
   root.innerHTML = `
@@ -424,7 +424,7 @@ async function deleteRequest(id, name) {
   loadAdminRequests();
 }
 
-/* ─── Shared bits ───────────────────────────────────────────── */
+/* Shared bits */
 function phaseTracker(status) {
   // side states don't sit on the line
   if (['on_hold', 'declined'].includes(status)) {

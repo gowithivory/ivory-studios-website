@@ -1,11 +1,11 @@
-/* ───────────────────────────────────────────────────────────
+/*
    Marketing / ads readiness — consent-gated, off until you add IDs.
    1) Fill in the IDs below (leave '' to keep a tag off).
    2) Deploy. A cookie banner appears; nothing loads until "Accept".
    Conversions fired: generate_lead (contact form), schedule (Calendly booking).
    Campaign parameters (utm_*, gclid, fbclid …) are kept for the session and
    attached to enquiries so you can see which ad produced which lead.
-─────────────────────────────────────────────────────────────── */
+*/
 (function () {
   const CONFIG = {
     GA4_ID: '',            // e.g. 'G-XXXXXXXXXX'

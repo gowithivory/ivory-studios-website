@@ -30,7 +30,7 @@ function write(file, content) {
   return true;
 }
 
-/* ─── Shared chrome ─────────────────────────────────────────── */
+/* Shared chrome */
 const NAV_LINKS = [
   ['services', 'Services', '/services'],
   ['work', 'Work', '/work'],
@@ -104,7 +104,7 @@ const FOOTER_HTML = `<!--footer:start-->
 </div>
 <!--footer:end-->`;
 
-/* ─── Link normalisation + chrome injection ─────────────────── */
+/* Link normalisation + chrome injection */
 function normalise(html) {
   return html
     .replace(/(href|action)="index\.html"/g, '$1="/"')
@@ -137,7 +137,7 @@ function ensureTracking(html) {
   return html;
 }
 
-/* ─── Case studies ──────────────────────────────────────────── */
+/* Case studies */
 const projects = (await import(pathToFileURL(path.join(ROOT, 'content/projects.mjs')))).default;
 
 function trim(text, max = 155) {
@@ -285,7 +285,7 @@ function caseStudy(slug, p) {
 `;
 }
 
-/* ─── Run ───────────────────────────────────────────────────── */
+/* Run */
 console.log('Ivory Studios build');
 
 const rootPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html') && !f.startsWith('.'));

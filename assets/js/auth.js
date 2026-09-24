@@ -26,7 +26,7 @@ function setLoading(btn, on, label) {
   }
 })();
 
-// ─── Sign up ────────────────────────────────────────────────
+// Sign up
 const signupForm = $('#signup-form');
 if (signupForm) {
   signupForm.addEventListener('submit', async e => {
@@ -69,7 +69,7 @@ if (signupForm) {
   });
 }
 
-// ─── Log in ─────────────────────────────────────────────────
+// Log in
 const loginForm = $('#login-form');
 if (loginForm) {
   loginForm.addEventListener('submit', async e => {
@@ -97,7 +97,7 @@ if (loginForm) {
   });
 }
 
-// ─── Reset password ─────────────────────────────────────────
+// Reset password
 // reset-password.html shows two forms: request a link, then set a new
 // password when the user arrives back from that emailed link.
 const requestForm = $('#request-form');

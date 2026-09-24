@@ -46,7 +46,7 @@ Open [http://localhost:3005](http://localhost:3005) — same clean-URL behaviour
 
 The site deploys automatically to Vercel on every push to `main`. No build step required — Vercel serves the static files directly using the config in `vercel.json`.
 
-See [docs/DEPLOY.md](./docs/DEPLOY.md) for first-time setup instructions, or double-click `DEPLOY.bat` on Windows.
+See [docs/DEPLOY.md](./docs/DEPLOY.md) for first-time setup instructions.
 
 ## Editing pages (build step)
 
