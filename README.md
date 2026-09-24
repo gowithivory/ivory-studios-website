@@ -20,7 +20,7 @@ The marketing and portfolio site for [Ivory Studios](https://ivorystudios.io) â€
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/ivory-studios-website.git
+git clone https://github.com/gowithivory/ivory-studios-website.git
 cd ivory-studios-website
 
 # 2. Install the dev server dependency
