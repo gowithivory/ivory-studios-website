@@ -1,106 +1,89 @@
-/*
-   Ivory Studios — main.js
-   Cursor · Loader · Nav · Scroll reveal · Counter · Tilt · Magnetic
-   */
+// Site-wide interactions: loader, cursor, nav, reveals, counters, Calendly.
 
-// Honour the OS "reduce motion" setting — skips the heavier effects
-// (custom cursor, 3D tilt, magnetic, count-up) for comfort + low-end devices.
 const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FINE_POINTER = window.matchMedia('(pointer: fine)').matches;
+const CALENDLY_URL = 'https://calendly.com/ammar-ivorystudios/30min';
 
-/* Page loader
-   Driven by a fixed timer, not window.load — so a slow image or the
-   Calendly embed can never leave the loader (or the hero) stuck. */
+// Loader (home page only). Shown once per tab session so repeat visits go
+// straight to the content. Timer-based on purpose: a slow image or third-party
+// script should never keep the hero hidden.
 function startLoader() {
   const loader = document.getElementById('loader');
-  if (!loader) { triggerHeroText(); return; }   // sub-pages have no loader
+  if (!loader) return revealHero();
+
+  let seen = false;
+  try { seen = sessionStorage.getItem('ivory-loader') === '1'; sessionStorage.setItem('ivory-loader', '1'); } catch {}
+
+  if (seen || REDUCE_MOTION) {
+    loader.remove();
+    return revealHero();
+  }
   setTimeout(() => {
     loader.classList.add('done');
-    triggerHeroText();
+    revealHero();
     setTimeout(() => loader.remove(), 600);
-  }, 800);
+  }, 700);
 }
+
+function revealHero() {
+  document.querySelectorAll('.ht-line, .reveal-fade').forEach(el => {
+    setTimeout(() => el.classList.add('visible'), parseInt(el.dataset.delay || 0, 10));
+  });
+}
+
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startLoader);
 else startLoader();
 
-/* Hero title reveal */
-function triggerHeroText() {
-  document.querySelectorAll('.ht-line').forEach(el => {
-    const delay = parseInt(el.dataset.delay || 0);
-    setTimeout(() => el.classList.add('visible'), delay);
-  });
-  document.querySelectorAll('.reveal-fade').forEach(el => {
-    const delay = parseInt(el.dataset.delay || 0);
-    setTimeout(() => el.classList.add('visible'), delay);
-  });
-}
-
-/* Custom cursor */
-(function initCursor() {
-  const dot  = document.getElementById('cursor-dot');
+// Custom cursor, mouse users only.
+(function cursor() {
+  const dot = document.getElementById('cursor-dot');
   const ring = document.getElementById('cursor-ring');
-  if (!dot || !ring) return;
-
-  // Only take over the cursor on real mouse devices. On touch / coarse
-  // pointers (or reduced-motion) we leave the native cursor alone.
-  const finePointer = window.matchMedia('(pointer: fine)').matches;
-  if (!finePointer || REDUCE_MOTION) return;
+  if (!dot || !ring || !FINE_POINTER || REDUCE_MOTION) return;
   document.documentElement.classList.add('has-custom-cursor');
 
-  // Move via transform (not left/top) so tracking is compositor-only —
-  // no layout or paint per mousemove, stays smooth even mid-scroll.
-  let mouseX = -100, mouseY = -100;
-  let ringX  = -100, ringY  = -100;
-  const place = (el, x, y) =>
-    el.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
+  let mx = -100, my = -100, rx = -100, ry = -100;
+  const place = (el, x, y) => { el.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`; };
 
   document.addEventListener('mousemove', e => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    place(dot, mouseX, mouseY);
+    mx = e.clientX; my = e.clientY;
+    place(dot, mx, my);
   });
 
-  (function animateRing() {
-    ringX += (mouseX - ringX) * 0.1;
-    ringY += (mouseY - ringY) * 0.1;
-    place(ring, ringX, ringY);
-    requestAnimationFrame(animateRing);
+  (function follow() {
+    rx += (mx - rx) * 0.1;
+    ry += (my - ry) * 0.1;
+    place(ring, rx, ry);
+    requestAnimationFrame(follow);
   })();
 
-  // Scale up cursor on interactive elements
-  document.querySelectorAll('a, button, .work-card, .service-item, .testi-card').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      dot.style.width = '10px';
-      dot.style.height = '10px';
-      ring.style.width = '56px';
-      ring.style.height = '56px';
-      ring.style.borderColor = 'rgba(240,230,211,.7)';
-    });
-    el.addEventListener('mouseleave', () => {
-      dot.style.width = '6px';
-      dot.style.height = '6px';
-      ring.style.width = '36px';
-      ring.style.height = '36px';
-      ring.style.borderColor = 'rgba(240,230,211,.5)';
-    });
+  const grow = on => {
+    dot.style.width = dot.style.height = on ? '10px' : '6px';
+    ring.style.width = ring.style.height = on ? '56px' : '36px';
+    ring.style.borderColor = on ? 'rgba(240,230,211,.7)' : 'rgba(240,230,211,.5)';
+  };
+  document.addEventListener('mouseover', e => {
+    if (e.target.closest('a, button, summary, .work-card, .service-item, .testi-card')) grow(true);
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest('a, button, summary, .work-card, .service-item, .testi-card')) grow(false);
   });
 
-  // Hide cursor when leaving window
-  document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
-  document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+  document.addEventListener('mouseleave', () => { dot.style.opacity = ring.style.opacity = '0'; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity = ring.style.opacity = '1'; });
 })();
 
-/* Nav scroll behaviour */
-(function initNav() {
-  const nav = document.getElementById('nav');
-  if (!nav) return;
-  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 40);
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+// Nav background on scroll.
+(function nav() {
+  const el = document.getElementById('nav');
+  if (!el) return;
+  const update = () => el.classList.toggle('scrolled', window.scrollY > 40);
+  window.addEventListener('scroll', update, { passive: true });
+  update();
 })();
 
-/* Mobile menu */
-(function initMobileMenu() {
-  const ham  = document.getElementById('nav-ham');
+// Mobile menu.
+(function mobileMenu() {
+  const ham = document.getElementById('nav-ham');
   const menu = document.getElementById('mobile-menu');
   if (!ham || !menu) return;
 
@@ -119,44 +102,67 @@ function triggerHeroText() {
   });
 })();
 
-/* Calendly popup
-   Any element with [data-calendly] opens the booking popup. If the widget
-   hasn't loaded (blocked / offline) the link falls through to /contact. */
+// Calendly. The widget (~200 KB) is only fetched the first time someone clicks
+// a [data-calendly] link. If it can't load, the link just goes to /contact.
+let calendlyLoading = null;
+function loadCalendly() {
+  if (window.Calendly) return Promise.resolve();
+  if (calendlyLoading) return calendlyLoading;
+  calendlyLoading = new Promise((resolve, reject) => {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://assets.calendly.com/assets/external/widget.css';
+    document.head.appendChild(css);
+
+    const js = document.createElement('script');
+    js.src = 'https://assets.calendly.com/assets/external/widget.js';
+    js.async = true;
+    js.onload = () => (window.Calendly ? resolve() : reject());
+    js.onerror = reject;
+    document.head.appendChild(js);
+    setTimeout(reject, 6000);
+  }).catch(() => { calendlyLoading = null; throw new Error('calendly'); });
+  return calendlyLoading;
+}
+
 document.addEventListener('click', e => {
-  const trigger = e.target.closest('[data-calendly]');
-  if (!trigger || !window.Calendly) return;
+  const link = e.target.closest('[data-calendly]');
+  if (!link || e.metaKey || e.ctrlKey || e.shiftKey) return;
   e.preventDefault();
-  window.Calendly.initPopupWidget({ url: 'https://calendly.com/ammar-ivorystudios/30min' });
+  link.setAttribute('aria-busy', 'true');
+  loadCalendly()
+    .then(() => window.Calendly.initPopupWidget({ url: CALENDLY_URL }))
+    .catch(() => { window.location.href = link.getAttribute('href') || '/contact'; })
+    .finally(() => link.removeAttribute('aria-busy'));
 });
 
-/* Scroll reveal — robust by design
-   Content must NEVER stay invisible. We layer three mechanisms:
-   1) IntersectionObserver (efficient, animates on scroll),
-   2) a passive scroll fallback (covers devices/cases where IO is slow
-      or never fires), and
-   3) an absolute safety net that reveals everything after a few seconds.
-   Above-the-fold elements reveal immediately. */
-(function initScrollReveal() {
+// Warm the Calendly script when someone shows intent, so the popup opens fast.
+document.addEventListener('pointerover', e => {
+  if (e.target.closest?.('[data-calendly]')) loadCalendly().catch(() => {});
+}, { passive: true });
+
+// Scroll reveals. IntersectionObserver does the work; the scroll sweep and the
+// timeout are there so nothing can stay invisible if IO misbehaves.
+(function scrollReveal() {
   const els = [...document.querySelectorAll('.reveal-up, .reveal-right')];
   if (!els.length) return;
 
   const show = el => el.classList.add('visible');
-  if (REDUCE_MOTION) { els.forEach(show); return; }   // no animation, just show
+  if (REDUCE_MOTION) return els.forEach(show);
 
   const pending = new Set(els);
   const reveal = el => {
-    if (!pending.has(el)) return;
-    pending.delete(el);
-    const d = parseInt(el.dataset.delay || 0);
+    if (!pending.delete(el)) return;
+    const d = parseInt(el.dataset.delay || 0, 10);
     d ? setTimeout(() => show(el), d) : show(el);
   };
 
+  let ticking = false;
   const sweep = () => {
     const h = window.innerHeight;
     pending.forEach(el => { if (el.getBoundingClientRect().top < h * 0.92) reveal(el); });
     if (!pending.size) window.removeEventListener('scroll', onScroll);
   };
-  let ticking = false;
   const onScroll = () => {
     if (ticking) return;
     ticking = true;
@@ -171,25 +177,22 @@ document.addEventListener('click', e => {
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
-  sweep();                                            // reveal whatever's already in view
-  setTimeout(() => els.forEach(show), 4000);          // absolute safety net
+  sweep();
+  setTimeout(() => els.forEach(show), 4000);
 })();
 
-/* Animated counters */
-(function initCounters() {
+// Count-up stats.
+(function counters() {
   const els = document.querySelectorAll('.stat-num[data-target]');
   if (!els.length) return;
 
-  const ease = t => 1 - Math.pow(1 - t, 3);
-
-  const animate = el => {
-    const target = parseInt(el.dataset.target);
-    if (REDUCE_MOTION) { el.textContent = target; return; }   // no count-up
-    const duration = 1600;
-    const start    = performance.now();
+  const run = el => {
+    const target = parseInt(el.dataset.target, 10);
+    if (REDUCE_MOTION) { el.textContent = target; return; }
+    const start = performance.now();
     const tick = now => {
-      const p = Math.min((now - start) / duration, 1);
-      el.textContent = Math.round(ease(p) * target);
+      const p = Math.min((now - start) / 1600, 1);
+      el.textContent = Math.round((1 - Math.pow(1 - p, 3)) * target);
       if (p < 1) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
@@ -198,76 +201,63 @@ document.addEventListener('click', e => {
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (!e.isIntersecting) return;
-      animate(e.target);
+      run(e.target);
       io.unobserve(e.target);
     });
   }, { threshold: 0.5 });
-
   els.forEach(el => io.observe(el));
 })();
 
-/* Portfolio card 3D tilt */
-(function initTilt() {
-  if (REDUCE_MOTION || !window.matchMedia('(pointer: fine)').matches) return;
+// Card tilt + magnetic buttons (mouse only).
+if (FINE_POINTER && !REDUCE_MOTION) {
   document.querySelectorAll('.tilt-card').forEach(card => {
     card.addEventListener('mousemove', e => {
-      const r  = card.getBoundingClientRect();
-      const x  = (e.clientX - r.left) / r.width  - 0.5;
-      const y  = (e.clientY - r.top)  / r.height - 0.5;
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
       card.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) translateZ(6px)`;
     });
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = '';
-    });
+    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
   });
-})();
 
-/* Magnetic buttons */
-(function initMagnetic() {
-  if (REDUCE_MOTION || !window.matchMedia('(pointer: fine)').matches) return;
   document.querySelectorAll('.magnetic').forEach(btn => {
     btn.addEventListener('mousemove', e => {
       const r = btn.getBoundingClientRect();
-      const x = (e.clientX - r.left - r.width  / 2) * 0.35;
-      const y = (e.clientY - r.top  - r.height / 2) * 0.35;
-      btn.style.transform = `translate(${x}px, ${y}px)`;
+      btn.style.transform = `translate(${(e.clientX - r.left - r.width / 2) * 0.35}px, ${(e.clientY - r.top - r.height / 2) * 0.35}px)`;
     });
-    btn.addEventListener('mouseleave', () => {
-      btn.style.transform = '';
-    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
   });
-})();
+}
 
-/* Smooth anchor scrolling */
+// In-page anchors. Moves focus too, so the skip link works for keyboard users.
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
-    const href = a.getAttribute('href');
-    if (href === '#') return;
-    const target = document.querySelector(href);
+    const id = a.getAttribute('href');
+    if (id === '#') return;
+    const target = document.querySelector(id);
     if (!target) return;
     e.preventDefault();
-    const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h')) || 68;
-    window.scrollTo({ top: target.offsetTop - navH, behavior: 'smooth' });
+    const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--nav-h'), 10) || 68;
+    window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - navH, behavior: REDUCE_MOTION ? 'auto' : 'smooth' });
+    if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+    target.focus({ preventScroll: true });
   });
 });
 
-/* Marquee pause on hover */
+// Pause the marquee on hover.
 const marquee = document.querySelector('.marquee-wrap');
-const track   = document.querySelector('.marquee-track');
+const track = document.querySelector('.marquee-track');
 if (marquee && track) {
-  marquee.addEventListener('mouseenter', () => track.style.animationPlayState = 'paused');
-  marquee.addEventListener('mouseleave', () => track.style.animationPlayState = 'running');
+  marquee.addEventListener('mouseenter', () => { track.style.animationPlayState = 'paused'; });
+  marquee.addEventListener('mouseleave', () => { track.style.animationPlayState = 'running'; });
 }
 
-/* Lazy image fade-in */
-(function initImageFade() {
-  const applyFade = img => {
-    img.style.transition = 'opacity .5s ease, filter .5s ease';
-    img.style.opacity = '0';
-    const onLoad = () => { img.style.opacity = '1'; };
-    if (img.complete && img.naturalWidth) { img.style.opacity = '1'; return; }
-    img.addEventListener('load', onLoad, { once: true });
-    img.addEventListener('error', onLoad, { once: true });
-  };
-  document.querySelectorAll('.wc-img img, .hc-img img').forEach(applyFade);
-})();
+// Fade work images in once they've loaded.
+document.querySelectorAll('.wc-img img').forEach(img => {
+  if (img.complete && img.naturalWidth) return;
+  img.style.opacity = '0';
+  img.style.transition = 'opacity .5s ease';
+  const done = () => { img.style.opacity = '1'; };
+  img.addEventListener('load', done, { once: true });
+  img.addEventListener('error', done, { once: true });
+});

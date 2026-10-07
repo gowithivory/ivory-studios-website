@@ -1,9 +1,19 @@
-/*
-   Ivory Studios — Premium Agency Stylesheet
-   Dark warm theme | Ivory accent | Syne headings | Inter body
-   */
+/* Ivory Studios */
 
-/* Design tokens */
+/* Syne + Inter, self-hosted variable fonts (OFL). latin-ext only loads when needed. */
+@font-face { font-family: 'Syne'; font-style: normal; font-weight: 400 800; font-display: swap;
+  src: url('/assets/fonts/syne-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Syne'; font-style: normal; font-weight: 400 800; font-display: swap;
+  src: url('/assets/fonts/syne-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url('/assets/fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url('/assets/fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+
 :root {
   --bg:         #080706;
   --bg-card:    #111009;
@@ -13,13 +23,13 @@
   --ivory-dim:  rgba(240,230,211,.65);
   --gold:       #c8a46e;
   --text:       #e8e1d8;
-  --text-muted: #8a8175;  /* ~5.3:1 on bg — passes WCAG AA for body text */
-  --text-dim:   #6f685d;  /* lifted from #3d3a35 for legible micro-labels */
+  --text-muted: #8a8175;  /* 5.3:1 on --bg, WCAG AA */
+  --text-dim:   #6f685d;
   --border:     #201e1a;
   --border2:    #2e2a24;
 
-  --font-head: 'Syne', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-head: 'Syne', 'Arial Black', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 
   --radius:    6px;
   --radius-lg: 14px;
@@ -52,10 +62,7 @@ a { color: inherit; text-decoration: none; }
 button { font-family: inherit; border: none; background: none; }
 ul { list-style: none; }
 
-/* Custom cursor
-   The native cursor is only hidden once JS confirms a fine pointer
-   and adds .has-custom-cursor — so it never disappears on touch
-   devices or on pages that don't load the cursor script. */
+/* Custom cursor. Native cursor is only hidden once JS adds .has-custom-cursor (mouse users). */
 html.has-custom-cursor,
 html.has-custom-cursor * { cursor: none !important; }
 
@@ -63,12 +70,10 @@ html.has-custom-cursor * { cursor: none !important; }
 html.has-custom-cursor .cursor-dot,
 html.has-custom-cursor .cursor-ring { display: block; }
 
-/* Native pointer on interactive elements (custom-cursor pages override
-   this with the !important rule above, so it only shows where relevant). */
+/* Pointer cursor on interactive elements */
 a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
 
-/* Positioned via transform (set from JS) so cursor movement runs on the
-   compositor thread — no layout/paint work per mousemove. */
+/* Moved with transform from JS to keep it off the layout thread */
 .cursor-dot {
   position: fixed; top: 0; left: 0; z-index: 9999;
   width: 6px; height: 6px;
@@ -101,8 +106,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
 .loader.done { opacity: 0; visibility: hidden; }
 .loader-word {
   font-family: var(--font-head);
-  /* Scales down enough that "IVORYSTUDIOS" never touches the screen edges
-     on small phones (was 453px wide at 320px → clipped). */
+  /* Small enough that the wordmark fits a 320px screen */
   font-size: clamp(22px, 6.5vw, 72px);
   font-weight: 800;
   letter-spacing: clamp(1.5px, 0.6vw, 4px);
@@ -222,14 +226,11 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
   .btn-nav   { display: none; }
   .nav-ham   { display: flex; }
 }
-/* Small phones: the 18px logo (252px wide) + 40px gap pushed the hamburger
-   off-screen. Tighten spacing and shrink the wordmark so the menu toggle
-   stays on-screen and right-aligned. */
+/* Small phones: shrink the wordmark so the menu button stays on screen */
 @media (max-width: 600px) {
   .nav { padding: 0 18px; gap: 12px; }
   .nav-logo { font-size: 15px; letter-spacing: 1px; }
-  /* Service cards: reclaim the wasted 36px side padding + shrink the title
-     so long words like "DEVELOPMENT" fit instead of clipping. */
+  /* Service cards: less padding so long titles fit */
   .service-item { padding: 26px 18px; }
   .service-item:hover { padding-left: 18px; }
   .si-title { font-size: clamp(16px, 5.5vw, 20px); }
@@ -351,7 +352,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
 .hero-inner {
   position: relative; z-index: 2;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 60px;
   align-items: center;
   padding-top: 60px;
@@ -374,7 +375,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
 .hero-title {
   display: flex; flex-direction: column;
   font-family: var(--font-head);
-  font-size: clamp(52px, 7.5vw, 110px);
+  font-size: clamp(52px, 6.4vw, 84px); /* widest word is 8.85em, leaves room for the card */
   font-weight: 800;
   text-transform: uppercase;
   line-height: 1.0;
@@ -456,8 +457,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
   background: linear-gradient(to bottom, var(--border2), transparent);
   animation: scrollBob 1.8s ease-in-out infinite;
 }
-/* On phones the hero fills more than one screen — the absolutely-positioned
-   hint lands on top of the proof row, so hide it. */
+/* Phones: the hint would overlap the proof row */
 @media (max-width: 700px) { .hero-scroll-hint { display: none; } }
 @keyframes scrollBob { 0%,100% { opacity:1; transform: scaleY(1); } 50% { opacity:.4; transform: scaleY(.5) translateY(-10px); } }
 
@@ -605,17 +605,13 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
 }
 .work-card:hover .wc-cta { opacity: 1; transform: none; }
 
-/* Touch devices / phones have no hover — reveal the description, CTA, and
-   a readable scrim by default so the portfolio never looks half-finished.
-   (Keyed on hover capability AND width so it holds whatever a device
-   reports.) */
+/* No hover on touch: show the card overlay by default */
 @media (hover: none), (max-width: 820px) {
   .wc-sub, .wc-cta { opacity: 1 !important; transform: none !important; }
   .wc-overlay { background: linear-gradient(to top, rgba(8,7,6,.94) 22%, rgba(8,7,6,.5) 62%, rgba(8,7,6,.15) 100%); }
   .wc-img img { filter: brightness(.5) saturate(.78); }
 }
-/* The featured card's wide 16:7 crop is too short to hold the now-visible
-   overlay text on phones — give it a taller crop so nothing clips. */
+/* Taller crop on phones so the overlay text fits */
 @media (max-width: 600px) {
   .work-card--large .wc-img { aspect-ratio: 4 / 3; }
   .wc-overlay { padding: 22px; }
@@ -828,7 +824,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
   background: var(--bg-card);
   border-top: 1px solid var(--border);
 }
-.footer-inner { padding: 72px 0 28px; }
+.footer-inner { padding-top: 72px; padding-bottom: 28px; }
 .footer-top {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -884,9 +880,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
   opacity: 1;
   transform: none;
 }
-/* On phones a horizontal reveal slides in from off-screen-right, which
-   briefly widens the page and causes a sliver of horizontal scroll.
-   Reveal vertically instead — same effect, zero overflow. */
+/* Phones: reveal vertically, a sideways slide causes horizontal scroll */
 @media (max-width: 700px) {
   .reveal-right { transform: translateY(28px); }
 }
@@ -915,8 +909,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
   .process-steps { grid-template-columns: 1fr; }
 }
 
-/* NOTE: max-width media queries must run largest → smallest so the
-   narrowest (most specific to phones) wins. 768 comes BEFORE 480. */
+/* max-width queries go largest to smallest */
 @media (max-width: 768px) {
   .hero-title { font-size: clamp(38px, 11vw, 64px); }
   .service-item { grid-template-columns: 56px 1fr; }
@@ -927,13 +920,12 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
 }
 @media (max-width: 480px) {
   .hero-title { font-size: clamp(31px, 9vw, 46px); letter-spacing: -0.5px; }
-  /* eyebrow as a normal block so its long line wraps instead of clipping */
+  /* Let the eyebrow wrap */
   .hero-eyebrow { display: block; line-height: 1.6; letter-spacing: 1px; font-size: 11px; }
   .hero-eyebrow .eyebrow-dot { display: inline-block; margin-right: 8px; vertical-align: middle; }
   .hero-proof { flex-wrap: wrap; gap: 8px 0; }
   .proof-item { padding: 0 14px; }
-  /* stack hero buttons so the long "Book a Discovery Call" label can't
-     force the hero wider than the screen (was getting clipped). */
+  /* Stack hero buttons on phones */
   .hero-btns { flex-direction: column; align-items: stretch; width: 100%; }
   .hero-btns .btn-primary, .hero-btns .btn-ghost { width: 100%; justify-content: center; }
 }
@@ -950,15 +942,12 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
 
 /* Calendly widget override */
 .calendly-inline-widget { background: var(--bg-card) !important; max-width: 100%; }
-/* The Calendly embed ships an inline min-width:300px that overflows the
-   smallest phones — neutralise it so the booking widget always fits. */
+/* Calendly's inline min-width overflows small phones */
 @media (max-width: 380px) {
   .calendly-inline-widget { min-width: 0 !important; width: 100% !important; }
 }
 
-/*
-   Nav actions + Client login
-*/
+/* Nav actions + client login */
 .nav-actions { display: flex; align-items: center; gap: 18px; flex-shrink: 0; }
 .nav-login {
   font-size: 13px; font-weight: 500; letter-spacing: .3px;
@@ -980,9 +969,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
 }
 .fs-icon:hover { color: var(--bg); background: var(--ivory); border-color: var(--ivory); transform: translateY(-3px); }
 
-/*
-   Auth pages (login / signup)
-*/
+/* Auth pages */
 .auth-body {
   min-height: 100vh;
   display: flex; flex-direction: column;
@@ -1023,8 +1010,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
 }
 .auth-title {
   font-family: var(--font-head);
-  /* "PASSWORD" spans ~10em in Syne 800 — scale down so it never clips
-     inside the padded card on small phones. */
+  /* Smaller title so long words fit the card on phones */
   font-size: clamp(19px, 7vw, 30px);
   font-weight: 800; text-transform: uppercase;
   color: var(--text); margin-bottom: 8px;
@@ -1061,9 +1047,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
 .auth-switch a { color: var(--ivory); }
 .auth-switch a:hover { text-decoration: underline; }
 
-/*
-   Client Portal / Dashboard
-*/
+/* Client portal */
 .portal-body { background: var(--bg); min-height: 100vh; }
 .portal-nav {
   position: sticky; top: 0; z-index: 50;
@@ -1203,9 +1187,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
 }
 .admin-post input:focus { outline: none; border-color: var(--ivory); }
 
-/*
-   Project detail / case study
-*/
+/* Case study pages */
 .project-page { min-height: 100vh; }
 .proj-404 { text-align: center; padding: 160px 24px; }
 .proj-404 h1 { font-family: var(--font-head); font-size: 40px; text-transform: uppercase; margin-bottom: 12px; }
@@ -1274,10 +1256,7 @@ a[href], button, summary, label[for], .magnetic, [onclick] { cursor: pointer; }
   .proj-gallery { grid-template-columns: 1fr; }
 }
 
-/*
-   Multi-page additions (inner page hero, services, FAQ, about,
-   contact, CTA band) — shared across the sub-pages.
-*/
+/* Inner pages: hero, services, FAQ, about, contact, CTA band */
 
 /* hero card as a link */
 a.hc-main { color: inherit; }
@@ -1299,15 +1278,12 @@ a.hc-main { color: inherit; }
   line-height: 1.05; letter-spacing: -1px;
   color: var(--text); margin: 8px 0 18px;
 }
-/* Long uppercase words (e.g. "STANDARD.") overflow the floor size on
-   small phones — scale the title down so every word fits. */
+/* Scale long uppercase words down on small phones */
 @media (max-width: 480px) {
   .page-hero-title { font-size: clamp(25px, 8vw, 40px); letter-spacing: -.5px; }
   .proj-title { font-size: clamp(26px, 8.5vw, 40px); }
 }
-/* Display headings never break mid-word ("SOMETHIN-G") — the clamp()
-   sizes are tuned so the longest word in each heading fits whole on a
-   320px screen, and balanced wrapping keeps multi-line headlines even. */
+/* Display headings: sizes are tuned so the longest word fits whole at 320px */
 .hero-title, .section-title, .cta-band-title, .proj-title, .svc-title,
 .svc-intro-lead, .about-h2, .cta-title, .pmet-val, .page-hero-title {
   overflow-wrap: normal;
@@ -1326,9 +1302,7 @@ a.hc-main { color: inherit; }
 /* CTA band */
 .cta-band { text-align: center; }
 .cta-band-inner { max-width: 840px; margin: 0 auto; text-align: center; }
-/* Syne 800 uppercase runs ~1.05em per glyph — "EXCEPTIONAL." needs ~12.6em.
-   The size tracks the container so the longest word always fits whole
-   (at 62px it spans ~780px inside the 792px content box). */
+/* Sized so "EXCEPTIONAL." (about 12.6em in Syne 800) fits on one line */
 .cta-band-title {
   font-family: var(--font-head);
   font-size: clamp(19px, 7.2vw - 4px, 57px);
@@ -1349,8 +1323,7 @@ a.hc-main { color: inherit; }
 .svc-row:last-child { border-bottom: none; }
 .svc-row--flip .svc-info { order: 2; }
 .svc-num { font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
-/* "DEVELOPMENT" measures 13.34em in Syne 800 uppercase — the widest word on
-   the site. Sized so it always fits its half-width column whole. */
+/* "DEVELOPMENT" is the widest word on the site (13.34em), sized to fit its column */
 .svc-title { font-family: var(--font-head); font-size: clamp(24px, 3.65vw - 4px, 40px); font-weight: 800; text-transform: uppercase; color: var(--text); margin-bottom: 16px; }
 .svc-lead { font-size: 16px; color: var(--text-muted); line-height: 1.8; margin-bottom: 24px; }
 .svc-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; }
@@ -1435,11 +1408,9 @@ a.hc-main { color: inherit; }
   .values-grid { grid-template-columns: 1fr; }
 }
 
-/*
-   Accessibility, performance & mobile polish (pre-launch pass)
-*/
+/* Accessibility and mobile polish */
 
-/* Skip link — first stop for keyboard users */
+/* Skip link */
 .skip-link {
   position: fixed; top: -120px; left: 16px; z-index: 10000;
   background: var(--ivory); color: var(--bg);
@@ -1449,7 +1420,7 @@ a.hc-main { color: inherit; }
 }
 .skip-link:focus { top: 16px; outline: none; }
 
-/* Visible keyboard focus everywhere (mouse users are unaffected) */
+/* Keyboard focus */
 :focus-visible {
   outline: 2px solid var(--ivory);
   outline-offset: 3px;
@@ -1474,8 +1445,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   .faq-item summary { padding: 20px 0; }
 }
 
-/* Respect users who ask for less motion — also a low-end-device safeguard.
-   Content is shown instantly; nothing animates, scrolls-jacks, or loops. */
+/* Reduced motion: show everything immediately, no animation */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: .001ms !important;
@@ -1664,9 +1634,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   body { background: #fff; color: #111; }
 }
 
-/*
-   Portal & admin additions (completion %, lead contact, users)
-*/
+/* Portal: completion %, lead contact, users */
 
 /* Completion bar in the phase tracker */
 .phase-pct-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
@@ -1692,7 +1660,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .admin-section-title { font-family: var(--font-head); font-size: 14px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin: 40px 0 18px; }
 
-/* Admin users table (responsive → stacked cards on phones) */
+/* Admin users table, stacks on phones */
 .admin-users-table { background: var(--bg-card); border: 1px solid var(--border2); border-radius: var(--radius-lg); overflow: hidden; }
 .aut-head, .aut-row { display: grid; grid-template-columns: 1.2fr 1.8fr .8fr 1fr; gap: 12px; padding: 13px 18px; align-items: center; }
 .aut-head { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); }
@@ -1708,9 +1676,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   .aut-row span::before { content: attr(data-l) ": "; color: var(--text-dim); font-size: 11px; }
 }
 
-/*
-   Service landing pages
-*/
+/* Service landing pages */
 .service-hero { position: relative; overflow: hidden; padding: calc(var(--nav-h) + 80px) 0 72px; border-bottom: 1px solid var(--border); }
 .service-hero-bg { position: absolute; inset: 0; z-index: 0; }
 .service-hero-bg img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.32) saturate(.85); }
@@ -1768,10 +1734,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .svc-proof-stats span { font-size: 13px; color: var(--text-muted); }
 .svc-proof-stats strong { font-family: var(--font-head); font-size: 26px; font-weight: 800; color: var(--ivory); display: block; }
 
-/*
-   Small-phone heading overrides — placed at the very end so they win
-   the cascade over the base definitions earlier in the file.
-*/
+/* Small-phone heading overrides (kept last so they win) */
 @media (max-width: 600px) {
   .si-title { font-size: clamp(16px, 5.5vw, 20px); }
   .section-title { font-size: clamp(20px, 8.1vw - 4px, 45px); }
@@ -1779,13 +1742,10 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   .wc-title { font-size: clamp(17px, 5.5vw, 30px); }
 }
 
-/* Grid hygiene — let grid items shrink below their content's min-content so
-   a long word can't blow the column out past the container (the flipped
-   "Web Development" service row was overflowing ~23px on small phones). */
+/* Let grid items shrink so long words can't push columns wider */
 .svc-row > *, .svc-detail-grid > *, .grid-2 > *, .grid-3 > * { min-width: 0; }
 
-/* Service-page heroes carry the service name in the H1 ("DEVELOPMENT" spans
-   13.34em in Syne 800) — sized so the name always fits on one line whole. */
+/* Service hero H1 sized so the service name fits on one line */
 .service-hero .page-hero-title { font-size: clamp(19px, 6.9vw - 3px, 58px); }
 .section-title.st-tight { font-size: clamp(19px, 6.9vw - 3px, 56px); }
 @media (min-width: 1800px) {
@@ -1793,15 +1753,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   .section-title.st-tight { font-size: clamp(30px, 3vw, 62px); }
 }
 
-/*
-   Large displays (1800px+ — big desktops & TVs): widen the shell and
-   let the display type breathe so the layout never looks like a
-   stretched phone site on a television.
-*/
+/* Large screens (1800px+) */
 @media (min-width: 1800px) {
   :root { --container: 1400px; }
   body { font-size: 17px; }
-  .hero-title { font-size: clamp(52px, 6.2vw, 124px); }
+  .hero-title { font-size: clamp(52px, 5.2vw, 100px); }
   .section-title { font-size: clamp(34px, 3.5vw, 68px); }
   .page-hero-title { font-size: clamp(34px, 5vw, 96px); }
   .page-hero-inner { max-width: 1000px; }
