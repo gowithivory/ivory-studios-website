@@ -1,16 +1,11 @@
--- ============================================================
--- IVORY STUDIOS — ONE-TIME CLEAN RESET
--- Run this ONCE in the Supabase SQL Editor, then run schema.sql.
--- Drops only Ivory's own objects. It never touches auth.users
--- data, the auth schema, or extensions.
--- ============================================================
+-- One-time clean reset. Run in the Supabase SQL editor, then run schema.sql.
+-- Only drops Ivory's own objects: auth.users data, the auth schema and
+-- extensions are left alone.
 
--- 1) Trigger on auth.users — drop by name (table cascade can't reach it).
 drop trigger if exists on_auth_user_created on auth.users;
 
--- 2) Drop every app table. CASCADE also removes their RLS policies,
---    indexes, foreign keys, and the triggers attached to them
---    (trg_profiles_updated, trg_requests_updated).
+-- cascade also removes the policies, indexes, foreign keys and table triggers
+drop view if exists public.admin_requests_view;
 drop table if exists
   public.request_updates,
   public.project_requests,
@@ -19,9 +14,10 @@ drop table if exists
   public.profiles
 cascade;
 
--- 3) Functions live independently of tables — drop them explicitly.
-drop function if exists public.set_updated_at()  cascade;
-drop function if exists public.handle_new_user() cascade;
-drop function if exists public.is_admin()        cascade;
-
--- Done. Now run supabase/schema.sql to rebuild everything fresh.
+drop function if exists public.set_updated_at()        cascade;
+drop function if exists public.handle_new_user()       cascade;
+drop function if exists public.is_admin()              cascade;
+drop function if exists public.is_privileged_role()    cascade;
+drop function if exists public.guard_profile_update()  cascade;
+drop function if exists public.guard_request_write()   cascade;
+drop function if exists public.guard_contact_flood()   cascade;

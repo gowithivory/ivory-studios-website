@@ -96,5 +96,14 @@ ok('client sees public updates only (not internal)', r.rows?.length === 1 && r.r
 r = await as('authenticated', A, `delete from public.project_requests where id='${reqId}' returning id`);
 ok('client cannot delete requests', (r.rows?.length ?? 0) === 0);
 
+// Backdating created_at must not get around the per-email rate limit.
+for (let i = 0; i < 3; i++) {
+  await as('anon', null, `insert into public.contact_submissions(name,email,message,created_at) values ('Bo','bo@x.com','Backdated message ${i}','2000-01-01')`);
+}
+r = await as('anon', null, `insert into public.contact_submissions(name,email,message,created_at) values ('Bo','bo@x.com','Backdated message 4','2000-01-01')`);
+ok('backdated created_at cannot bypass flood guard', !!r.err, JSON.stringify(r));
+r = await as('authenticated', A, `insert into public.project_requests(user_id,project_name,service_type,created_at) values ('${A}','Old','Web Design','2000-01-01') returning created_at`);
+ok('client cannot backdate a request', r.rows && new Date(r.rows[0].created_at).getFullYear() > 2000, JSON.stringify(r));
+
 console.log(`\n${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

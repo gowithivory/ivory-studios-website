@@ -1,6 +1,6 @@
---  Ivory Studios — Production schema (hardened)
---  Paste into Supabase → SQL Editor → Run.  Safe to re-run (idempotent).
---  Free tier is enough. See supabase/SETUP.md for the 5-minute walkthrough.
+-- Ivory Studios database schema.
+-- Paste into the Supabase SQL editor and run. Safe to re-run.
+-- Run `npm run test:db` after any change. Setup notes: supabase/SETUP.md
 
 
 --  TABLES
@@ -142,9 +142,12 @@ as $$
 begin
   if public.is_privileged_role() or public.is_admin() then return new; end if;
   if tg_op = 'INSERT' then
-    new.status   := 'new';
-    new.priority := 'normal';
+    new.status     := 'new';
+    new.priority   := 'normal';
+    new.created_at := now();
+    new.updated_at := now();
   else
+    new.created_at := old.created_at;
     new.user_id  := old.user_id;
     new.status   := old.status;
     new.priority := old.priority;
@@ -159,6 +162,10 @@ returns trigger language plpgsql security definer   -- must count rows the anon 
 set search_path = public
 as $$
 begin
+  -- Server sets these. Otherwise a backdated created_at would slip past the
+  -- rate limits below.
+  new.created_at := now();
+  new.ip_hash    := null;
   if (select count(*) from public.contact_submissions
        where email = new.email and created_at > now() - interval '1 hour') >= 3 then
     raise exception 'Too many enquiries from this email. Please email teams@ivorystudios.io.' using errcode = 'P0001';
@@ -245,16 +252,17 @@ drop policy if exists "contact_select_admin" on public.contact_submissions;
 create policy "contact_insert_anon"  on public.contact_submissions for insert to anon, authenticated with check (true);
 create policy "contact_select_admin" on public.contact_submissions for select to authenticated using (public.is_admin());
 
--- newsletter: anyone can subscribe; only admins read. (No public UPDATE — it let anyone
--- unsubscribe everyone. Unsubscribes are handled by an admin or a signed-token function.)
+-- newsletter: anyone can subscribe, only admins read. No public UPDATE, or anyone
+-- could unsubscribe everyone.
 drop policy if exists "newsletter_insert_anon"  on public.newsletter;
 drop policy if exists "newsletter_select_admin" on public.newsletter;
 drop policy if exists "newsletter_update_own"   on public.newsletter;
 create policy "newsletter_insert_anon"  on public.newsletter for insert to anon, authenticated with check (status = 'active');
 create policy "newsletter_select_admin" on public.newsletter for select to authenticated using (public.is_admin());
 
---  ADMIN VIEW  (security_invoker → RLS of the *caller* applies; without it the view
---  runs as its owner and would leak every client's requests to anyone)
+--  ADMIN VIEW
+--  security_invoker makes the caller's RLS apply. Without it the view runs as
+--  its owner and would expose every request.
 
 drop view if exists public.admin_requests_view;
 create view public.admin_requests_view
@@ -267,7 +275,7 @@ select
 from public.project_requests r
 join public.profiles p on p.id = r.user_id;
 
---  PRIVILEGES  (defence in depth: RLS is the gate, grants are the fence)
+--  PRIVILEGES (RLS decides rows, grants decide tables)
 
 revoke all on all tables    in schema public from anon, authenticated;
 revoke all on all functions in schema public from anon, authenticated, public;
@@ -283,7 +291,7 @@ grant select on public.admin_requests_view to authenticated;
 -- Signed-in users evaluate these inside policies and guard triggers; anon never does.
 grant execute on function public.is_admin(), public.is_privileged_role() to authenticated;
 
---  MAKE YOURSELF ADMIN — run once, AFTER you have signed up on the site:
+--  MAKE YOURSELF ADMIN (run once, after signing up on the site):
 --
 --    update public.profiles set role = 'admin' where email = 'ammar@ivorystudios.io';
 --
