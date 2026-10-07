@@ -1,13 +1,12 @@
 {
   "name": "ivory-studios",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
-  "description": "Ivory Studios \u2014 web design & development agency site",
+  "description": "Ivory Studios website",
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
     "build:html": "node scripts/build.mjs",
-    "build": "echo 'No build step on Vercel \u2014 run npm run build:html locally after editing pages, then deploy'",
     "test:db": "node supabase/tests/rls.test.mjs"
   },
   "dependencies": {

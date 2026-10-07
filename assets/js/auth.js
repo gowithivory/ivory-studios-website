@@ -1,4 +1,4 @@
-/* Login + signup. One file, both forms — whichever is on the page. */
+// Login, signup and password reset. Each block only runs if its form is on the page.
 import { supabase, isConfigured, friendly } from './supabase.js';
 
 const $ = s => document.querySelector(s);
@@ -54,7 +54,7 @@ if (signupForm) {
     if (error) {
       const m = (error.message || '').toLowerCase();
       if (m.includes('already registered') || m.includes('already exists'))
-        return notify(note, 'That email already has an account — try logging in instead.');
+        return notify(note, 'That email already has an account. Try logging in instead.');
       return notify(note, friendly(error));
     }
 
@@ -89,7 +89,7 @@ if (loginForm) {
 
     if (error) {
       const m = (error.message || '').toLowerCase();
-      if (m.includes('not confirmed'))      return notify(note, 'Please confirm your email first — check your inbox for the link.');
+      if (m.includes('not confirmed'))      return notify(note, 'Please confirm your email first. Check your inbox for the link.');
       if (m.includes('invalid'))            return notify(note, 'Wrong email or password.');
       return notify(note, friendly(error));
     }
@@ -97,19 +97,15 @@ if (loginForm) {
   });
 }
 
-// Reset password
-// reset-password.html shows two forms: request a link, then set a new
-// password when the user arrives back from that emailed link.
+// Password reset: step 1 requests the email, step 2 sets the new password
+// after the user comes back from the link.
 const requestForm = $('#request-form');
 const newpassForm = $('#newpass-form');
 if (requestForm || newpassForm) {
-  // When the recovery email link is opened, supabase-js establishes a
-  // temporary session and fires PASSWORD_RECOVERY — swap to step 2.
   if (isConfigured) {
     supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') showNewPassStep();
     });
-    // Also handle the case where the session is already present on load.
     supabase.auth.getSession().then(({ data }) => {
       if (data.session && location.hash.includes('type=recovery')) showNewPassStep();
     });
@@ -137,7 +133,7 @@ if (requestForm) {
       redirectTo: location.origin + '/reset-password',
     });
     setLoading(btn, false);
-    // Always show success — don't reveal whether an email is registered.
+    // Same message either way so the form can't be used to check who has an account.
     notify(note, "If that email has an account, a reset link is on its way. Check your inbox.", true);
     requestForm.reset();
   });

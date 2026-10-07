@@ -1,73 +1,59 @@
-# Ivory Studios Website
+# ivorystudios.io
 
-The marketing and portfolio site for [Ivory Studios](https://ivorystudios.io) — a design agency that builds fast, considered digital products.
+Source for the [Ivory Studios](https://ivorystudios.io) website: marketing pages, case studies and the client portal.
 
-## Stack
+Plain HTML, CSS and JavaScript. No framework, no build step on the server. Supabase handles auth and the portal database, Vercel hosts it.
 
-| Layer | Technology |
-|---|---|
-| Pages | Plain HTML5 |
-| Styles | Vanilla CSS (`assets/css/style.css`) |
-| Scripts | Vanilla JS ES modules (`assets/js/`) |
-| Database / Auth | Supabase (client portal & project dashboard) |
-| Booking | Calendly embed |
-| Local dev server | Express (`server.js`) |
-| Hosting | Vercel (static, no build step) |
+## Run it locally
 
-## Local development
-
-**Prerequisites:** [Node.js](https://nodejs.org) v18+, [Git](https://git-scm.com)
+Needs Node 18+.
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/gowithivory/ivory-studios-website.git
-cd ivory-studios-website
-
-# 2. Install the dev server dependency
 npm install
-
-# 3. Start the local server
-npm run dev
+npm run dev        # http://localhost:3001
 ```
 
-Open [http://localhost:3001](http://localhost:3001).
+The dev server uses the same headers and clean URLs as production (`server.js` reads `vercel.json`).
 
-The Express server serves all HTML files with clean URLs (no `.html` extension needed), security headers, and sensible caching — matching production behaviour as closely as possible.
+## Making changes
 
-**No Node installed?** There's a zero-dependency fallback that needs nothing but Windows:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File scripts\dev-server.ps1
-```
-
-Open [http://localhost:3005](http://localhost:3005) — same clean-URL behaviour.
-
-## Deployment
-
-The site deploys automatically to Vercel on every push to `main`. No build step required — Vercel serves the static files directly using the config in `vercel.json`.
-
-See [docs/DEPLOY.md](./docs/DEPLOY.md) for first-time setup instructions.
-
-## Editing pages (build step)
-
-Nav, footer, clean URLs, case-study pages and `sitemap.xml` are generated into the HTML so search
-engines see them without running JavaScript. After editing any page, or `content/projects.mjs`:
+1. Edit the HTML/CSS/JS.
+2. If you touched a page, the nav/footer or `content/projects.mjs`, run `npm run build:html`. It bakes the shared nav and footer into every page, renders the case studies and updates `sitemap.xml`.
+3. Commit and push to `main`. Vercel deploys it in about a minute.
 
 ```bash
-npm run build:html   # idempotent; rewrites only files that changed
-npm run test:db      # re-verifies the 30 database access rules after any schema change
+git add -A
+git commit -m "Update services copy"
+git push
 ```
 
-- Add a case study: add an entry to `content/projects.mjs`, then `npm run build:html`.
-- Deploy only ships the public site — `.vercelignore` keeps `docs/`, `supabase/`, `scripts/`, `content/`, `server.js` and env files out of production.
+Adding a case study: add an entry to `content/projects.mjs`, then `npm run build:html`.
 
-## Database (Supabase, free tier)
+## Layout
 
-Setup takes ~5 minutes: see [supabase/SETUP.md](./supabase/SETUP.md). The two constants live at the
-top of `assets/js/supabase.js` (anon key only — it is public by design and protected by row-level security).
+```
+*.html              pages (nav/footer are generated, edit them in scripts/build.mjs)
+case-studies/       generated from content/projects.mjs, don't edit by hand
+assets/css|js|img   styles, scripts, images
+assets/fonts        self-hosted Syne + Inter
+supabase/           schema, reset script, RLS tests, setup notes
+scripts/build.mjs   static build
+server.js           local dev server
+vercel.json         headers, redirects, caching
+```
 
-## Ads & analytics
+`.vercelignore` keeps everything except the public site out of the deployment.
 
-`assets/js/track.js` is off until you add IDs (GA4 / Google Ads / Meta Pixel). Once set, a consent banner
-appears and nothing loads until a visitor accepts. Contact-form leads and Calendly bookings fire conversions,
-and UTM / gclid / fbclid values are attached to each enquiry.
+## Database
+
+Setup is in [supabase/SETUP.md](supabase/SETUP.md). After changing `supabase/schema.sql`, run the access-rule tests:
+
+```bash
+npm run test:db
+```
+
+Then paste the schema into the Supabase SQL editor and run it (it's safe to re-run).
+
+## Analytics
+
+`assets/js/track.js` stays off until you fill in a GA4, Google Ads or Meta Pixel ID. Once one is set, a cookie banner appears and nothing loads until the visitor accepts.

@@ -1,11 +1,7 @@
-/*
-   Marketing / ads readiness — consent-gated, off until you add IDs.
-   1) Fill in the IDs below (leave '' to keep a tag off).
-   2) Deploy. A cookie banner appears; nothing loads until "Accept".
-   Conversions fired: generate_lead (contact form), schedule (Calendly booking).
-   Campaign parameters (utm_*, gclid, fbclid …) are kept for the session and
-   attached to enquiries so you can see which ad produced which lead.
-*/
+// Analytics and ad tags. Everything is off until an ID is filled in below,
+// and nothing loads until the visitor accepts the cookie banner.
+// Events: generate_lead (contact form) and schedule (Calendly booking).
+// UTM / click IDs are kept for the session and attached to enquiries.
 (function () {
   const CONFIG = {
     GA4_ID: '',            // e.g. 'G-XXXXXXXXXX'
@@ -22,7 +18,7 @@
     set(k, v) { try { localStorage.setItem(k, v); } catch { /* blocked */ } },
   };
 
-  /* ─ Attribution (first-party, session only) ─ */
+  // Attribution (first-party, session only)
   const PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid', 'fbclid', 'msclkid'];
   try {
     const q = new URLSearchParams(location.search);
@@ -34,7 +30,7 @@
   } catch { /* storage blocked */ }
   window.ivoryAttribution = () => { try { return sessionStorage.getItem('ivory-attr') || ''; } catch { return ''; } };
 
-  /* ─ Tag loaders ─ */
+  // Tag loaders
   const load = src => { const s = document.createElement('script'); s.async = true; s.src = src; document.head.appendChild(s); };
   let loaded = false;
   function loadTags() {
@@ -78,7 +74,7 @@
     }
   });
 
-  /* ─ Consent banner (only when something is configured) ─ */
+  // Consent banner (only shown when a tag is configured)
   function showBanner() {
     if (document.getElementById('consent-banner')) return;
     const box = document.createElement('div');

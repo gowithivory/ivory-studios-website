@@ -1,9 +1,6 @@
-/*
-   Client portal.
-   Clients: see their own requests, submit new ones, watch phases.
-   Admin (Ammar): sees every request, advances phases, posts updates.
-   What you can read/write is enforced by RLS — this is just the UI.
-*/
+// Client portal. Clients see and submit their own requests; admins see
+// everything and move projects through phases. Access is enforced by RLS in
+// supabase/schema.sql, this file is only the UI.
 import { supabase, isConfigured, friendly } from './supabase.js';
 
 const $   = s => document.querySelector(s);
@@ -43,8 +40,7 @@ async function init() {
   const { data: profile, error: profErr } = await supabase
     .from('profiles').select('*').eq('id', session.user.id).single();
 
-  // The tables won't exist until schema.sql has been run — show a
-  // clear "finish setup" screen instead of a cryptic error.
+  // Tables missing means schema.sql hasn't been run yet.
   if (profErr && isSchemaMissing(profErr)) {
     $('#portal-user').textContent = session.user.email;
     $('#logout-btn').addEventListener('click', async () => { await supabase.auth.signOut(); location.replace('/'); });
@@ -72,7 +68,7 @@ async function init() {
   isAdmin ? renderAdmin() : renderClient();
 }
 
-/* Client view */
+// Client view
 async function renderClient() {
   const root = $('#portal-root');
   root.innerHTML = `
@@ -106,7 +102,7 @@ async function loadClientRequests() {
     return;
   }
 
-  // pull updates for all of this client's requests in one round-trip
+  // One query for every request's updates.
   const ids = reqs.map(r => r.id);
   const { data: updates } = await supabase
     .from('request_updates').select('*').in('request_id', ids).order('created_at', { ascending: false });
@@ -145,12 +141,12 @@ function clientCard(r, updates) {
                   <div class="ru-time">${u.phase ? esc(PHASE_LABEL[u.phase] || u.phase) + ' · ' : ''}${fmtDate(u.created_at)}</div>
                 </div>
               </div>`).join('')
-          : `<p class="ru-empty">No updates yet — we'll post here as work progresses.</p>`}
+          : `<p class="ru-empty">No updates yet. We'll post here as work progresses.</p>`}
       </div>
     </div>`;
 }
 
-/* New-request form */
+// New request form
 function toggleRequestForm() {
   const panel = $('#new-req-panel');
   if (!panel.hidden) { panel.hidden = true; panel.innerHTML = ''; return; }
@@ -245,14 +241,14 @@ async function submitRequest(e) {
   loadClientRequests();
 }
 
-/* Admin view */
+// Admin view
 async function renderAdmin() {
   const root = $('#portal-root');
   root.innerHTML = `
     <div class="portal-head">
       <div>
         <h1 class="portal-h1">Admin Dashboard</h1>
-        <p class="portal-sub">Advance phases, post updates, and reach leads — all in one place.</p>
+        <p class="portal-sub">Advance phases, post updates and follow up with leads.</p>
       </div>
     </div>
     <div id="admin-stats" class="admin-stats"></div>
@@ -276,7 +272,6 @@ async function loadAdminRequests() {
   if (error) { wrap.innerHTML = `<p class="portal-empty">${esc(friendly(error))}</p>`; return; }
   if (!reqs?.length) { wrap.innerHTML = `<p class="portal-empty">No requests yet.</p>`; return; }
 
-  // lightweight analytics
   const active = reqs.filter(r => !['new','completed','declined','on_hold'].includes(r.status)).length;
   const done   = reqs.filter(r => r.status === 'completed' || r.status === 'launched').length;
   const fresh  = reqs.filter(r => r.status === 'new').length;
@@ -395,7 +390,7 @@ function adminRow(r) {
 async function changeStatus(id, status) {
   const { error } = await supabase.from('project_requests').update({ status }).eq('id', id);
   if (error) { alert(friendly(error)); return; }
-  // auto-log the phase change so the client sees it
+  // Log the change so the client sees it in their activity feed.
   await supabase.from('request_updates').insert({
     request_id: id, phase: status, created_by: me.id,
     message: `Project moved to ${PHASE_LABEL[status]}.`,
@@ -424,9 +419,9 @@ async function deleteRequest(id, name) {
   loadAdminRequests();
 }
 
-/* Shared bits */
+// Helpers
 function phaseTracker(status) {
-  // side states don't sit on the line
+  // On hold / declined don't sit on the timeline.
   if (['on_hold', 'declined'].includes(status)) {
     return `<div class="phase-flag ${status}">${PHASE_LABEL[status]}</div>`;
   }
@@ -435,7 +430,7 @@ function phaseTracker(status) {
   const pct = PHASE_PCT[status] ?? 0;
   return `
     <div class="phase-pct-row">
-      <span class="phase-pct-label">Current stage — <strong>${PHASE_LABEL[status]}</strong></span>
+      <span class="phase-pct-label">Current stage: <strong>${PHASE_LABEL[status]}</strong></span>
       <span class="phase-pct-val">${pct}%</span>
     </div>
     <div class="phase-pct-bar"><span style="width:${pct}%"></span></div>
@@ -477,7 +472,7 @@ function notConfigured() {
     <div class="portal-empty-card">
       <div class="pe-icon">⚙</div>
       <h3>Portal not connected yet</h3>
-      <p>Add your Supabase URL and anon key in <code>js/supabase.js</code>,
+      <p>Add your Supabase URL and anon key in <code>assets/js/supabase.js</code>,
          then run <code>supabase/schema.sql</code> to switch the client portal on.</p>
       <a href="/" class="btn-primary">← Back home</a>
     </div>`;
@@ -487,7 +482,7 @@ function schemaNeeded() {
   return `
     <div class="portal-empty-card">
       <div class="pe-icon">⚙</div>
-      <h3>One step left — run the database setup</h3>
+      <h3>One step left: run the database setup</h3>
       <p>You're signed in, but the project tables don't exist yet. Open your
          Supabase project → SQL Editor → paste <code>supabase/schema.sql</code> → Run.
          Then refresh this page.</p>

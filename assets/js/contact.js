@@ -1,6 +1,5 @@
-/* Contact / brief form → Supabase `contact_submissions`.
-   If the database is unreachable the visitor is handed a pre-filled email
-   instead, so an enquiry is never lost. */
+// Contact form -> Supabase contact_submissions.
+// If the insert fails we open a pre-filled email instead, so no enquiry is lost.
 import { supabase, isConfigured, friendly } from './supabase.js';
 
 const form = document.getElementById('inquiry-form');
@@ -22,7 +21,7 @@ if (form) {
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const f = form.elements;
-    if (f.website.value) return;                       // honeypot: bots fill it, people can't see it
+    if (f.website.value) return;                       // honeypot
 
     const name = f.name.value.trim();
     const email = f.email.value.trim();
@@ -49,7 +48,7 @@ if (form) {
       if (error) throw error;
       window.ivoryTrack?.('generate_lead', { form: 'contact' });
       form.reset();
-      say("Thanks — your brief is in. We'll reply within 24 hours.", true);
+      say("Thanks, your brief is in. We'll reply within 24 hours.", true);
     } catch (err) {
       const body = `${row.message}\n\n— ${name}${row.company ? ', ' + row.company : ''}\n${email}${services ? '\nInterested in: ' + services : ''}`;
       const href = `mailto:${EMAIL}?subject=${encodeURIComponent('Project enquiry from ' + name)}&body=${encodeURIComponent(body)}`;

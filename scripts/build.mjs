@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-/* Ivory Studios — static build. Zero dependencies.
-   Run after editing any page:  npm run build:html
-
-   - Normalises internal links to clean absolute URLs (/about, /assets/...)
-   - Bakes the shared nav + footer into every page (crawlable without JS)
-   - Pre-renders every case study to /case-studies/<slug>.html
-   - Regenerates sitemap.xml (lastmod = the page file's mtime)
-   Idempotent: files are only rewritten when their content changes. */
+// Static build, no dependencies. Run after editing pages: npm run build:html
+//
+// - rewrites internal links to clean URLs (/about, /assets/...)
+// - bakes the shared nav, footer and service-page sections into the HTML
+// - renders case studies from content/projects.mjs to /case-studies/<slug>.html
+// - regenerates sitemap.xml
+// Files are only written when their content actually changes.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { execFileSync } from 'node:child_process';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ORIGIN = 'https://ivorystudios.io';
@@ -30,7 +30,7 @@ function write(file, content) {
   return true;
 }
 
-/* Shared chrome */
+// Shared nav + footer
 const NAV_LINKS = [
   ['services', 'Services', '/services'],
   ['work', 'Work', '/work'],
@@ -42,7 +42,7 @@ const navHtml = page => `<!--nav:start-->
 <a href="#main" class="skip-link">Skip to content</a>
 <div id="site-nav">
   <nav class="nav" id="nav" aria-label="Primary">
-    <a href="/" class="nav-logo" aria-label="Ivory Studios — home">IVORY<span class="logo-accent">STUDIOS</span></a>
+    <a href="/" class="nav-logo" aria-label="Ivory Studios home">IVORY<span class="logo-accent">STUDIOS</span></a>
     <ul class="nav-links">${NAV_LINKS.map(([id, label, href]) =>
       `<li><a href="${href}"${id === page ? ' class="active" aria-current="page"' : ''}>${label}</a></li>`).join('')}</ul>
     <div class="nav-actions">
@@ -104,7 +104,7 @@ const FOOTER_HTML = `<!--footer:start-->
 </div>
 <!--footer:end-->`;
 
-/* Link normalisation + chrome injection */
+// Link cleanup + nav/footer injection
 function normalise(html) {
   return html
     .replace(/(href|action)="index\.html"/g, '$1="/"')
@@ -137,7 +137,54 @@ function ensureTracking(html) {
   return html;
 }
 
-/* Case studies */
+// "How we work" + proof section, shared by the four service pages
+const SERVICE_PAGES = ['web-design', 'web-development', 'brand-identity', 'seo-growth'];
+const ICON = {
+  arrow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+  search: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
+  design: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>',
+  build: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+  launch: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>',
+};
+const step = (n, title, desc, tag, icon) =>
+  `<div class="process-step reveal-up"><div class="ps-num">${n}</div><div class="ps-icon">${icon}</div><h3 class="ps-title">${title}</h3><p class="ps-desc">${desc}</p><div class="ps-tag">${tag}</div></div>`;
+const connector = `<div class="process-connector reveal-fade"><div class="pc-line"></div>${ICON.arrow}</div>`;
+
+const PROCESS_HTML = `<!--process:start-->
+<section class="section">
+  <div class="container">
+    <div class="section-header reveal-up"><div class="section-label">How We Work</div><h2 class="section-title">A clear, <span class="accent">proven</span> process</h2></div>
+    <div class="process-steps">
+      ${[
+        step('01', 'Discovery', 'We learn your goals, audience and competitors before anything gets designed.', 'Week 1', ICON.search),
+        step('02', 'Design', 'You review and sign off high-fidelity designs, so launch day has no surprises.', 'Weeks 2–3', ICON.design),
+        step('03', 'Build', 'Clean, fast, SEO-ready code. Mobile-first, with green Core Web Vitals.', 'Weeks 3–5', ICON.build),
+        step('04', 'Launch &amp; Grow', 'We launch, watch the numbers and keep improving with ongoing support.', 'Week 6+', ICON.launch),
+      ].join(`\n      ${connector}\n      `)}
+    </div>
+  </div>
+</section>
+<section class="section dark-section">
+  <div class="container svc-proof reveal-up">
+    <div class="svc-proof-stars" role="img" aria-label="5 out of 5 stars">★★★★★</div>
+    <p class="svc-proof-quote">"None of the agencies we tried before opened a discovery call with a conversion goal instead of a colour palette. Ivory did, and three months later our qualified leads are up 3×."</p>
+    <div class="svc-proof-author">Ahmed Kamal · CEO, NovaTech Solutions</div>
+    <div class="svc-proof-stats"><span><strong>50+</strong> projects</span><span><strong>30+</strong> clients</span><span><strong>98%</strong> satisfaction</span></div>
+    <a href="/work" class="btn-ghost">See the results in our work ${ICON.arrow}</a>
+  </div>
+</section>
+<!--process:end-->
+`;
+
+function serviceProcess(file, html) {
+  if (!SERVICE_PAGES.includes(file.replace(/\.html$/, ''))) return html;
+  if (html.includes('<!--process:start-->')) {
+    return html.replace(/<!--process:start-->[\s\S]*?<!--process:end-->\n/, () => PROCESS_HTML);
+  }
+  return html.replace(/(  <section class="section">\n    <div class="container faq-wrap">)/, () => PROCESS_HTML + '\n' + '  <section class="section">\n    <div class="container faq-wrap">');
+}
+
+// Case studies
 const projects = (await import(pathToFileURL(path.join(ROOT, 'content/projects.mjs')))).default;
 
 function trim(text, max = 155) {
@@ -147,7 +194,7 @@ function trim(text, max = 155) {
 
 function caseStudy(slug, p) {
   const url = `${ORIGIN}/case-studies/${slug}`;
-  const title = `${p.title} — Case Study | Ivory Studios`;
+  const title = `${p.title} Case Study | Ivory Studios`;
   const desc = trim(`${p.tagline} ${p.intro}`);
   const keys = Object.keys(projects);
   const next = keys[(keys.indexOf(slug) + 1) % keys.length];
@@ -192,13 +239,13 @@ function caseStudy(slug, p) {
   <meta property="og:type" content="article">
   <meta property="og:url" content="${url}">
   <meta property="og:site_name" content="Ivory Studios">
-  <meta property="og:title" content="${esc(p.title)} — Ivory Studios">
+  <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(p.tagline)}">
   <meta property="og:image" content="${OG_IMAGE}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${esc(p.title)} — Ivory Studios">
+  <meta name="twitter:title" content="${esc(title)}">
   <meta name="twitter:description" content="${esc(p.tagline)}">
   <meta name="twitter:image" content="${OG_IMAGE}">
   <meta name="theme-color" content="#080706">
@@ -206,11 +253,9 @@ function caseStudy(slug, p) {
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.pexels.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+  <link rel="preload" href="/assets/fonts/syne-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body data-page="work">
@@ -223,7 +268,7 @@ function caseStudy(slug, p) {
 <main class="project-page">
   <header class="proj-hero">
     <div class="proj-hero-img">
-      <img src="${esc(p.cover)}" alt="${esc(p.title)} — ${esc(p.services.join(', '))} by Ivory Studios" fetchpriority="high" width="1600" height="900">
+      <img src="${esc(p.cover)}" alt="${esc(p.title)}: ${esc(p.services.join(', '))} by Ivory Studios" fetchpriority="high" width="1600" height="900">
       <div class="proj-hero-shade"></div>
     </div>
     <div class="container proj-hero-inner">
@@ -255,7 +300,7 @@ function caseStudy(slug, p) {
     </div>
 
     <div class="proj-gallery">
-      ${p.gallery.map(src => `<div class="proj-shot"><img src="${esc(src)}" alt="${esc(p.title)} — interface detail" loading="lazy" width="1200" height="800"></div>`).join('\n      ')}
+      ${p.gallery.map(src => `<div class="proj-shot"><img src="${esc(src)}" alt="${esc(p.title)} project image" loading="lazy" width="1200" height="800"></div>`).join('\n      ')}
     </div>
 
     <div class="proj-stack"><span class="proj-stack-label">Built with</span>${p.stack.map(t => `<span class="stack-pill">${esc(t)}</span>`).join('')}</div>
@@ -274,7 +319,6 @@ function caseStudy(slug, p) {
 
 <div id="site-footer"></div>
 
-<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 <script src="/assets/js/partials.js" defer></script>
 <script src="/assets/js/track.js" defer></script>
 <script src="/assets/js/main.js" defer></script>
@@ -285,12 +329,12 @@ function caseStudy(slug, p) {
 `;
 }
 
-/* Run */
+// Run
 console.log('Ivory Studios build');
 
 const rootPages = fs.readdirSync(ROOT).filter(f => f.endsWith('.html') && !f.startsWith('.'));
 for (const file of rootPages) {
-  write(file, ensureTracking(chrome(normalise(read(file)))));
+  write(file, ensureTracking(serviceProcess(file, chrome(normalise(read(file))))));
 }
 
 const expected = new Set();
@@ -303,8 +347,19 @@ for (const f of fs.readdirSync(path.join(ROOT, 'case-studies'))) {
   if (f.endsWith('.html') && !f.startsWith('.') && !expected.has(f)) console.warn(`  warning: case-studies/${f} has no entry in content/projects.mjs`);
 }
 
-/* sitemap */
-const mtime = f => fs.statSync(path.join(ROOT, f)).mtime.toISOString().slice(0, 10);
+// Sitemap
+// lastmod = last commit that touched the file (file mtimes reset on every clone).
+// Uncommitted edits fall back to today.
+function lastmod(f) {
+  try {
+    const dirty = execFileSync('git', ['status', '--porcelain', '--', f], { cwd: ROOT, encoding: 'utf8' }).trim();
+    if (!dirty) {
+      const d = execFileSync('git', ['log', '-1', '--format=%cs', '--', f], { cwd: ROOT, encoding: 'utf8' }).trim();
+      if (d) return d;
+    }
+  } catch { /* not a git checkout */ }
+  return new Date().toISOString().slice(0, 10);
+}
 const urls = [
   ['/', 'index.html', 'weekly', '1.0'],
   ['/services', 'services.html', 'monthly', '0.9'],
@@ -322,12 +377,12 @@ const urls = [
 
 write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(([loc, f, freq, pri]) =>
-  `  <url><loc>${ORIGIN}${loc}</loc><lastmod>${mtime(f)}</lastmod><changefreq>${freq}</changefreq><priority>${pri}</priority></url>`).join('\n')}
+${urls.map(([loc, f]) =>
+  `  <url><loc>${ORIGIN}${loc}</loc><lastmod>${lastmod(f)}</lastmod></url>`).join('\n')}
 </urlset>
 `);
 
-/* sanity: every public page must carry the baked-in nav + footer */
+// Every public page must have the nav + footer baked in
 const publicPages = [...MARKETING.map(p => `${p}.html`), 'index.html', ...Object.keys(projects).map(s => `case-studies/${s}.html`)];
 const missing = publicPages.filter(f => fs.existsSync(path.join(ROOT, f)) &&
   !(read(f).includes('<!--nav:start-->') && read(f).includes('<!--footer:start-->')));

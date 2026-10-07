@@ -23,12 +23,11 @@ desktop.ini
 
 # Logs
 *.log
-docs/deploy-log.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Build artifacts (none currently, but future-proof)
+# Build output
 dist/
 build/
 .next/
