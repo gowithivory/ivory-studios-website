@@ -1,5 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#080706"/>
-  <text x="50%" y="50%" dy=".06em" text-anchor="middle" dominant-baseline="middle"
-        font-family="Syne, Arial, sans-serif" font-weight="800" font-size="34" fill="#f0e6d3">I</text>
-</svg>
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="120" height="120" rx="18" fill="#080706"/><rect x="30" y="30" width="42" height="8" rx="4" fill="#F2EDE4"/><rect x="47" y="38" width="8" height="44" rx="2" fill="#F2EDE4"/><rect x="30" y="82" width="42" height="8" rx="4" fill="#F2EDE4"/><rect x="78" y="32" width="8" height="56" rx="4" fill="#C19A5B"></rect></svg>

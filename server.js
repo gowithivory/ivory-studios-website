@@ -32,7 +32,7 @@ app.get('/project(.html)?', (req, res) => {
 });
 
 // Only the public site is served. Never .env, SQL, scripts or docs.
-const PUBLIC_ROOT_FILES = /^\/(robots\.txt|sitemap\.xml|site\.webmanifest|[a-z0-9-]+\.html)$/;
+const PUBLIC_ROOT_FILES = /^\/(robots\.txt|sitemap\.xml|site\.webmanifest|favicon\.ico|[a-z0-9-]+\.html)$/;
 const PUBLIC_DIRS = /^\/(assets|case-studies)\//;
 const notFound = (req, res) => res.status(404).sendFile(path.join(ROOT, '404.html'));
 
