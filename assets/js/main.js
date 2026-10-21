@@ -1,7 +1,11 @@
-// Site-wide interactions: nav, mobile menu, scroll reveals, Calendly.
+// Site-wide interactions: nav, mobile menu, scroll reveals, Calendly, and the
+// pointer layer (cursor, 3D cards, magnetic buttons, spotlights).
 // The hero animates with CSS alone, so nothing above the fold waits for this file.
 
 const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Mouse/trackpad users only: touch screens keep native behaviour.
+const FINE_POINTER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+const RICH_POINTER = FINE_POINTER && !REDUCE_MOTION;
 const CALENDLY_URL = 'https://calendly.com/ammar-ivorystudios/30min';
 
 // Hide reveal targets only once we know this script runs, so the page is
@@ -124,7 +128,7 @@ document.addEventListener('pointerover', e => {
 
 // Scroll reveals. Siblings in the same row are staggered slightly.
 (function scrollReveal() {
-  const els = [...document.querySelectorAll('.reveal-up')];
+  const els = [...document.querySelectorAll('.reveal-up, .footer-sign, .proj-shot')];
   if (!els.length) return;
   const show = el => el.classList.add('visible');
   if (REDUCE_MOTION || !('IntersectionObserver' in window)) return els.forEach(show);
@@ -158,3 +162,166 @@ document.addEventListener('click', e => {
   target.focus({ preventScroll: true });
   history.replaceState(null, '', id);
 });
+
+// Count-up for the facts band. Final values are in the HTML, so the numbers
+// are correct with JS off or reduced motion on.
+(function counters() {
+  const els = document.querySelectorAll('[data-count]');
+  if (!els.length || REDUCE_MOTION || !('IntersectionObserver' in window)) return;
+  const run = el => {
+    const target = +el.dataset.count;
+    const start = performance.now();
+    const tick = now => {
+      const p = Math.min((now - start) / 1400, 1);
+      el.textContent = Math.round((1 - Math.pow(1 - p, 4)) * target);
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    el.textContent = '0';
+    requestAnimationFrame(tick);
+  };
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.forEach(e => { if (e.isIntersecting) { run(e.target); obs.unobserve(e.target); } });
+  }, { threshold: 0.6 });
+  els.forEach(el => io.observe(el));
+})();
+
+// Signature cursor: a dot that tracks the pointer exactly and a ring that
+// follows with a short delay. The native cursor is only hidden after the first
+// real mouse move, so it can never disappear if this fails to start.
+(function cursor() {
+  if (!RICH_POINTER) return;
+  const root = document.documentElement;
+  const dot = Object.assign(document.createElement('div'), { className: 'cursor-dot' });
+  const ring = Object.assign(document.createElement('div'), { className: 'cursor-ring' });
+  dot.setAttribute('aria-hidden', 'true');
+  ring.setAttribute('aria-hidden', 'true');
+  document.body.append(dot, ring);
+
+  let mx = -100, my = -100, rx = -100, ry = -100, raf = 0;
+  const loop = () => {
+    rx += (mx - rx) * 0.18;
+    ry += (my - ry) * 0.18;
+    ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+    raf = Math.abs(mx - rx) + Math.abs(my - ry) > 0.1 ? requestAnimationFrame(loop) : 0;
+  };
+  document.addEventListener('pointermove', e => {
+    if (e.pointerType !== 'mouse') return;
+    mx = e.clientX; my = e.clientY;
+    dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
+    if (!root.classList.contains('cursor-on')) { rx = mx; ry = my; root.classList.add('cursor-on'); }
+    if (!raf) raf = requestAnimationFrame(loop);
+  }, { passive: true });
+
+  const STATES = ['cursor-link', 'cursor-view', 'cursor-text'];
+  const setState = (state, label = '') => {
+    STATES.forEach(c => root.classList.toggle(c, c === state));
+    ring.dataset.label = label;
+  };
+  document.addEventListener('pointerover', e => {
+    const t = e.target;
+    if (t.closest('input, textarea, select, iframe, [contenteditable]')) return setState('cursor-text');
+    const card = t.closest('.work-card, .hero-feature');
+    if (card) return setState('cursor-view', card.classList.contains('is-concept') ? 'Study' : 'View');
+    if (t.closest('a, button, summary, label, [role="button"]')) return setState('cursor-link');
+    setState(null);
+  }, { passive: true });
+  document.addEventListener('pointerdown', () => root.classList.add('cursor-down'), { passive: true });
+  document.addEventListener('pointerup', () => root.classList.remove('cursor-down'), { passive: true });
+  document.documentElement.addEventListener('mouseleave', () => root.classList.remove('cursor-on'));
+  // Back to the native cursor while the Calendly popup (an iframe) is open.
+  window.addEventListener('blur', () => root.classList.remove('cursor-on'));
+})();
+
+// 3D project cards. The card's rect is read once on enter; moves only write
+// custom properties inside one rAF.
+(function tilt() {
+  if (!RICH_POINTER) return;
+  const MAX = 5; // degrees
+  document.querySelectorAll('.work-card, .hero-feature').forEach(card => {
+    card.classList.add('tilt');
+    const img = card.querySelector('img');
+    let rect = null, raf = 0, px = 0, py = 0;
+    const apply = () => {
+      raf = 0;
+      card.style.setProperty('--ry', `${(px - 0.5) * MAX * 2}deg`);
+      card.style.setProperty('--rx', `${(0.5 - py) * MAX * 2}deg`);
+      card.style.setProperty('--mx', `${px * 100}%`);
+      card.style.setProperty('--my', `${py * 100}%`);
+      if (img) { img.style.setProperty('--px', `${(0.5 - px) * 14}px`); img.style.setProperty('--py', `${(0.5 - py) * 14}px`); }
+    };
+    card.addEventListener('pointerenter', e => {
+      if (e.pointerType !== 'mouse') return;
+      rect = card.getBoundingClientRect();
+      card.classList.add('is-tilting');
+    });
+    card.addEventListener('pointermove', e => {
+      if (!rect) return;
+      px = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+      py = Math.min(Math.max((e.clientY - rect.top) / rect.height, 0), 1);
+      if (!raf) raf = requestAnimationFrame(apply);
+    }, { passive: true });
+    card.addEventListener('pointerleave', () => {
+      rect = null;
+      if (raf) cancelAnimationFrame(raf), raf = 0;
+      card.classList.remove('is-tilting');
+      ['--rx', '--ry', '--mx', '--my'].forEach(p => card.style.removeProperty(p));
+      img?.style.removeProperty('--px'); img?.style.removeProperty('--py');
+    });
+  });
+  // Rects go stale when the page scrolls under a stationary pointer.
+  window.addEventListener('scroll', () => document.querySelectorAll('.tilt.is-tilting').forEach(c => c.dispatchEvent(new PointerEvent('pointerenter', { pointerType: 'mouse' }))), { passive: true });
+})();
+
+// Magnetic primary buttons: a restrained pull towards the pointer.
+(function magnetic() {
+  if (!RICH_POINTER) return;
+  document.querySelectorAll('.btn-primary, .btn-nav').forEach(btn => {
+    btn.classList.add('magnetic');
+    let rect = null;
+    btn.addEventListener('pointerenter', () => { rect = btn.getBoundingClientRect(); btn.classList.add('is-pulled'); });
+    btn.addEventListener('pointermove', e => {
+      if (!rect) return;
+      const clamp = v => Math.max(-6, Math.min(6, v));
+      btn.style.setProperty('--tx', `${clamp((e.clientX - rect.left - rect.width / 2) * 0.12)}px`);
+      btn.style.setProperty('--ty', `${clamp((e.clientY - rect.top - rect.height / 2) * 0.25)}px`);
+    }, { passive: true });
+    btn.addEventListener('pointerleave', () => {
+      rect = null;
+      btn.classList.remove('is-pulled');
+      btn.style.removeProperty('--tx'); btn.style.removeProperty('--ty');
+    });
+  });
+})();
+
+// Spotlight that follows the pointer across service and supporting cards.
+(function spotlight() {
+  if (!RICH_POINTER) return;
+  let raf = 0, card = null, x = 0, y = 0;
+  document.addEventListener('pointermove', e => {
+    card = e.target.closest?.('.service-card, .related-service, .benefit-card, .value-card, .diff-item');
+    if (!card) return;
+    x = e.clientX; y = e.clientY;
+    if (!raf) raf = requestAnimationFrame(() => {
+      raf = 0;
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${x - r.left}px`);
+      card.style.setProperty('--my', `${y - r.top}px`);
+    });
+  }, { passive: true });
+})();
+
+// Hero depth: the featured project drifts a little slower than the page.
+(function heroDrift() {
+  const card = document.querySelector('.hero-feature');
+  if (!card || REDUCE_MOTION || !window.matchMedia('(min-width: 900px)').matches) return;
+  let raf = 0;
+  const update = () => {
+    raf = 0;
+    const y = window.scrollY;
+    if (y > window.innerHeight) return;
+    // Down only (the card lags behind the page), so it can never rise into the headline.
+    card.style.setProperty('--drift', `${Math.min(y * 0.06, 40)}px`);
+  };
+  window.addEventListener('scroll', () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
+})();

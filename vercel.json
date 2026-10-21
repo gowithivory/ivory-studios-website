@@ -15,6 +15,7 @@
     { "source": "/service.html", "has": [{ "type": "query", "key": "slug", "value": "web-development" }], "destination": "/web-development", "permanent": true },
     { "source": "/service.html", "has": [{ "type": "query", "key": "slug", "value": "brand-identity" }],  "destination": "/brand-identity",  "permanent": true },
     { "source": "/service.html", "has": [{ "type": "query", "key": "slug", "value": "seo" }],             "destination": "/seo-growth",      "permanent": true },
+    { "source": "/", "has": [{ "type": "host", "value": "www.ivorystudios.io" }], "destination": "https://ivorystudios.io/", "permanent": true },
     { "source": "/:path*", "has": [{ "type": "host", "value": "www.ivorystudios.io" }], "destination": "https://ivorystudios.io/:path*", "permanent": true }
   ],
 

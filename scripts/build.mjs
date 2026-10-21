@@ -93,10 +93,11 @@ const FOOTER_HTML = `<!--footer:start-->
 <div id="site-footer">
   <footer class="footer">
     <div class="container footer-inner">
+      <p class="footer-sign" aria-hidden="true"><span>We build.</span> <span>You grow.</span></p>
       <div class="footer-top">
         <div class="footer-brand">
           <a href="/" class="footer-logo" aria-label="Ivory Studios home">${LOGO}<span>IVORY<span>STUDIOS</span></span></a>
-          <p class="footer-tagline">Your vision, built to grow. Websites, brands and business systems from Cairo, for clients worldwide.</p>
+          <p class="footer-tagline">Your vision, brought to life. Websites, brands and business systems from Cairo, for clients worldwide.</p>
         </div>
         <nav class="footer-links-group" aria-label="Services">
           <h2 class="flg-title">Services</h2>
@@ -253,7 +254,7 @@ function head({ title, description, url, type = 'website', extra = '', preloadIm
   <meta property="og:image" content="${OG_IMAGE}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Ivory Studios: Your vision, built to grow.">
+  <meta property="og:image:alt" content="Ivory Studios: Your Vision, Brought to Life.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(title)}">
   <meta name="twitter:description" content="${esc(description)}">
