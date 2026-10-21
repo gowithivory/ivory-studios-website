@@ -18,7 +18,7 @@ The dev server uses the same headers and clean URLs as production (`server.js` r
 ## Making changes
 
 1. Edit the HTML/CSS/JS.
-2. If you touched a page, the nav/footer or `content/projects.mjs`, run `npm run build:html`. It bakes the shared nav and footer into every page, renders the case studies and updates `sitemap.xml`.
+2. If you touched a page, the nav/footer, `content/projects.mjs` or `content/services.mjs`, run `npm run build:html`. It bakes the shared nav and footer into every page, renders the service pages and case studies, fills the generated blocks on the home, services and work pages, and updates `sitemap.xml`.
 3. Commit and push to `main`. Vercel deploys it to production in about a minute. Other branches get a preview deployment.
 
 ```bash
@@ -27,14 +27,17 @@ git commit -m "Update services copy"
 git push
 ```
 
-Adding a case study: add an entry to `content/projects.mjs`, then `npm run build:html`.
+Adding a case study: add an entry to `content/projects.mjs`, add its images to `assets/img/work/` as WebP (`<slug>-cover-800.webp`, `<slug>-cover-1600.webp`, `<slug>-1-800.webp`, `<slug>-1-1200.webp`, …), then `npm run build:html`. The build fails if an image is missing. Mark self-initiated work with `concept: true` so it is labelled as a concept study.
+
+Editing a service: change its entry in `content/services.mjs`, then `npm run build:html`. Service pages are generated, so don't edit `web-design.html` and friends by hand.
 
 ## Layout
 
 ```
 *.html              pages (nav/footer are generated, edit them in scripts/build.mjs)
 case-studies/       generated from content/projects.mjs, don't edit by hand
-assets/css|js|img   styles, scripts, images
+content/            projects.mjs (case studies), services.mjs (service pages)
+assets/css|js|img   styles, scripts, images (project photos: assets/img/work)
 assets/fonts        self-hosted Syne + Inter
 supabase/           schema, reset script, RLS tests, setup notes
 scripts/build.mjs   static build
