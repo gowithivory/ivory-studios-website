@@ -619,7 +619,7 @@ ul, ol { list-style: none; }
 .proj-intro { font-family: var(--font-head); font-size: clamp(22px, 2.6vw, 34px); font-weight: 600; line-height: 1.35; color: var(--text); max-width: 30em; margin-bottom: clamp(40px, 5vw, 64px); text-wrap: pretty; }
 .proj-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: clamp(48px, 6vw, 80px); }
 .proj-metric { padding: 28px; background: var(--bg-card); border: 1px solid var(--border2); border-radius: var(--radius-xl); }
-.pmet-val { font-family: var(--font-head); font-size: clamp(30px, 3.6vw, 46px); font-weight: 800; color: var(--ivory); line-height: 1; }
+.pmet-val { font-size: clamp(30px, 3.6vw, 46px); color: var(--ivory); line-height: 1.05; }
 .pmet-label { font-size: 14px; color: var(--text-muted); margin-top: 12px; }
 .proj-cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 72px); margin-bottom: clamp(48px, 6vw, 80px); }
 .proj-h2 { font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
@@ -766,10 +766,22 @@ ul, ol { list-style: none; }
 .calendly-overlay { z-index: 10001 !important; }
 
 
+/* ---------- Numerals ----------
+   Syne's digits are wide display shapes (its 0 reads as an "o" at small sizes
+   and its 1 as a slab), so every number on the site uses Inter's tabular
+   figures: even widths, no jumping while counters run. */
+.fact-num, .pmet-val, .sc-num, .ps-num, .svc-num, .benefit-num, .next-steps li::before, .ast-num, .phase-pct-val {
+  font-family: var(--font-body); font-variant-numeric: tabular-nums lining-nums; font-feature-settings: 'tnum' 1, 'lnum' 1;
+}
+.sc-num, .ps-num, .svc-num, .benefit-num, .next-steps li::before { font-weight: 600; letter-spacing: .08em; }
+.fact-num { font-weight: 700; letter-spacing: -.04em; }
+.pmet-val { font-weight: 700; letter-spacing: -.03em; }
+.ast-num, .phase-pct-val { font-weight: 700; letter-spacing: -.02em; }
+
 /* ---------- Motion system ---------- */
 
 /* Signature cursor: dot + trailing ring (fine pointers only, added by JS) */
-.cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; z-index: 10001; pointer-events: none; border-radius: 50%; opacity: 0; will-change: transform; }
+.cursor-dot, .cursor-ring { position: fixed; top: 0; left: 0; z-index: 2147483647; pointer-events: none; border-radius: 50%; opacity: 0; will-change: transform; }
 .cursor-dot { width: 6px; height: 6px; margin: -3px 0 0 -3px; background: var(--ivory); transition: opacity var(--dur-xs), width var(--dur-xs), height var(--dur-xs), margin var(--dur-xs); }
 .cursor-ring {
   width: 38px; height: 38px; margin: -19px 0 0 -19px;
@@ -780,6 +792,7 @@ ul, ol { list-style: none; }
 }
 .cursor-ring::after { content: attr(data-label); opacity: 0; transition: opacity var(--dur-xs); }
 html.cursor-on .cursor-dot, html.cursor-on .cursor-ring { opacity: 1; }
+html.cursor-suspended .cursor-dot, html.cursor-suspended .cursor-ring { opacity: 0 !important; }
 html.cursor-on, html.cursor-on a, html.cursor-on button, html.cursor-on summary, html.cursor-on label { cursor: none; }
 html.cursor-on input, html.cursor-on textarea, html.cursor-on select, html.cursor-on iframe { cursor: auto; }
 html.cursor-link .cursor-ring { width: 60px; height: 60px; margin: -30px 0 0 -30px; border-color: rgba(240,230,211,.85); background: rgba(240,230,211,.06); }
@@ -816,8 +829,6 @@ html.cursor-down .cursor-ring { scale: .86; }
 .service-card:hover::before, .related-service:hover::before, .benefit-card:hover::before, .value-card:hover::before, .diff-item:hover::before { opacity: 1; }
 .service-card { transition: border-color var(--dur-s), background var(--dur-s), transform var(--dur-m) var(--ease-out); }
 .service-card:hover { transform: translateY(-4px); }
-.service-card .sc-num { transition: letter-spacing var(--dur-m) var(--ease-out); }
-.service-card:hover .sc-num { letter-spacing: .3em; }
 
 /* Magnetic buttons (JS sets --tx/--ty) */
 .magnetic { translate: var(--tx, 0) var(--ty, 0); transition: translate var(--dur-m) var(--ease-out), background var(--dur-xs), color var(--dur-xs), border-color var(--dur-xs), box-shadow var(--dur-s), transform var(--dur-s) var(--ease-out); }
@@ -866,11 +877,12 @@ html.cursor-down .cursor-ring { scale: .86; }
 .facts-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .fact { display: flex; flex-direction: column; gap: 12px; padding: clamp(28px, 4vw, 48px) clamp(16px, 2vw, 32px); border-left: 1px solid var(--border); }
 .fact:first-child { border-left: 0; padding-left: 0; }
-.fact-num { font-family: var(--font-head); font-weight: 800; font-size: clamp(44px, 5vw, 76px); line-height: .9; letter-spacing: -.02em; color: var(--ivory); font-variant-numeric: tabular-nums; }
-.fact-num small { font-size: .45em; color: var(--gold); margin-left: .08em; letter-spacing: 0; }
+.fact-num { font-size: clamp(44px, 5vw, 72px); line-height: 1; color: var(--ivory); white-space: nowrap; }
+.fact-num small { font-size: .5em; font-weight: 600; color: var(--gold); margin-left: .06em; letter-spacing: 0; }
 .fact-label { font-size: 15px; color: var(--text-muted); max-width: 22ch; }
 @media (max-width: 900px) { .facts-grid { grid-template-columns: 1fr 1fr; } .fact:nth-child(3) { border-left: 0; padding-left: 0; } .fact:nth-child(n+3) { border-top: 1px solid var(--border); } }
 @media (max-width: 420px) { .fact-num { font-size: 40px; } .fact-label { font-size: 14px; } }
+[data-count] { display: inline-block; text-align: right; }
 
 /* Footer sign-off */
 .footer-sign {

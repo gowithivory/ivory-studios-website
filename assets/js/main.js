@@ -166,23 +166,29 @@ document.addEventListener('click', e => {
 // Count-up for the facts band. Final values are in the HTML, so the numbers
 // are correct with JS off or reduced motion on.
 (function counters() {
-  const els = document.querySelectorAll('[data-count]');
+  const els = [...document.querySelectorAll('[data-count]')];
   if (!els.length || REDUCE_MOTION || !('IntersectionObserver' in window)) return;
   const run = el => {
     const target = +el.dataset.count;
     const start = performance.now();
     const tick = now => {
       const p = Math.min((now - start) / 1400, 1);
-      el.textContent = Math.round((1 - Math.pow(1 - p, 4)) * target);
+      el.textContent = p < 1 ? Math.round((1 - Math.pow(1 - p, 4)) * target) : target;
       if (p < 1) requestAnimationFrame(tick);
     };
-    el.textContent = '0';
     requestAnimationFrame(tick);
   };
   const io = new IntersectionObserver((entries, obs) => {
-    entries.forEach(e => { if (e.isIntersecting) { run(e.target); obs.unobserve(e.target); } });
+    entries.forEach(e => { if (e.isIntersecting) { obs.unobserve(e.target); run(e.target); } });
   }, { threshold: 0.6 });
-  els.forEach(el => io.observe(el));
+  els.forEach(el => {
+    // Reserve the final width so nothing shifts as digits are added.
+    el.style.minWidth = `${el.dataset.count.length}ch`;
+    // Already on screen at load: keep the real value instead of flashing to 0.
+    if (el.getBoundingClientRect().top < innerHeight) return;
+    el.textContent = '0';
+    io.observe(el);
+  });
 })();
 
 // Signature cursor: a dot that tracks the pointer exactly and a ring that
@@ -198,17 +204,35 @@ document.addEventListener('click', e => {
   document.body.append(dot, ring);
 
   let mx = -100, my = -100, rx = -100, ry = -100, raf = 0;
+  const place = () => {
+    dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
+    ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+  };
   const loop = () => {
     rx += (mx - rx) * 0.18;
     ry += (my - ry) * 0.18;
     ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
     raf = Math.abs(mx - rx) + Math.abs(my - ry) > 0.1 ? requestAnimationFrame(loop) : 0;
   };
+  const show = () => { if (!root.classList.contains('cursor-suspended')) root.classList.add('cursor-on'); };
+
+  // Pick up where the pointer was on the previous page, so the cursor doesn't
+  // vanish after every click until the mouse moves again.
+  try {
+    const last = JSON.parse(sessionStorage.getItem('ivory-cursor') || 'null');
+    if (last && Date.now() - last.t < 5000 && last.x < innerWidth && last.y < innerHeight) {
+      mx = rx = last.x; my = ry = last.y; place(); show();
+    }
+  } catch { /* storage blocked */ }
+  window.addEventListener('pagehide', () => {
+    try { sessionStorage.setItem('ivory-cursor', JSON.stringify({ x: mx, y: my, t: Date.now() })); } catch { /* storage blocked */ }
+  });
+
   document.addEventListener('pointermove', e => {
     if (e.pointerType !== 'mouse') return;
     mx = e.clientX; my = e.clientY;
     dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
-    if (!root.classList.contains('cursor-on')) { rx = mx; ry = my; root.classList.add('cursor-on'); }
+    if (!root.classList.contains('cursor-on')) { rx = mx; ry = my; place(); show(); }
     if (!raf) raf = requestAnimationFrame(loop);
   }, { passive: true });
 
@@ -227,9 +251,25 @@ document.addEventListener('click', e => {
   }, { passive: true });
   document.addEventListener('pointerdown', () => root.classList.add('cursor-down'), { passive: true });
   document.addEventListener('pointerup', () => root.classList.remove('cursor-down'), { passive: true });
-  document.documentElement.addEventListener('mouseleave', () => root.classList.remove('cursor-on'));
-  // Back to the native cursor while the Calendly popup (an iframe) is open.
+  root.addEventListener('mouseleave', () => root.classList.remove('cursor-on'));
   window.addEventListener('blur', () => root.classList.remove('cursor-on'));
+
+  // Pointer events stop at an iframe's edge, so inside the Calendly popup the
+  // custom cursor would freeze while the native one carries on. Step aside
+  // completely (native cursor back) for as long as the overlay is open.
+  const suspend = on => {
+    root.classList.toggle('cursor-suspended', on);
+    if (on) root.classList.remove('cursor-on');
+  };
+  new MutationObserver(() => suspend(!!document.querySelector('.calendly-overlay, .calendly-popup')))
+    .observe(document.body, { childList: true });
+
+  // Restored from the back/forward cache: clear states left from the click.
+  window.addEventListener('pageshow', e => {
+    if (!e.persisted) return;
+    setState(null);
+    root.classList.remove('cursor-down');
+  });
 })();
 
 // 3D project cards. The card's rect is read once on enter; moves only write
@@ -268,6 +308,10 @@ document.addEventListener('click', e => {
       img?.style.removeProperty('--px'); img?.style.removeProperty('--py');
     });
   });
+  // Restored from the back/forward cache with the card mid-tilt: flatten it.
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) document.querySelectorAll('.tilt.is-tilting').forEach(c => c.dispatchEvent(new PointerEvent('pointerleave')));
+  });
   // Rects go stale when the page scrolls under a stationary pointer.
   window.addEventListener('scroll', () => document.querySelectorAll('.tilt.is-tilting').forEach(c => c.dispatchEvent(new PointerEvent('pointerenter', { pointerType: 'mouse' }))), { passive: true });
 })();
@@ -290,6 +334,9 @@ document.addEventListener('click', e => {
       btn.classList.remove('is-pulled');
       btn.style.removeProperty('--tx'); btn.style.removeProperty('--ty');
     });
+  });
+  window.addEventListener('pageshow', e => {
+    if (e.persisted) document.querySelectorAll('.magnetic.is-pulled').forEach(b => b.dispatchEvent(new PointerEvent('pointerleave')));
   });
 })();
 
