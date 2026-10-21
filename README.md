@@ -19,7 +19,7 @@ The dev server uses the same headers and clean URLs as production (`server.js` r
 
 1. Edit the HTML/CSS/JS.
 2. If you touched a page, the nav/footer or `content/projects.mjs`, run `npm run build:html`. It bakes the shared nav and footer into every page, renders the case studies and updates `sitemap.xml`.
-3. Commit and push to `main`. Vercel deploys it in about a minute.
+3. Commit and push to `main`. Vercel deploys it to production in about a minute. Other branches get a preview deployment.
 
 ```bash
 git add -A
