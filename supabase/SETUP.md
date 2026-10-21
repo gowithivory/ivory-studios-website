@@ -2,14 +2,14 @@
 
 Free tier is enough. Takes about five minutes.
 
-> The project the site currently points at (`jsqybmwsjcunjyjijlgt`) doesn't resolve any more, so login,
-> signup, the portal and the enquiry inbox are down until a new project is set up. The contact form
-> falls back to a pre-filled email in the meantime.
+> Production project: `ivory-studios-production` (ref `lpsixmkqeaydxpqytuiw`, Central EU / Frankfurt),
+> in the **Ivory Studios** organization. It replaced `jsqybmwsjcunjyjijlgt`, which no longer exists.
+> The site uses its **publishable** key (`sb_publishable_…`); secret keys never go in this repo.
 
 ## 1. Project
 1. supabase.com > New project. Pick the region closest to your clients.
-2. Project Settings > API: copy the Project URL and the anon public key into the two constants at the top
-   of `assets/js/supabase.js`. Never put the `service_role` key in this repo.
+2. Project Settings > API Keys: copy the Project URL and the **publishable** key into the two constants at the
+   top of `assets/js/supabase.js`. Never put a secret / `service_role` key in this repo.
 
 ## 2. Database
 1. SQL Editor > New query > paste all of `schema.sql` > Run. Safe to re-run.

@@ -1,9 +1,10 @@
 // Supabase client. Setup steps are in supabase/SETUP.md.
-// Only the public anon key belongs here. Never put the service_role key in
-// front-end code, it bypasses row-level security.
+// Only the publishable key belongs here: it is public by design, and
+// row-level security decides what it can do. Never put a secret
+// (sb_secret_…) or service_role key in front-end code, it bypasses RLS.
 
-const SUPABASE_URL  = 'https://jsqybmwsjcunjyjijlgt.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpzcXlibXdzamN1bmp5amlqbGd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NzQyMzYsImV4cCI6MjA5NzM1MDIzNn0.we09QNNZIBSo9mAtU0iaGFclPpFMbOgV73MFK14yD50';
+const SUPABASE_URL  = 'https://lpsixmkqeaydxpqytuiw.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_MwooCsC-ND_9mi5_9BWswg_i45I_XzN';
 
 export const isConfigured =
   !SUPABASE_URL.includes('YOUR-PROJECT') && !SUPABASE_ANON.includes('YOUR-ANON') && !!window.supabase;
