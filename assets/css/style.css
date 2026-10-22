@@ -882,18 +882,25 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .intro-title .accent { color: var(--gold); }
 .intro-title span { display: block; }
 @media (max-width: 900px) { .intro-title { font-size: calc(var(--wc) / 9.9); } }
-.facts-band { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.facts-band { position: relative; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); background: radial-gradient(60% 120% at 50% 0%, rgba(200,164,110,.07), transparent 70%); }
 .facts-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.fact { display: flex; flex-direction: column; gap: 12px; padding: clamp(28px, 4vw, 48px) clamp(16px, 2vw, 32px); border-left: 1px solid var(--border); }
+.fact { position: relative; display: flex; flex-direction: column; gap: 14px; padding: clamp(36px, 5vw, 64px) clamp(16px, 2.4vw, 36px); border-left: 1px solid var(--border); transition: background var(--dur-s); }
 .fact:first-child { border-left: 0; padding-left: 0; }
-.fact-num { font-size: clamp(44px, 5vw, 72px); line-height: 1; color: var(--ivory); white-space: nowrap; }
-.fact-num small { font-size: .5em; font-weight: 600; color: var(--gold); margin-left: .06em; letter-spacing: 0; }
-.fact-label { font-size: 15px; color: var(--text-muted); max-width: 22ch; }
+.fact:hover { background: linear-gradient(180deg, rgba(200,164,110,.05), transparent); }
+.fact-kicker { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); }
+/* A short gold rule that draws in when the band scrolls into view. */
+.fact-kicker::before { content: ''; width: 0; height: 1px; background: var(--gold); transition: width .9s var(--ease-out) calc(var(--d, 0ms) + 200ms); }
+.fact.visible .fact-kicker::before, html:not(.js) .fact-kicker::before { width: 24px; }
+.fact-num {
+  font-size: clamp(52px, 6vw, 92px); line-height: .95; white-space: nowrap; color: var(--ivory);
+  background: linear-gradient(180deg, var(--ivory) 35%, #d9c29a 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.fact-num small { font-size: .46em; font-weight: 600; margin-left: .04em; letter-spacing: 0; color: var(--gold); -webkit-text-fill-color: var(--gold); vertical-align: .62em; }
+.fact-label { font-size: 15px; line-height: 1.55; color: var(--text-muted); max-width: 24ch; }
 @media (max-width: 900px) { .facts-grid { grid-template-columns: 1fr 1fr; } .fact:nth-child(3) { border-left: 0; padding-left: 0; } .fact:nth-child(n+3) { border-top: 1px solid var(--border); } }
-@media (max-width: 420px) { .fact-num { font-size: 40px; } .fact-label { font-size: 14px; } }
+@media (max-width: 420px) { .fact { padding-right: 12px; } .fact:nth-child(even) { padding-left: 16px; } .fact-num { font-size: 46px; } .fact-label { font-size: 14px; } }
+@media (prefers-reduced-motion: reduce) { .fact-kicker::before { width: 24px; transition: none; } }
 [data-count] { display: inline-block; text-align: right; }
-/* A counter that is itself a flex item would stretch to the cell and push its digits to the far edge. */
-.fact > [data-count] { align-self: flex-start; }
 .fact [data-count] { text-align: left; }
 
 /* Footer sign-off */

@@ -181,17 +181,15 @@ document.addEventListener('click', e => {
   const io = new IntersectionObserver((entries, obs) => {
     entries.forEach(e => { if (e.isIntersecting) { obs.unobserve(e.target); run(e.target); } });
   }, { threshold: 0.6 });
-  els.forEach(el => {
-    // Reserve the final width so nothing shifts as digits are added. Each
-    // digit is 1ch plus the element's (negative) letter-spacing.
-    const n = el.dataset.count.length;
-    const ls = parseFloat(getComputedStyle(el).letterSpacing) || 0;
-    el.style.minWidth = `calc(${n}ch + ${n * ls}px)`;
+  // Measure once the web fonts are in, so the reserved width is the real
+  // width of the final number and suffixes like "%" sit right after it.
+  (document.fonts?.ready || Promise.resolve()).then(() => els.forEach(el => {
+    el.style.minWidth = `${el.getBoundingClientRect().width}px`;
     // Already on screen at load: keep the real value instead of flashing to 0.
     if (el.getBoundingClientRect().top < innerHeight) return;
     el.textContent = '0';
     io.observe(el);
-  });
+  }));
 })();
 
 // Signature cursor: a dot that tracks the pointer exactly and a ring that
