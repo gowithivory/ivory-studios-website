@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://ivorystudios.io/</loc><lastmod>2026-10-22</lastmod></url>
-  <url><loc>https://ivorystudios.io/services</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://ivorystudios.io/services</loc><lastmod>2026-10-22</lastmod></url>
   <url><loc>https://ivorystudios.io/web-design</loc><lastmod>2026-10-22</lastmod></url>
   <url><loc>https://ivorystudios.io/web-development</loc><lastmod>2026-10-22</lastmod></url>
   <url><loc>https://ivorystudios.io/brand-identity</loc><lastmod>2026-10-22</lastmod></url>
@@ -9,7 +9,8 @@
   <url><loc>https://ivorystudios.io/seo-growth</loc><lastmod>2026-10-22</lastmod></url>
   <url><loc>https://ivorystudios.io/work</loc><lastmod>2026-10-22</lastmod></url>
   <url><loc>https://ivorystudios.io/about</loc><lastmod>2026-10-22</lastmod></url>
-  <url><loc>https://ivorystudios.io/contact</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://ivorystudios.io/contact</loc><lastmod>2026-10-22</lastmod></url>
+  <url><loc>https://ivorystudios.io/website-project-checklist</loc><lastmod>2026-10-22</lastmod></url>
   <url><loc>https://ivorystudios.io/case-studies/apadel</loc><lastmod>2026-10-22</lastmod></url>
   <url><loc>https://ivorystudios.io/case-studies/novatech</loc><lastmod>2026-10-22</lastmod></url>
   <url><loc>https://ivorystudios.io/case-studies/lumiere</loc><lastmod>2026-10-22</lastmod></url>
@@ -25,6 +26,6 @@
   <url><loc>https://ivorystudios.io/case-studies/wanderly</loc><lastmod>2026-10-22</lastmod></url>
   <url><loc>https://ivorystudios.io/case-studies/atlas</loc><lastmod>2026-10-22</lastmod></url>
   <url><loc>https://ivorystudios.io/case-studies/granite</loc><lastmod>2026-10-22</lastmod></url>
-  <url><loc>https://ivorystudios.io/privacy</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://ivorystudios.io/privacy</loc><lastmod>2026-10-22</lastmod></url>
   <url><loc>https://ivorystudios.io/terms</loc><lastmod>2026-10-22</lastmod></url>
 </urlset>

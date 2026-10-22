@@ -1395,3 +1395,41 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .wf-count { font-size: 12px; font-variant-numeric: tabular-nums; opacity: .65; }
 .work-filter-status { flex-basis: 100%; min-height: 1em; margin-top: 4px; font-size: 13px; color: var(--text-dim); }
 .work-card[hidden] { display: none; }
+
+/* Website project checklist */
+.cl-wrap { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
+.cl-progress { position: sticky; top: 104px; padding: 22px; border: 1px solid var(--border2); border-radius: var(--radius-lg); background: var(--bg-card); }
+.cl-progress-bar { height: 4px; border-radius: 4px; background: var(--border2); overflow: hidden; margin-bottom: 14px; }
+.cl-progress-bar span { display: block; height: 100%; width: 0; background: var(--gold); transition: width .5s var(--ease-out); }
+.cl-progress p { font-size: 15px; color: var(--text-muted); }
+.cl-progress strong { font-family: var(--font-body); font-variant-numeric: tabular-nums; color: var(--ivory); font-size: 20px; }
+.cl-hint { margin-top: 8px; font-size: 13px !important; color: var(--text-dim) !important; line-height: 1.5; }
+.cl-reset { margin-top: 12px; font-size: 13px; color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px; }
+.cl-reset:hover { color: var(--ivory); }
+.cl-steps { display: grid; gap: 0; }
+.cl-step { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 16px; padding: 36px 0; border-top: 1px solid var(--border); }
+.cl-step:first-child { border-top: 0; padding-top: 0; }
+.cl-num { font-family: var(--font-body); font-weight: 600; font-size: 14px; letter-spacing: .08em; color: var(--gold); padding-top: 6px; font-variant-numeric: tabular-nums; }
+.cl-step h2 { font-family: var(--font-head); font-size: clamp(22px, 2.4vw, 30px); line-height: 1.2; color: var(--text); margin-bottom: 10px; }
+.cl-step > div > p { color: var(--text-muted); font-size: 16px; line-height: 1.65; max-width: 60ch; margin-bottom: 18px; }
+.cl-list { display: grid; gap: 4px; }
+.cl-list label { display: flex; gap: 14px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; cursor: pointer; transition: background var(--dur-s); }
+.cl-list label:hover { background: rgba(240,230,211,.03); }
+.cl-list input { appearance: none; -webkit-appearance: none; flex: none; width: 20px; height: 20px; margin-top: 2px; border: 1.5px solid var(--border2); border-radius: 6px; transition: background .2s, border-color .2s; }
+.cl-list input:checked { background: var(--gold) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23080706' stroke-width='3.5'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center / 13px no-repeat; border-color: var(--gold); }
+.cl-list input:focus-visible { outline: 2px solid var(--ivory); outline-offset: 2px; }
+.cl-list span { font-size: 16px; line-height: 1.55; color: var(--text); transition: color var(--dur-s); }
+.cl-list li.is-done span { color: var(--text-dim); text-decoration: line-through; text-decoration-color: rgba(200,164,110,.5); }
+.cl-end { margin-top: 24px; padding: clamp(28px, 4vw, 44px); border: 1px solid rgba(200,164,110,.3); border-radius: var(--radius-lg); background: radial-gradient(80% 120% at 0% 0%, rgba(200,164,110,.1), transparent 70%), var(--bg-card); }
+.cl-end h2 { font-family: var(--font-head); font-size: clamp(24px, 2.8vw, 34px); color: var(--ivory); margin-bottom: 10px; }
+.cl-end p { color: var(--text-muted); max-width: 58ch; margin-bottom: 22px; line-height: 1.65; }
+@media (max-width: 900px) {
+  .cl-wrap { grid-template-columns: 1fr; }
+  .cl-progress { top: 72px; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding: 14px 16px; }
+  .cl-progress-bar { flex-basis: 100%; margin-bottom: 6px; }
+  .cl-hint { display: none; }
+  .cl-reset { margin: 0 0 0 auto; }
+  .cl-step { grid-template-columns: 1fr; gap: 6px; }
+}
+.text-inline-link { color: var(--ivory); text-decoration: underline; text-decoration-color: rgba(200,164,110,.5); text-underline-offset: 3px; }
+.text-inline-link:hover { text-decoration-color: var(--gold); }

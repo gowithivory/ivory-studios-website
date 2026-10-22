@@ -23,7 +23,7 @@ const projects = await load('content/projects.mjs');
 const services = await load('content/services.mjs');
 
 const SERVICE_PAGES = Object.keys(services);
-const MARKETING = ['services', 'work', 'about', 'contact', ...SERVICE_PAGES, 'privacy', 'terms'];
+const MARKETING = ['services', 'work', 'about', 'contact', ...SERVICE_PAGES, 'website-project-checklist', 'privacy', 'terms'];
 const PORTAL = ['login', 'signup', 'dashboard', 'reset-password'];
 const CLEAN_PAGES = [...MARKETING, ...PORTAL];
 
@@ -107,6 +107,7 @@ const FOOTER_HTML = `<!--footer:start-->
           <h2 class="flg-title">Studio</h2>
           <a href="/work">Work</a>
           <a href="/about">About &amp; Process</a>
+          <a href="/website-project-checklist">Project checklist</a>
           <a href="/contact">Contact</a>
           <a href="/login">Client Portal</a>
         </nav>
@@ -585,6 +586,7 @@ const urls = [
   ['/work', 'work.html'],
   ['/about', 'about.html'],
   ['/contact', 'contact.html'],
+  ['/website-project-checklist', 'website-project-checklist.html'],
   ...[...clientSlugs, ...conceptSlugs].map(s => [`/case-studies/${s}`, `case-studies/${s}.html`]),
   ['/privacy', 'privacy.html'],
   ['/terms', 'terms.html'],

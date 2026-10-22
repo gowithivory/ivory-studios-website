@@ -187,6 +187,38 @@ document.addEventListener('pointerover', e => {
   });
 })();
 
+// Planning checklist: tick items, see progress. Stored in this browser only.
+(function checklist() {
+  const boxes = [...document.querySelectorAll('[data-check]')];
+  if (!boxes.length) return;
+  const KEY = 'ivory-checklist';
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { /* storage blocked */ }
+  const done = document.getElementById('cl-done');
+  const bar = document.getElementById('cl-bar');
+  const render = () => {
+    const n = boxes.filter(b => b.checked).length;
+    done.textContent = n;
+    bar.style.width = `${(n / boxes.length) * 100}%`;
+    boxes.forEach(b => b.closest('li').classList.toggle('is-done', b.checked));
+  };
+  boxes.forEach(b => {
+    b.checked = !!saved[b.dataset.check];
+    b.addEventListener('change', () => {
+      saved[b.dataset.check] = b.checked || undefined;
+      try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch { /* storage blocked */ }
+      render();
+    });
+  });
+  document.getElementById('cl-reset')?.addEventListener('click', () => {
+    boxes.forEach(b => { b.checked = false; });
+    saved = {};
+    try { localStorage.removeItem(KEY); } catch { /* storage blocked */ }
+    render();
+  });
+  render();
+})();
+
 // Scroll reveals. Siblings in the same row are staggered slightly.
 (function scrollReveal() {
   const els = [...document.querySelectorAll('.reveal-up, .footer-sign, .proj-shot')];
