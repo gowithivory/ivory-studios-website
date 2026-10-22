@@ -192,61 +192,76 @@ document.addEventListener('click', e => {
 })();
 
 // Signature cursor: a dot that tracks the pointer exactly and a ring that
-// follows with a short delay. The native cursor is only hidden after the first
-// real mouse move, so it can never disappear if this fails to start.
+// follows on a soft spring. The native cursor is only hidden after the first
+// real mouse event, so it can never disappear if this fails to start.
 (function cursor() {
   if (!RICH_POINTER) return;
   const root = document.documentElement;
   const dot = Object.assign(document.createElement('div'), { className: 'cursor-dot' });
   const ring = Object.assign(document.createElement('div'), { className: 'cursor-ring' });
+  const shape = Object.assign(document.createElement('div'), { className: 'cursor-ring-shape' });
+  ring.append(shape);
   dot.setAttribute('aria-hidden', 'true');
   ring.setAttribute('aria-hidden', 'true');
   document.body.append(dot, ring);
 
-  let mx = -100, my = -100, rx = -100, ry = -100, raf = 0, last = 0;
-  const place = () => {
-    dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
-    ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+  let mx = -100, my = -100, rx = -100, ry = -100, vx = 0, vy = 0, raf = 0, last = 0;
+  const placeDot = () => { dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`; };
+  const placeRing = () => { ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`; };
+  const snap = () => { rx = mx; ry = my; vx = vy = 0; placeDot(); placeRing(); };
+
+  // Critically damped spring (no overshoot), integrated on real elapsed time
+  // so it feels the same at 60 Hz and 120 Hz. The loop stops once settled.
+  const SMOOTH = 0.085; // seconds to roughly catch up
+  const step = (x, target, v, dt) => {
+    const w = 2 / SMOOTH, k = w * dt, e = 1 / (1 + k + 0.48 * k * k + 0.235 * k * k * k);
+    const d = x - target, t = (v + w * d) * dt;
+    return [target + (d + t) * e, (v - w * t) * e];
   };
-  // The ring eases towards the pointer at the same speed on 60 Hz and 120 Hz
-  // screens (time-based, not frame-based), and the loop stops once it settles.
   const loop = now => {
-    const dt = Math.min(now - (last || now), 50);
+    const dt = Math.min(now - (last || now - 16.67), 64) / 1000;
     last = now;
-    const k = 1 - Math.pow(1 - 0.22, dt / 16.67);
-    rx += (mx - rx) * k;
-    ry += (my - ry) * k;
-    const settled = Math.abs(mx - rx) + Math.abs(my - ry) < 0.15;
-    if (settled) { rx = mx; ry = my; }
-    ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+    [rx, vx] = step(rx, mx, vx, dt);
+    [ry, vy] = step(ry, my, vy, dt);
+    const settled = Math.abs(mx - rx) + Math.abs(my - ry) < 0.1 && Math.abs(vx) + Math.abs(vy) < 5;
+    if (settled) { rx = mx; ry = my; vx = vy = 0; }
+    placeRing();
     if (settled) { raf = 0; last = 0; } else raf = requestAnimationFrame(loop);
   };
   const show = () => { if (!root.classList.contains('cursor-suspended')) root.classList.add('cursor-on'); };
 
+  // Every mouse event carries the pointer position, not just moves. A press
+  // that lands somewhere new (back from another app, the end of a drag) snaps
+  // there instead of drawing from a stale spot.
+  const track = e => {
+    if (e.pointerType && e.pointerType !== 'mouse') return;
+    if (!e.clientX && !e.clientY) return; // drag events report 0,0 when leaving
+    const jumped = Math.abs(e.clientX - mx) + Math.abs(e.clientY - my) > 4 && !/^(pointermove|drag|dragover)$/.test(e.type);
+    mx = e.clientX; my = e.clientY;
+    if (!root.classList.contains('cursor-on') || jumped) { snap(); show(); return; }
+    placeDot();
+    if (!raf) raf = requestAnimationFrame(loop);
+  };
+
   // Pick up where the pointer was on the previous page, so the cursor doesn't
   // vanish after every click until the mouse moves again.
   try {
-    const last = JSON.parse(sessionStorage.getItem('ivory-cursor') || 'null');
-    if (last && Date.now() - last.t < 5000 && last.x < innerWidth && last.y < innerHeight) {
-      mx = rx = last.x; my = ry = last.y; place(); show();
+    const saved = JSON.parse(sessionStorage.getItem('ivory-cursor') || 'null');
+    if (saved && Date.now() - saved.t < 5000 && saved.x < innerWidth && saved.y < innerHeight) {
+      mx = saved.x; my = saved.y; snap(); show();
     }
   } catch { /* storage blocked */ }
   window.addEventListener('pagehide', () => {
     try { sessionStorage.setItem('ivory-cursor', JSON.stringify({ x: mx, y: my, t: Date.now() })); } catch { /* storage blocked */ }
   });
 
-  document.addEventListener('pointermove', e => {
-    if (e.pointerType !== 'mouse') return;
-    mx = e.clientX; my = e.clientY;
-    dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
-    if (!root.classList.contains('cursor-on')) { rx = mx; ry = my; place(); show(); }
-    if (!raf) raf = requestAnimationFrame(loop);
-  }, { passive: true });
+  ['pointermove', 'pointerdown', 'pointerup', 'drag', 'dragover', 'dragend'].forEach(type =>
+    document.addEventListener(type, track, { passive: true }));
 
   const STATES = ['cursor-link', 'cursor-view', 'cursor-text'];
   const setState = (state, label = '') => {
     STATES.forEach(c => root.classList.toggle(c, c === state));
-    ring.dataset.label = label;
+    shape.dataset.label = label;
   };
   document.addEventListener('pointerover', e => {
     const t = e.target;
@@ -256,12 +271,11 @@ document.addEventListener('click', e => {
     if (t.closest('a, button, summary, label, [role="button"]')) return setState('cursor-link');
     setState(null);
   }, { passive: true });
-  document.addEventListener('pointerdown', () => root.classList.add('cursor-down'), { passive: true });
-  document.addEventListener('pointerup', () => root.classList.remove('cursor-down'), { passive: true });
-  root.addEventListener('mouseleave', () => root.classList.remove('cursor-on'));
-  window.addEventListener('blur', () => root.classList.remove('cursor-on'));
-  // Back from another tab (social links open in one): show it where it was.
-  window.addEventListener('focus', () => { if (mx > 0 && my > 0) { place(); show(); } });
+  const release = () => root.classList.remove('cursor-down');
+  document.addEventListener('pointerdown', e => { if (e.button === 0) root.classList.add('cursor-down'); }, { passive: true });
+  ['pointerup', 'pointercancel', 'dragend', 'drop'].forEach(type => document.addEventListener(type, release, { passive: true }));
+  root.addEventListener('mouseleave', () => { root.classList.remove('cursor-on'); release(); });
+  window.addEventListener('blur', () => { root.classList.remove('cursor-on'); release(); });
 
   // Pointer events stop at an iframe's edge, so inside the Calendly popup the
   // custom cursor would freeze while the native one carries on. Step aside
@@ -277,7 +291,7 @@ document.addEventListener('click', e => {
   window.addEventListener('pageshow', e => {
     if (!e.persisted) return;
     setState(null);
-    root.classList.remove('cursor-down');
+    release();
   });
 })();
 
