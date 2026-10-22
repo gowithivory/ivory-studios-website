@@ -41,7 +41,7 @@ Status key: ✅ done and verified live · 🔁 checked, no change needed · ⏳ 
 - ⛔ **Branded Supabase emails** need a custom SMTP sender (templates ready in `supabase/email-templates/`).
 - ⛔ **Admin→client portal test** needs a second account the owner signs up.
 - ⛔ **Calendly event name** is "Free Strategy Call"; the site says "Discovery Call". Rename in Calendly or tell us to change the site.
-- ⛔ **Instagram handle**: site links `instagram.com/ivorystudios`; other profiles use `gowithivory`. Owner to confirm.
+- ✅ **Social links** (owner-confirmed 2026-10-22): Instagram https://www.instagram.com/gowithivory/, LinkedIn https://www.linkedin.com/company/130014150/ (public page for the admin URL supplied), on all pages and in Organization sameAs.
 - ⏳ "50+ projects delivered" is the owner's figure, not independently verified.
 - ⏳ Recommend (needs owner approval, account setting): set Supabase Auth minimum password length to 8 to match the sign-up form (server default is 6).
 - ⛔ **Ranking for "Ivory Studios" (spaced) is mostly off-site now.** Owner actions, in order of impact: (1) Google Business Profile named exactly "Ivory Studios", Cairo, category Website designer, linking ivorystudios.io; (2) Search Console: request indexing of the homepage; (3) social profile display names exactly "Ivory Studios" with the site link; (4) consistent listings (Clutch, DesignRush, Sortlist, GoodFirms); (5) a "Website by Ivory Studios" credit link on the APadel site, with the client's permission. No ranking can be guaranteed.
