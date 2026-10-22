@@ -479,7 +479,7 @@ document.addEventListener('click', e => {
   if (!RICH_POINTER) return;
   let raf = 0, card = null, x = 0, y = 0;
   document.addEventListener('pointermove', e => {
-    card = e.target.closest?.('.service-card, .related-service, .benefit-card, .value-card, .diff-item');
+    card = e.target.closest?.('.service-card, .related-service, .benefit-card, .value-card');
     if (!card) return;
     x = e.clientX; y = e.clientY;
     if (!raf) raf = requestAnimationFrame(() => {
