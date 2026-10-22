@@ -58,7 +58,7 @@ const navHtml = page => `<!--nav:start-->
 <a href="#main" class="skip-link">Skip to content</a>
 <div id="site-nav">
   <header class="nav" id="nav">
-    <a href="/" class="nav-logo" aria-label="Ivory Studios home">${LOGO}<span>IVORY<span class="logo-accent">STUDIOS</span></span></a>
+    <a href="/" class="nav-logo" aria-label="Ivory Studios home">${LOGO}<span>Ivory<span class="logo-gap"> </span><span class="logo-accent">Studios</span></span></a>
     <nav aria-label="Primary"><ul class="nav-links">${NAV_LINKS.map(([id, label, href]) =>
       `<li><a href="${href}"${id === page ? ' class="active" aria-current="page"' : ''}>${label}</a></li>`).join('')}</ul></nav>
     <div class="nav-actions">
@@ -96,8 +96,8 @@ const FOOTER_HTML = `<!--footer:start-->
       <p class="footer-sign" aria-hidden="true"><span>We build.</span> <span>You grow.</span></p>
       <div class="footer-top">
         <div class="footer-brand">
-          <a href="/" class="footer-logo" aria-label="Ivory Studios home">${LOGO}<span>IVORY<span>STUDIOS</span></span></a>
-          <p class="footer-tagline">Your vision, brought to life. Websites, brands and business systems from Cairo, for clients worldwide.</p>
+          <a href="/" class="footer-logo" aria-label="Ivory Studios home">${LOGO}<span>Ivory<span class="logo-gap"> </span><span>Studios</span></span></a>
+          <p class="footer-tagline">Ivory Studios: websites, brands and business systems from Cairo, for clients worldwide. Your vision, brought to life.</p>
         </div>
         <nav class="footer-links-group" aria-label="Services">
           <h2 class="flg-title">Services</h2>

@@ -1507,3 +1507,7 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .nf-links a:hover { color: var(--ivory); padding-left: 6px; }
 .nf-links a:hover::after { color: var(--gold); }
 @media (max-width: 600px) { .nf-links ul { grid-template-columns: 1fr; } }
+
+/* The logotype reads IVORYSTUDIOS, but its text is "Ivory Studios": the
+   space is real (for search engines and screen readers) and zero-width. */
+.logo-gap { font-size: 0; letter-spacing: 0; }
