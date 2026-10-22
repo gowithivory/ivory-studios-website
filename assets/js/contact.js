@@ -1,9 +1,22 @@
 // Contact form -> Supabase contact_submissions.
 // If the insert fails we open a pre-filled email instead, so no enquiry is lost.
-import { supabase, isConfigured, friendly } from './supabase.js';
+// The Supabase library (~55 KB) is only fetched once someone starts filling
+// in the form, so it never weighs on the page load.
+let sb = null;
+function client() {
+  sb ??= new Promise((resolve, reject) => {
+    if (window.supabase) return resolve();
+    const s = document.createElement('script');
+    s.src = '/assets/js/vendor/supabase.min.js';
+    s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  }).then(() => import('./supabase.js')).catch(err => { sb = null; throw err; });
+  return sb;
+}
 
 const form = document.getElementById('inquiry-form');
 if (form) {
+  form.addEventListener('focusin', () => client().catch(() => {}), { once: true });
   const status = document.getElementById('iform-status');
   const btn = form.querySelector('button[type=submit]');
   const EMAIL = 'teams@ivorystudios.io';
@@ -69,9 +82,11 @@ if (form) {
     btn.disabled = true;
     btn.setAttribute('aria-busy', 'true');
     status.hidden = true;
+    let lib = null;
     try {
-      if (!isConfigured) throw new Error('not configured');
-      const { error } = await supabase.from('contact_submissions').insert(row);
+      lib = await client();
+      if (!lib.isConfigured) throw new Error('not configured');
+      const { error } = await lib.supabase.from('contact_submissions').insert(row);
       if (error) throw error;
       window.ivoryTrack?.('generate_lead', { form: 'contact' });
       form.reset();
@@ -79,7 +94,7 @@ if (form) {
     } catch (err) {
       const body = `${row.message}\n\n— ${name}${row.company ? ', ' + row.company : ''}\n${email}${services ? '\nInterested in: ' + services : ''}`;
       const href = `mailto:${EMAIL}?subject=${encodeURIComponent('Project enquiry from ' + name)}&body=${encodeURIComponent(body)}`;
-      const reason = isConfigured && !/fetch|network|load failed/i.test(String(err?.message || err)) ? friendly(err) : '';
+      const reason = lib?.isConfigured && !/fetch|network|load failed/i.test(String(err?.message || err)) ? lib.friendly(err) : '';
       say(reason
         ? `${reason} Your email app is opening with your brief filled in, so nothing is lost.`
         : `We couldn't send this from the website, so we're opening your email app with your brief filled in. If nothing opens, email ${EMAIL}.`);

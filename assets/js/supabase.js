@@ -9,7 +9,9 @@ const SUPABASE_ANON = 'sb_publishable_MwooCsC-ND_9mi5_9BWswg_i45I_XzN';
 export const isConfigured =
   !SUPABASE_URL.includes('YOUR-PROJECT') && !SUPABASE_ANON.includes('YOUR-ANON') && !!window.supabase;
 
-// supabase-js is self-hosted (pinned) at /assets/js/vendor/supabase.min.js.
+// supabase-js 2.117.3 is self-hosted (pinned) at /assets/js/vendor/supabase.min.js
+// (UMD build from npm, sha256 1qXEQUpdTOZG2cHeIjqnBn0/9mTBU5T/63/P/HYzVKM=). 2.45.4
+// threw an uncaught LockManager error on every page load in Firefox.
 export const supabase = isConfigured
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
