@@ -7,6 +7,8 @@ Status key: ✅ done and verified live · 🔁 checked, no change needed · ⏳ 
 
 | # | Issue | Evidence | Change | Checks | Deployed |
 |---|---|---|---|---|---|
+| 44 | "ivory studios" (with a space) doesn't find the site first; "ivorystudios" does | Owner report; web search shows ivorystudios.ca (music school), Ivory (London agency), Ivorie Studios, Ann Ivory Studios competing for the spaced name | Logotype text "Ivory Studios" with a zero-width real space (was one word to crawlers on every page); homepage h1 is the brand line (slogan restyled as paragraph, pixel-identical); footer tagline opens "Ivory Studios:" with services and city | Pixel diff 0; audit; LH 100×4 live | ✅ 6ad2f20 |
+| 43 | Brand line on first screen lacked the name | Visible-text count | Eyebrow "Ivory Studios · Design & technology studio in Cairo, working worldwide" (became the h1 in 44) | Wrap at 320/390/1440 | ✅ 6ad2f20 |
 | 42 | Heading hierarchy | Script over 31 pages | None needed: one h1 per page, no skipped levels (dashboard h1 is script-rendered; reset page's two h1s are alternate steps) | Scan | 🔁 |
 | 41 | 28 case-study gallery images had alt "<Project>: supporting image" | Read markup; viewed every image | Factual descriptions per image (no assumed roles) | Build; live check | ✅ 2b0cc6e |
 | 40 | "ivorystudios" (one word, as in the logotype) not in schema | Organization/WebSite alternateName | Added "IvoryStudios" | JSON-LD valid; live | ✅ 9c374ab |
@@ -42,6 +44,7 @@ Status key: ✅ done and verified live · 🔁 checked, no change needed · ⏳ 
 - ⛔ **Instagram handle**: site links `instagram.com/ivorystudios`; other profiles use `gowithivory`. Owner to confirm.
 - ⏳ "50+ projects delivered" is the owner's figure, not independently verified.
 - ⏳ Recommend (needs owner approval, account setting): set Supabase Auth minimum password length to 8 to match the sign-up form (server default is 6).
+- ⛔ **Ranking for "Ivory Studios" (spaced) is mostly off-site now.** Owner actions, in order of impact: (1) Google Business Profile named exactly "Ivory Studios", Cairo, category Website designer, linking ivorystudios.io; (2) Search Console: request indexing of the homepage; (3) social profile display names exactly "Ivory Studios" with the site link; (4) consistent listings (Clutch, DesignRush, Sortlist, GoodFirms); (5) a "Website by Ivory Studios" credit link on the APadel site, with the client's permission. No ranking can be guaranteed.
 - ⏳ Recommend (needs Search Console access): submit https://ivorystudios.io/sitemap.xml and request indexing for the two new guides.
 
 ## Coverage checklist
