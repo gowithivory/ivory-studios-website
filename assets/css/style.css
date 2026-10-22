@@ -1435,3 +1435,6 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .text-inline-link:hover { text-decoration-color: var(--gold); }
 .about-services a { color: var(--ivory); text-decoration: underline; text-decoration-color: rgba(200,164,110,.5); text-underline-offset: 3px; transition: text-decoration-color var(--dur-s); }
 .about-services a:hover { text-decoration-color: var(--gold); }
+.hero-btns:has(+ .hero-assure) { margin-bottom: 14px; }
+.hero-assure { margin-bottom: 30px; font-size: 13px; color: var(--text-dim); letter-spacing: .01em; }
+@media (max-width: 600px) { .hero-assure { text-align: center; line-height: 1.7; } .hero-assure span { display: block; } .hero-assure .ha-sep { display: none; } }
