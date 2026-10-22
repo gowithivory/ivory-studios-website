@@ -338,7 +338,7 @@ async function runHealthChecks() {
     ['Analytics', 'Visitor analytics', async () => {
       const r = await fetch('/_vercel/insights/script.js', { method: 'HEAD' });
       return r.ok
-        ? ['warn', 'Vercel Web Analytics script is served. GA4, Google Ads and Meta Pixel are not configured (IDs empty in track.js).']
+        ? ['warn', 'Page views: Vercel Web Analytics is recording. Conversion events (enquiries, bookings) are sent but Vercel only stores them on Pro plans. GA4, Google Ads and Meta Pixel are not configured.']
         : ['fail', `Vercel Analytics script returned HTTP ${r.status}`];
     }],
   ];
