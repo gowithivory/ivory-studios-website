@@ -513,9 +513,9 @@ function caseStudy(slug, p) {
       <div class="proj-col"><h2 class="proj-h2">${p.concept ? 'Our approach' : 'What we built'}</h2><p>${esc(p.solution)}</p></div>
     </div>
 
-    ${p.features?.length ? `<div class="proj-features"><h2 class="proj-h2">Key features</h2><ul>${p.features.map(f => `<li>${esc(f)}</li>`).join('')}</ul></div>` : ''}
+${p.features?.length ? `    <div class="proj-features"><h2 class="proj-h2">Key features</h2><ul>${p.features.map(f => `<li>${esc(f)}</li>`).join('')}</ul></div>
 
-    <div class="proj-gallery${gallery.length === 1 ? ' proj-gallery--single' : ''}">
+` : ''}    <div class="proj-gallery${gallery.length === 1 ? ' proj-gallery--single' : ''}">
       ${gallery.join('\n      ')}
     </div>
     <p class="proj-credit">Photography: Pexels.${p.concept ? ' Images illustrate the sector, not a finished client build.' : ''}</p>
