@@ -369,6 +369,7 @@ iframe:focus-within { outline: 2px solid var(--gold); outline-offset: 2px; }
   font-size: clamp(24px, 2.8vw, 38px); line-height: 1.25; color: var(--text); text-wrap: pretty;
 }
 .intro-sub { margin-top: 22px; max-width: 54ch; font-size: 17px; line-height: 1.65; color: var(--text-muted); }
+.intro-who-label { margin-bottom: 14px; font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
 .intro-facts { display: grid; gap: 0; border-top: 1px solid var(--border2); }
 .intro-facts li { display: grid; gap: 4px; padding: 20px 0; border-bottom: 1px solid var(--border2); }
 .intro-facts strong { font-size: 16px; font-weight: 600; color: var(--text); }
