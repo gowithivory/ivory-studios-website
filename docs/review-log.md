@@ -7,6 +7,9 @@ Status key: ✅ done and verified live · 🔁 checked, no change needed · ⏳ 
 
 | # | Issue | Evidence | Change | Checks | Deployed |
 |---|---|---|---|---|---|
+| 42 | Heading hierarchy | Script over 31 pages | None needed: one h1 per page, no skipped levels (dashboard h1 is script-rendered; reset page's two h1s are alternate steps) | Scan | 🔁 |
+| 41 | 28 case-study gallery images had alt "<Project>: supporting image" | Read markup; viewed every image | Factual descriptions per image (no assumed roles) | Build; live check | ✅ 2b0cc6e |
+| 40 | "ivorystudios" (one word, as in the logotype) not in schema | Organization/WebSite alternateName | Added "IvoryStudios" | JSON-LD valid; live | ✅ 9c374ab |
 | 39 | Consistency of prices, reply times, timelines, call length | Site-wide extraction | None needed: $1k–$15k, 48h proposal, one working day, 30-minute call, 3–6 weeks agree everywhere | Text scan, 29 pages | 🔁 |
 | 38 | One US spelling in portal ("Admin authorization"); site otherwise British | Scan of pages, scripts, attributes | "Admin authorisation" (status keys like `optimization` are DB values, left as is) | node --check | ✅ (this commit) |
 | 37 | Work page heading said "Delivered for clients" above one project | Read /work | "Featured client project" | Layout audit /work | ✅ 5210a75 |
@@ -38,6 +41,8 @@ Status key: ✅ done and verified live · 🔁 checked, no change needed · ⏳ 
 - ⛔ **Calendly event name** is "Free Strategy Call"; the site says "Discovery Call". Rename in Calendly or tell us to change the site.
 - ⛔ **Instagram handle**: site links `instagram.com/ivorystudios`; other profiles use `gowithivory`. Owner to confirm.
 - ⏳ "50+ projects delivered" is the owner's figure, not independently verified.
+- ⏳ Recommend (needs owner approval, account setting): set Supabase Auth minimum password length to 8 to match the sign-up form (server default is 6).
+- ⏳ Recommend (needs Search Console access): submit https://ivorystudios.io/sitemap.xml and request indexing for the two new guides.
 
 ## Coverage checklist
 
