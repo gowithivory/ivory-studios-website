@@ -706,7 +706,7 @@ iframe:focus-within { outline: 2px solid var(--gold); outline-offset: 2px; }
 .inquiry-form { display: flex; flex-direction: column; gap: 22px; }
 .iform-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
 .iform-group { display: flex; flex-direction: column; gap: 8px; border: 0; min-width: 0; }
-.iform-group label, .iform-group legend { font-size: 14px; font-weight: 500; color: var(--text); padding: 0; margin-bottom: 0; }
+.iform-group label:not(.iform-check), .iform-group legend { font-size: 14px; font-weight: 500; color: var(--text); padding: 0; margin-bottom: 0; }
 .iform-group legend { margin-bottom: 10px; }
 .req { color: var(--gold); }
 .iform-group input:not([type=checkbox]), .iform-group select, .iform-group textarea {
@@ -1209,7 +1209,22 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .btn-del:hover { background: rgba(200,90,80,.14); border-color: rgba(200,90,80,.5); }
 
 /* Admin: system health */
-.health { margin: 8px 0 8px; padding: 24px; background: var(--bg-card); border: 1px solid var(--border2); border-radius: var(--radius-lg); }
+.health { margin: 48px 0 8px; padding: 24px; background: var(--bg-card); border: 1px solid var(--border2); border-radius: var(--radius-lg); }
+.health-summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; cursor: pointer; list-style: none; }
+.health-summary::-webkit-details-marker { display: none; }
+.health-summary::after { content: '+'; margin-left: auto; font-size: 20px; line-height: 1; color: var(--text-muted); transition: rotate var(--dur-xs); }
+.health[open] .health-summary::after { rotate: 45deg; }
+.health-summary .admin-section-title { margin: 0; }
+.health-summary-hint { font-size: 13px; color: var(--text-dim); }
+.health[open] .health-summary { margin-bottom: 16px; }
+.admin-filter { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 0 0 16px; }
+.admin-filter[hidden] { display: none; }
+.admin-filter input, .admin-filter select { min-height: 44px; padding: 0 14px; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); color: var(--text); font: inherit; font-size: 14px; }
+.admin-filter input { flex: 1 1 260px; }
+.admin-filter select { flex: 0 1 220px; }
+.admin-filter input:focus, .admin-filter select:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,164,110,.32); }
+.admin-filter-count { font-size: 13px; color: var(--text-muted); }
+.admin-row[hidden], .admin-archived[hidden] { display: none; }
 .health-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
 .health-head .admin-section-title { margin: 0 0 6px; }
 .health-sub { font-size: 14px; color: var(--text-muted); max-width: 60ch; }

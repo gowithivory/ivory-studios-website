@@ -263,29 +263,54 @@ async function renderAdmin() {
     </div>
     <div id="admin-new-panel" class="req-form-panel" hidden></div>
     <div id="admin-stats" class="admin-stats"></div>
-    <section class="health" aria-labelledby="health-title">
-      <div class="health-head">
-        <div>
-          <h2 class="admin-section-title" id="health-title">System health</h2>
-          <p class="health-sub">Live checks run from this browser with your admin session. Untested items are marked as such, never as passing.</p>
-        </div>
-        <button type="button" class="btn-ghost btn-sm" id="health-run">Run checks</button>
-      </div>
-      <div id="health-list" class="health-list" aria-live="polite"></div>
-      <p class="health-meta" id="health-meta"></p>
-    </section>
     <h2 class="admin-section-title">Project Requests</h2>
+    <div class="admin-filter" id="admin-filter" hidden>
+      <label class="sr-only" for="admin-search">Search projects</label>
+      <input type="search" id="admin-search" placeholder="Search by project, client or email" autocomplete="off">
+      <label class="sr-only" for="admin-status-filter">Filter by status</label>
+      <select id="admin-status-filter"><option value="">All statuses</option>${ALL_STATUSES.map(st => `<option value="${st}">${PHASE_LABEL[st]}</option>`).join('')}</select>
+      <span class="admin-filter-count" id="admin-filter-count" aria-live="polite"></span>
+    </div>
     <div id="admin-requests"><div class="spinner"></div></div>
     <h2 class="admin-section-title">Website Enquiries</h2>
     <div id="admin-leads"><div class="spinner"></div></div>
     <h2 class="admin-section-title">All Clients</h2>
-    <div id="admin-users"><div class="spinner"></div></div>`;
+    <div id="admin-users"><div class="spinner"></div></div>
+    <details class="health" id="health">
+      <summary class="health-summary"><span class="admin-section-title" id="health-title">System health</span><span class="health-summary-hint">Live checks of the database, session and analytics. Opens and runs on click.</span></summary>
+      <div class="health-head">
+        <p class="health-sub">Checks run from this browser with your admin session. Untested items are marked as such, never as passing.</p>
+        <button type="button" class="btn-ghost btn-sm" id="health-run">Run checks</button>
+      </div>
+      <div id="health-list" class="health-list" aria-live="polite"></div>
+      <p class="health-meta" id="health-meta"></p>
+    </details>`;
   loadAdminRequests();
   loadAdminLeads();
   loadAdminUsers();
   $('#health-run').addEventListener('click', runHealthChecks);
+  // Checks include a no-op write, so they run when the panel is opened, not on every visit.
+  $('#health').addEventListener('toggle', e => { if (e.target.open && !$('#health-list').childElementCount) runHealthChecks(); });
   $('#admin-new-btn').addEventListener('click', toggleAdminProjectForm);
-  runHealthChecks();
+  $('#admin-search').addEventListener('input', filterAdminRows);
+  $('#admin-status-filter').addEventListener('change', filterAdminRows);
+}
+
+// Narrow the project list by text (project, client, email) and status.
+function filterAdminRows() {
+  const q = $('#admin-search').value.trim().toLowerCase();
+  const st = $('#admin-status-filter').value;
+  const rows = [...document.querySelectorAll('#admin-requests .admin-row')];
+  let shown = 0;
+  rows.forEach(row => {
+    const hit = (!q || row.dataset.search.includes(q)) && (!st || row.dataset.status === st);
+    row.hidden = !hit;
+    if (hit && !row.classList.contains('is-archived')) shown++;
+  });
+  const archived = $('#admin-requests .admin-archived');
+  if (archived) archived.hidden = (q || st) && !archived.querySelector('.admin-row:not([hidden])');
+  const live = rows.filter(r => !r.classList.contains('is-archived')).length;
+  $('#admin-filter-count').textContent = q || st ? `${shown} of ${live} shown` : '';
 }
 
 // System health. Each check does the real thing (a request, a query, a
@@ -395,6 +420,8 @@ async function loadAdminRequests() {
   wrap.innerHTML = live.map(r => adminRow(r, msByReq[r.id] || [])).join('') +
     (archived.length ? `<details class="admin-archived"><summary>Archived projects (${archived.length})</summary>${archived.map(r => adminRow(r, msByReq[r.id] || [])).join('')}</details>` : '');
   reqs.forEach(r => wireAdminRow(r));
+  $('#admin-filter').hidden = reqs.length < 2;
+  filterAdminRows();
 }
 
 function wireAdminRow(r) {
@@ -477,7 +504,7 @@ function adminRow(r, milestones) {
   const who   = r.profiles?.full_name || r.profiles?.email || 'Unknown client';
   const email = r.profiles?.email || '';
   return `
-    <div class="admin-row${r.archived ? ' is-archived' : ''}">
+    <div class="admin-row${r.archived ? ' is-archived' : ''}" data-status="${esc(r.status)}" data-search="${esc([r.project_name, who, email, r.company].filter(Boolean).join(' ').toLowerCase())}">
       <div class="admin-row-head">
         <div>
           <div class="req-name">${esc(r.project_name)}</div>
