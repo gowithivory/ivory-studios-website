@@ -167,7 +167,9 @@ document.addEventListener('click', e => {
 // are correct with JS off or reduced motion on.
 (function counters() {
   const els = [...document.querySelectorAll('[data-count]')];
-  if (!els.length || REDUCE_MOTION || !('IntersectionObserver' in window)) return;
+  // The unit (+, h, %) appears once its number has landed.
+  const done = el => el.closest('.fact')?.classList.add('counted');
+  if (!els.length || REDUCE_MOTION || !('IntersectionObserver' in window)) return els.forEach(done);
   const run = el => {
     const target = +el.dataset.count;
     const start = performance.now();
@@ -175,6 +177,7 @@ document.addEventListener('click', e => {
       const p = Math.min((now - start) / 1400, 1);
       el.textContent = p < 1 ? Math.round((1 - Math.pow(1 - p, 4)) * target) : target;
       if (p < 1) requestAnimationFrame(tick);
+      else done(el);
     };
     requestAnimationFrame(tick);
   };
@@ -186,7 +189,7 @@ document.addEventListener('click', e => {
   (document.fonts?.ready || Promise.resolve()).then(() => els.forEach(el => {
     el.style.minWidth = `${el.getBoundingClientRect().width}px`;
     // Already on screen at load: keep the real value instead of flashing to 0.
-    if (el.getBoundingClientRect().top < innerHeight) return;
+    if (el.getBoundingClientRect().top < innerHeight) return done(el);
     el.textContent = '0';
     io.observe(el);
   }));

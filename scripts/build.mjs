@@ -182,6 +182,7 @@ function workCard(slug, p, { large = false, heading = 'h3', sizes = '' } = {}) {
     <div class="wc-meta"><span class="wc-badge${p.concept ? '' : ' wc-badge--client'}">${label}</span><span>${esc(p.kind)}</span></div>
     <${heading} class="wc-title">${esc(p.title)}</${heading}>
     <p class="wc-sub">${esc(p.summary)}</p>
+    ${large && !p.concept && p.metrics?.length ? `<dl class="wc-metrics">${p.metrics.map(m => `<div><dt>${esc(m.value)}</dt><dd>${esc(m.label)}</dd></div>`).join('')}</dl>` : ''}
     <span class="wc-cta">${p.concept ? 'Read the study' : 'View case study'} ${ICON.diag}</span>
   </div>
 </a>`;
@@ -193,6 +194,20 @@ const conceptSlugs = Object.keys(projects).filter(s => projects[s].concept);
 const WORK_CLIENT = `<div class="work-grid work-grid--single">
 ${clientSlugs.map(s => workCard(s, projects[s], { large: true, heading: 'h3' })).join('\n')}
 </div>`;
+// The Work page as a collection of every case study, client work first.
+const WORK_LD = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${ORIGIN}/` },
+      { '@type': 'ListItem', position: 2, name: 'Work', item: `${ORIGIN}/work` },
+    ] },
+    { '@type': 'CollectionPage', '@id': `${ORIGIN}/work#page`, name: 'Ivory Studios work', url: `${ORIGIN}/work`,
+      isPartOf: { '@id': `${ORIGIN}/#website` }, about: { '@id': `${ORIGIN}/#org` },
+      mainEntity: { '@type': 'ItemList', itemListElement: [...clientSlugs, ...conceptSlugs].map((k, i) => ({
+        '@type': 'ListItem', position: i + 1, url: `${ORIGIN}/case-studies/${k}`, name: projects[k].title })) } },
+  ],
+};
 const WORK_CONCEPTS = `<div class="work-grid">
 ${conceptSlugs.map(s => workCard(s, projects[s])).join('\n')}
 </div>`;
@@ -422,10 +437,22 @@ function trim(text, max = 155) {
   return text.slice(0, max).replace(/\s+\S*$/, '') + '…';
 }
 
+const listJoin = xs => xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`;
+// Project services that have a page of their own, for links from case studies.
+const SERVICE_LINK = {
+  'Web Design': 'web-design', 'UI/UX Design': 'web-design',
+  'Development': 'web-development', 'Web App': 'web-development', 'E-commerce': 'web-development',
+  'Branding': 'brand-identity',
+  'SEO': 'seo-growth', 'Local SEO': 'seo-growth', 'Content Strategy': 'seo-growth',
+  'Membership Portal': 'business-systems', 'Booking Platform': 'business-systems', 'Booking Engine': 'business-systems', 'Learning Platform': 'business-systems',
+};
+
 function caseStudy(slug, p) {
   const url = `${ORIGIN}/case-studies/${slug}`;
   const title = `${p.title}${p.concept ? ' Concept Study' : ' Case Study'} | Ivory Studios`;
-  const desc = trim(`${p.tagline} ${p.intro}`);
+  // Whole sentences only: the tagline, then what the page is and the main services.
+  const label = p.concept ? 'Concept study' : 'Case study';
+  const desc = [3, 2, 1, 0].map(n => `${p.tagline} ${label} by Ivory Studios${n ? `: ${listJoin(p.services.slice(0, n))}` : ''}.`).find(d => d.length <= 160) || trim(p.tagline);
   const keys = [...clientSlugs, ...conceptSlugs];
   const next = keys[(keys.indexOf(slug) + 1) % keys.length];
   const ld = {
@@ -464,7 +491,7 @@ function caseStudy(slug, p) {
     <div class="pm-item"><span>Client</span><strong>${esc(p.client)}</strong></div>
     <div class="pm-item"><span>Sector</span><strong>${esc(p.kind)}</strong></div>
     <div class="pm-item"><span>Year</span><strong>${esc(p.year)}</strong></div>
-    <div class="pm-item"><span>Scope</span><strong>${esc(p.services.join(', '))}</strong></div>
+    <div class="pm-item"><span>Scope</span><strong>${p.services.map(x => SERVICE_LINK[x] ? `<a href="/${SERVICE_LINK[x]}" class="pm-link">${esc(x)}</a>` : esc(x)).join(', ')}</strong></div>
   </section>
 
   <article class="container proj-body">
@@ -519,6 +546,7 @@ for (const file of rootPages) {
   html = block(html, 'home-services', serviceCards('h3'));
   html = block(html, 'home-featured', HOME_FEATURED);
   html = block(html, 'services-detail', SERVICES_DETAIL);
+  html = block(html, 'work-ld', `  <script type="application/ld+json">${JSON.stringify(WORK_LD)}</script>`);
   html = block(html, 'work-client', WORK_CLIENT);
   html = block(html, 'work-concepts', WORK_CONCEPTS);
   html = block(html, 'process', PROCESS_STEPS);
