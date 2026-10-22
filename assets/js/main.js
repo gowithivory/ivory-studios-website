@@ -203,16 +203,23 @@ document.addEventListener('click', e => {
   ring.setAttribute('aria-hidden', 'true');
   document.body.append(dot, ring);
 
-  let mx = -100, my = -100, rx = -100, ry = -100, raf = 0;
+  let mx = -100, my = -100, rx = -100, ry = -100, raf = 0, last = 0;
   const place = () => {
     dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
     ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
   };
-  const loop = () => {
-    rx += (mx - rx) * 0.18;
-    ry += (my - ry) * 0.18;
+  // The ring eases towards the pointer at the same speed on 60 Hz and 120 Hz
+  // screens (time-based, not frame-based), and the loop stops once it settles.
+  const loop = now => {
+    const dt = Math.min(now - (last || now), 50);
+    last = now;
+    const k = 1 - Math.pow(1 - 0.22, dt / 16.67);
+    rx += (mx - rx) * k;
+    ry += (my - ry) * k;
+    const settled = Math.abs(mx - rx) + Math.abs(my - ry) < 0.15;
+    if (settled) { rx = mx; ry = my; }
     ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
-    raf = Math.abs(mx - rx) + Math.abs(my - ry) > 0.1 ? requestAnimationFrame(loop) : 0;
+    if (settled) { raf = 0; last = 0; } else raf = requestAnimationFrame(loop);
   };
   const show = () => { if (!root.classList.contains('cursor-suspended')) root.classList.add('cursor-on'); };
 
@@ -253,6 +260,8 @@ document.addEventListener('click', e => {
   document.addEventListener('pointerup', () => root.classList.remove('cursor-down'), { passive: true });
   root.addEventListener('mouseleave', () => root.classList.remove('cursor-on'));
   window.addEventListener('blur', () => root.classList.remove('cursor-on'));
+  // Back from another tab (social links open in one): show it where it was.
+  window.addEventListener('focus', () => { if (mx > 0 && my > 0) { place(); show(); } });
 
   // Pointer events stop at an iframe's edge, so inside the Calendly popup the
   // custom cursor would freeze while the native one carries on. Step aside

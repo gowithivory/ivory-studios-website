@@ -17,14 +17,64 @@ function setLoading(btn, on, label) {
   btn.textContent = on ? 'Please wait…' : (label || btn.dataset.label);
 }
 
-// If already signed in, skip straight to the dashboard.
-(async () => {
-  if (!isConfigured) return;
-  const { data } = await supabase.auth.getSession();
-  if (data.session && /^\/(login|signup)/.test(location.pathname)) {
-    location.replace('/dashboard');
+// Where confirmation emails send people back to. Fixed, never taken from the URL.
+const CONFIRM_REDIRECT = `${location.origin}/login?confirmed=1`;
+
+// Arriving on /login from a confirmation email. Supabase has already checked
+// the token by the time we get here: success comes back as #...type=signup with
+// a session, failure as #error=... We report which one honestly, then ask the
+// person to sign in with their password.
+const authHash = new URLSearchParams(location.hash.slice(1));
+const fromConfirmLink = /^\/login/.test(location.pathname) && (authHash.get('type') === 'signup' || (authHash.get('error') && new URLSearchParams(location.search).has('confirmed')));
+
+async function handleConfirmation() {
+  const note = $('#auth-note');
+  if (authHash.get('error')) {
+    history.replaceState(null, '', '/login');
+    const expired = /expired|otp/i.test(`${authHash.get('error_code')} ${authHash.get('error_description')}`);
+    notify(note, expired
+      ? 'That confirmation link has expired or was already used. Enter your email below and send yourself a new one.'
+      : "We couldn't confirm your email with that link. Enter your email below and send yourself a new one.");
+    $('#resend-wrap')?.removeAttribute('hidden');
+    return;
   }
-})();
+  // Let the client read the token from the URL before tidying the address bar.
+  const { data } = await supabase.auth.getSession();
+  history.replaceState(null, '', '/login');
+  if (data.session?.user?.email_confirmed_at) {
+    const email = data.session.user.email;
+    await supabase.auth.signOut({ scope: 'local' });
+    const field = $('#li-email');
+    if (field) field.value = email;
+    notify(note, 'Your email is confirmed. Sign in with your password to open your workspace.', true);
+    $('#li-pass')?.focus();
+  } else {
+    notify(note, "We couldn't confirm your email with that link. Enter your email below and send yourself a new one.");
+    $('#resend-wrap')?.removeAttribute('hidden');
+  }
+}
+
+if (isConfigured && fromConfirmLink) {
+  handleConfirmation();
+} else if (isConfigured) {
+  // Already signed in: skip straight to the dashboard.
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session && /^\/(login|signup)/.test(location.pathname)) location.replace('/dashboard');
+  });
+}
+
+// Resend the confirmation email (login page). Same reply whatever the outcome,
+// so it can't be used to discover which emails have accounts.
+$('#resend-btn')?.addEventListener('click', async () => {
+  const note = $('#auth-note');
+  const email = $('#li-email')?.value.trim() || '';
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return notify(note, 'Enter your email address above first.');
+  const btn = $('#resend-btn');
+  btn.disabled = true;
+  await supabase.auth.resend({ type: 'signup', email, options: { emailRedirectTo: CONFIRM_REDIRECT } }).catch(() => {});
+  btn.disabled = false;
+  notify(note, 'If that email has an unconfirmed account, a new confirmation link is on its way.', true);
+});
 
 // Sign up
 const signupForm = $('#signup-form');
@@ -47,7 +97,7 @@ if (signupForm) {
     setLoading(btn, true);
     const { data, error } = await supabase.auth.signUp({
       email, password: pass,
-      options: { data: { full_name: name } },
+      options: { data: { full_name: name }, emailRedirectTo: CONFIRM_REDIRECT },
     });
     setLoading(btn, false);
 
@@ -63,7 +113,7 @@ if (signupForm) {
       location.replace('/dashboard');
     } else {
       // Confirmation on → user must click the email link before logging in.
-      notify(note, 'Account created! Check your email for a confirmation link, then log in.', true);
+      notify(note, 'Account created. We have sent a confirmation link to your email; open it to activate your account, then sign in.', true);
       signupForm.reset();
     }
   });
@@ -89,7 +139,10 @@ if (loginForm) {
 
     if (error) {
       const m = (error.message || '').toLowerCase();
-      if (m.includes('not confirmed'))      return notify(note, 'Please confirm your email first. Check your inbox for the link.');
+      if (m.includes('not confirmed')) {
+        $('#resend-wrap')?.removeAttribute('hidden');
+        return notify(note, 'Please confirm your email first. Check your inbox for the link.');
+      }
       if (m.includes('invalid'))            return notify(note, 'Wrong email or password.');
       return notify(note, friendly(error));
     }

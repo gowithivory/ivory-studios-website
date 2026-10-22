@@ -29,8 +29,12 @@ create table if not exists public.project_requests (
   description   text        check (char_length(description) <= 2000),
   status        text        not null default 'new'
                             check (status in ('new','reviewing','discovery','design','development',
-                                              'optimization','launched','on_hold','completed','declined')),
+                                              'feedback','optimization','launched','on_hold','completed','declined')),
   priority      text        not null default 'normal' check (priority in ('low','normal','high','urgent')),
+  start_date    date,
+  target_date   date,
+  progress      smallint    check (progress between 0 and 100),
+  archived      boolean     not null default false,
   created_at    timestamptz not null default now(),
   updated_at    timestamptz not null default now()
 );
@@ -64,6 +68,33 @@ create table if not exists public.newsletter (
   created_at  timestamptz not null default now()
 );
 
+--  PROJECT TRACKING (added Oct 2026; safe on databases created before it)
+--  progress = share of the agreed scope delivered, set by an admin. Null means
+--  "not stated", and the portal then shows the phase only.
+
+alter table public.project_requests add column if not exists start_date  date;
+alter table public.project_requests add column if not exists target_date date;
+alter table public.project_requests add column if not exists progress    smallint check (progress between 0 and 100);
+alter table public.project_requests add column if not exists archived    boolean not null default false;
+alter table public.project_requests drop constraint if exists project_requests_status_check;
+alter table public.project_requests add constraint project_requests_status_check
+  check (status in ('new','reviewing','discovery','design','development',
+                    'feedback','optimization','launched','on_hold','completed','declined'));
+alter table public.project_requests drop constraint if exists project_requests_dates_check;
+alter table public.project_requests add constraint project_requests_dates_check
+  check (target_date is null or start_date is null or target_date >= start_date);
+
+create table if not exists public.project_milestones (
+  id          uuid        primary key default gen_random_uuid(),
+  request_id  uuid        not null references public.project_requests(id) on delete cascade,
+  title       text        not null check (char_length(title) between 1 and 120),
+  due_date    date,
+  done        boolean     not null default false,
+  done_at     timestamptz,
+  position    smallint    not null default 0,
+  created_at  timestamptz not null default now()
+);
+
 --  INDEXES
 
 create index if not exists idx_profiles_role        on public.profiles(role);
@@ -74,6 +105,7 @@ create index if not exists idx_updates_request      on public.request_updates(re
 create index if not exists idx_updates_created_by   on public.request_updates(created_by);
 create index if not exists idx_contact_created      on public.contact_submissions(created_at desc);
 create index if not exists idx_contact_email        on public.contact_submissions(email, created_at desc);
+create index if not exists idx_milestones_request   on public.project_milestones(request_id, position);
 
 --  FUNCTIONS
 
@@ -142,15 +174,23 @@ as $$
 begin
   if public.is_privileged_role() or public.is_admin() then return new; end if;
   if tg_op = 'INSERT' then
-    new.status     := 'new';
-    new.priority   := 'normal';
-    new.created_at := now();
-    new.updated_at := now();
+    new.status      := 'new';
+    new.priority    := 'normal';
+    new.progress    := null;
+    new.start_date  := null;
+    new.target_date := null;
+    new.archived    := false;
+    new.created_at  := now();
+    new.updated_at  := now();
   else
-    new.created_at := old.created_at;
-    new.user_id  := old.user_id;
-    new.status   := old.status;
-    new.priority := old.priority;
+    new.created_at  := old.created_at;
+    new.user_id     := old.user_id;
+    new.status      := old.status;
+    new.priority    := old.priority;
+    new.progress    := old.progress;
+    new.start_date  := old.start_date;
+    new.target_date := old.target_date;
+    new.archived    := old.archived;
   end if;
   return new;
 end;
@@ -178,6 +218,59 @@ begin
 end;
 $$;
 
+-- Project history, written by the database so it can't be skipped or faked
+-- from the browser. Client-facing changes are public; reassignment is internal.
+create or replace function public.log_request_change()
+returns trigger language plpgsql security definer
+set search_path = public
+as $$
+declare
+  labels jsonb := '{"new":"New","reviewing":"In review","discovery":"Discovery","design":"Design","development":"Development","feedback":"Awaiting your feedback","optimization":"Optimisation","launched":"Launched","on_hold":"On hold","completed":"Completed","declined":"Declined"}';
+begin
+  if tg_op = 'INSERT' then
+    if auth.uid() is distinct from new.user_id then
+      insert into public.request_updates (request_id, phase, message, created_by)
+      values (new.id, new.status, 'Project set up in your workspace.', auth.uid());
+    end if;
+    return new;
+  end if;
+  if new.status is distinct from old.status then
+    insert into public.request_updates (request_id, phase, message, created_by)
+    values (new.id, new.status, 'Status changed to ' || coalesce(labels->>new.status, new.status) || '.', auth.uid());
+  end if;
+  if new.progress is distinct from old.progress and new.progress is not null then
+    insert into public.request_updates (request_id, phase, message, created_by)
+    values (new.id, new.status, 'Progress updated to ' || new.progress || '%.', auth.uid());
+  end if;
+  if new.target_date is distinct from old.target_date then
+    insert into public.request_updates (request_id, phase, message, created_by)
+    values (new.id, new.status, case when new.target_date is null then 'Target date removed.'
+      else 'Target date set to ' || to_char(new.target_date, 'FMDD Mon YYYY') || '.' end, auth.uid());
+  end if;
+  if new.user_id is distinct from old.user_id then
+    insert into public.request_updates (request_id, phase, message, is_internal, created_by)
+    values (new.id, new.status, 'Project reassigned to another client account.', true, auth.uid());
+  end if;
+  return new;
+end;
+$$;
+
+create or replace function public.log_milestone_change()
+returns trigger language plpgsql security definer
+set search_path = public
+as $$
+begin
+  if new.done and not coalesce(old.done, false) then
+    new.done_at := now();
+    insert into public.request_updates (request_id, message, created_by)
+    values (new.request_id, 'Milestone completed: ' || new.title, auth.uid());
+  elsif not new.done then
+    new.done_at := null;
+  end if;
+  return new;
+end;
+$$;
+
 --  TRIGGERS
 
 drop trigger if exists trg_profiles_updated       on public.profiles;
@@ -186,6 +279,8 @@ drop trigger if exists trg_profiles_guard         on public.profiles;
 drop trigger if exists trg_requests_guard         on public.project_requests;
 drop trigger if exists trg_contact_flood          on public.contact_submissions;
 drop trigger if exists on_auth_user_created       on auth.users;
+drop trigger if exists trg_requests_log           on public.project_requests;
+drop trigger if exists trg_milestones_log         on public.project_milestones;
 
 create trigger trg_profiles_updated before update on public.profiles
   for each row execute function public.set_updated_at();
@@ -199,6 +294,10 @@ create trigger trg_contact_flood before insert on public.contact_submissions
   for each row execute function public.guard_contact_flood();
 create trigger on_auth_user_created after insert on auth.users
   for each row execute function public.handle_new_user();
+create trigger trg_requests_log after insert or update on public.project_requests
+  for each row execute function public.log_request_change();
+create trigger trg_milestones_log before insert or update on public.project_milestones
+  for each row execute function public.log_milestone_change();
 
 --  ROW LEVEL SECURITY
 
@@ -207,6 +306,7 @@ alter table public.project_requests    enable row level security;
 alter table public.request_updates     enable row level security;
 alter table public.contact_submissions enable row level security;
 alter table public.newsletter          enable row level security;
+alter table public.project_milestones  enable row level security;
 
 -- profiles
 drop policy if exists "profiles_select_own"   on public.profiles;
@@ -235,6 +335,16 @@ create policy "requests_update_own"   on public.project_requests for update to a
 create policy "requests_update_admin" on public.project_requests for update to authenticated
   using (public.is_admin()) with check (public.is_admin());
 create policy "requests_delete_admin" on public.project_requests for delete to authenticated using (public.is_admin());
+drop policy if exists "requests_insert_admin" on public.project_requests;
+create policy "requests_insert_admin" on public.project_requests for insert to authenticated with check (public.is_admin());
+
+-- project_milestones: clients read their own project's milestones; admins manage all.
+drop policy if exists "milestones_select_own"   on public.project_milestones;
+drop policy if exists "milestones_admin_all"    on public.project_milestones;
+create policy "milestones_select_own" on public.project_milestones for select to authenticated
+  using (exists (select 1 from public.project_requests r where r.id = request_id and r.user_id = auth.uid()));
+create policy "milestones_admin_all" on public.project_milestones for all to authenticated
+  using (public.is_admin()) with check (public.is_admin());
 
 -- request_updates
 drop policy if exists "updates_select_own"   on public.request_updates;
@@ -269,7 +379,7 @@ create view public.admin_requests_view
 with (security_invoker = true) as
 select
   r.id, r.project_name, r.service_type, r.status, r.priority, r.budget_range, r.timeline,
-  r.created_at, r.updated_at,
+  r.start_date, r.target_date, r.progress, r.archived, r.created_at, r.updated_at,
   p.full_name as client_name, p.email as client_email, p.company as client_company,
   (select count(*) from public.request_updates u where u.request_id = r.id) as update_count
 from public.project_requests r
@@ -286,7 +396,7 @@ grant usage on schema public to anon, authenticated;
 grant insert on public.contact_submissions, public.newsletter to anon;
 grant select, insert, update, delete on
   public.profiles, public.project_requests, public.request_updates,
-  public.contact_submissions, public.newsletter to authenticated;
+  public.contact_submissions, public.newsletter, public.project_milestones to authenticated;
 grant select on public.admin_requests_view to authenticated;
 -- Signed-in users evaluate these inside policies and guard triggers; anon never does.
 grant execute on function public.is_admin(), public.is_privileged_role() to authenticated;
