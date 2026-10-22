@@ -1,0 +1,148 @@
+# Ivory Studios site review log
+
+Running log of review cycles. `docs/` is excluded from deployment (`.vercelignore`), so this file is never public.
+Status key: ✅ done and verified live · 🔁 checked, no change needed · ⏳ open · ⛔ blocked (needs owner).
+
+## Cycles (newest first)
+
+| # | Issue | Evidence | Change | Checks | Deployed |
+|---|---|---|---|---|---|
+| 39 | Consistency of prices, reply times, timelines, call length | Site-wide extraction | None needed: $1k–$15k, 48h proposal, one working day, 30-minute call, 3–6 weeks agree everywhere | Text scan, 29 pages | 🔁 |
+| 38 | One US spelling in portal ("Admin authorization"); site otherwise British | Scan of pages, scripts, attributes | "Admin authorisation" (status keys like `optimization` are DB values, left as is) | node --check | ✅ (this commit) |
+| 37 | Work page heading said "Delivered for clients" above one project | Read /work | "Featured client project" | Layout audit /work | ✅ 5210a75 |
+| 36 | 404 offered only three generic buttons | Screenshot | Popular pages list (services, APadel, guides, portal) | Status still 404; 2 sizes | ✅ e69bef5 |
+| 35 | Guides printed dark, with nav and half-faded sections | Print emulation | Print styles; transitions off in print; Print/PDF button on checklist | Print previews, both guides | ✅ 5945c29 |
+| 34 | Booking popup ignored Escape; Calendly cookie banner covered half the popup calendar | Puppeteer + screenshot | Escape closes popup; popup URL gets hide_gdpr_banner like the inline embed | Popup open/close, cursor resumes | ✅ 5945c29 |
+| 33 | Contact calendar iframe was 150px tall in a 700px panel (live) | Measured on production | Explicit iframe height (700/640px) | Measured live: 700px | ✅ 59ced89 |
+| 32 | Calendly (third-party cookies) and a render-blocking Calendly stylesheet loaded on page open | Request log; Lighthouse Best Practices 79 | Load after first interaction; drop stylesheet from head | 0 requests before interaction; LH 99/100/100/100 | ✅ 59ced89 |
+| 31 | No answer to "how much does a website cost" | Search-intent review | /website-cost-guide using only the FAQ's existing range | Audit 12 sizes, LH 100×4, valid Article markup | ✅ 37cc3ac |
+| 30 | Navigation between pages felt abrupt | Manual | Cross-document view transitions (off for reduced motion) | Cursor sweep, CLS 0 | ✅ e2ee7b7 |
+| 29 | APadel case study thin for the only client project | Read page | Key features list drawn only from existing claims | 2 sizes | ✅ 43df343 |
+| 28 | Hero CTA had no risk-reducer | Conversion review | "Free 30-minute call · Fixed-price proposal within 48 hours" | Audit, contrast 100 | ✅ 532a50e |
+| 27 | Shared links all showed the same preview | og tags | 22 page-specific share cards | Served 200 image/jpeg, ~60 KB | ✅ ff52017 |
+| 26 | About: duplicate "How we work" heading; no service links | Read page | "What we believe"; links to all services | Audit | ✅ 2356a2a |
+| 25 | Service descriptions lacked location | Meta review | Cairo in three descriptions (≤160 chars) | Build | ✅ 67a11bb |
+| 24 | Services overview headline generic | Copy review | "Five services. One team." | Audit | ✅ (services commit) |
+| 23 | Visitors not ready to book had no next step | Funnel review | /website-project-checklist with saved ticks | Persistence test, LH 100×4 | ✅ 6fedd1f |
+| 22 | Three intro points repeated stats and comparison | Copy review | "Who we work with" list; after-launch FAQ (+FAQPage) | Audit | ✅ 4e7cd8d |
+| 21 | Hero generic; benefits grid didn't show the difference; no mid-page CTA on phones; no work filters | Competitor research | New hero line, comparison table, phone booking bar, work filters | Audit, mobile bar states, filter counts | ✅ c4f2843 |
+| 20 | Stats: suffix could show before count; ghost glyphs mid-animation | Frame capture | Suffix on count end; gradient on digits only | 343 frames, 0 early | ✅ 2b780b0 |
+| 19 | Case-study descriptions cut mid-sentence | Meta review | Whole-sentence descriptions; scope links; Work ItemList | JSON-LD valid, ≤160 chars | ✅ 2b780b0 |
+| 1–18 | Earlier cycles: cursor jump on press (scale + translate), focus rings, error-text leak, portal guidance, robots.txt, admin filter, contact chips, image sizes, related work, stats alignment | See git history 2026-10-22 | — | — | ✅ |
+
+## Open items and blockers
+
+- ⛔ **DMARC record missing** for ivorystudios.io. DNS is hosted at Squarespace (nameservers nsb1–4.squarespacedns.com); no access from here. SPF (`include:_spf.google.com ~all`) and DKIM (`google._domainkey`) are present. Suggested TXT at host `_dmarc`: `v=DMARC1; p=none; rua=mailto:teams@ivorystudios.io` (monitor only, blocks nothing).
+- ⛔ **Branded Supabase emails** need a custom SMTP sender (templates ready in `supabase/email-templates/`).
+- ⛔ **Admin→client portal test** needs a second account the owner signs up.
+- ⛔ **Calendly event name** is "Free Strategy Call"; the site says "Discovery Call". Rename in Calendly or tell us to change the site.
+- ⛔ **Instagram handle**: site links `instagram.com/ivorystudios`; other profiles use `gowithivory`. Owner to confirm.
+- ⏳ "50+ projects delivered" is the owner's figure, not independently verified.
+
+## Coverage checklist
+
+### Design details (50)
+
+1. ✅ Hero headline scale and line breaks
+2. ✅ Hero subcopy specificity
+3. ✅ Hero CTA pair and reassurance line
+4. ✅ Featured project card in hero
+5. ✅ Eyebrow labels (size ≥12px, tracking)
+6. ✅ Section heading wipe-up motion
+7. ✅ Stats band layout and alignment
+8. ✅ Stats counters, units, finish
+9. ✅ Stats arrival motion
+10. ✅ Intro "Who we work with" list
+11. ✅ Service cards on home
+12. ✅ Featured client card metrics row
+13. ✅ Concept card labels
+14. ✅ Comparison table (desktop)
+15. ✅ Comparison stacking (phone)
+16. ✅ Process steps and rule draw-in
+17. ✅ FAQ accordion
+18. ✅ Closing CTA band
+19. ✅ Footer link groups
+20. ✅ Footer sign-off
+21. ✅ Custom cursor position on press/drag/refocus
+22. ✅ Cursor spring smoothness and idle stop
+23. ✅ Card tilt stability
+24. ✅ Magnetic buttons
+25. ✅ Focus rings on fields, buttons, iframes
+26. ✅ Mobile menu (focus trap, Escape, lock)
+27. ✅ Phone booking bar
+28. ✅ Work filter chips
+29. ✅ Related-work row on service pages
+30. ✅ Case-study meta bar and scope links
+31. ✅ Case-study key features
+32. ✅ Concept disclosure box
+33. ✅ Service page hero
+34. ✅ Service "What you receive" card
+35. ✅ About facts card
+36. ✅ Contact service chips
+37. ✅ Contact form error/success states
+38. ✅ Booking calendar sizing
+39. ✅ Booking popup
+40. ✅ Checklist progress panel
+41. ✅ Guide typography and numbering
+42. ✅ Print layout for guides
+43. ✅ 404 popular pages
+44. ✅ Portal status callouts
+45. ✅ Portal tracker on phones
+46. ✅ Admin filter bar
+47. ✅ Admin health panel (collapsed)
+48. ✅ Auth pages focus and placeholders
+49. ✅ Page transitions
+50. ✅ Share cards (OG images)
+
+### Website-wide areas (50)
+
+1. ✅ Positioning (who, what, outcome)
+2. ✅ Differentiation
+3. ✅ Proof and honesty of claims
+4. ✅ Client vs concept labelling
+5. ✅ Service explanations
+6. ✅ Pricing consistency ($1k–$15k, fixed price, 48h)
+7. ✅ Timeline consistency (3–6 weeks, reply in one working day)
+8. ✅ Voice and copy clichés
+9. ✅ Spelling consistency (British/American)
+10. ✅ Navigation and IA
+11. ✅ Internal linking
+12. ✅ Calls to action placement
+13. ✅ Booking flow (inline + popup)
+14. ✅ Contact form submission and failures
+15. ✅ Form error text safety
+16. ✅ Guides / lead nurture
+17. ✅ 404 recovery
+18. ✅ Mobile layouts (12 sizes)
+19. ✅ Large screens
+20. ✅ Keyboard navigation
+21. ✅ Contrast
+22. ✅ Reduced motion
+23. ✅ JavaScript-off behaviour
+24. ✅ Image alternatives
+25. ✅ Titles
+26. ✅ Meta descriptions
+27. ✅ Canonicals and redirects (www, http)
+28. ✅ robots.txt and noindex on portal
+29. ✅ Sitemap
+30. ✅ Structured data (Organization, Service, FAQ, Article, ItemList)
+31. ✅ Open Graph / social previews
+32. ✅ Local SEO signals (Cairo)
+33. ✅ Performance (Lighthouse)
+34. ✅ Image delivery (srcset/sizes)
+35. ✅ Third-party scripts (Calendly deferral)
+36. ✅ Security headers
+37. ✅ Dependency vulnerabilities
+38. ✅ Database access rules (54 tests)
+39. ✅ Portal client view
+40. ✅ Portal admin view
+41. ✅ Auth flows (confirm, reset, errors)
+42. ⛔ Email templates (SMTP)
+43. ⛔ Email authentication (DMARC)
+44. ✅ Analytics and tracking
+45. ✅ Error handling (network, server)
+46. ✅ Privacy (third-party cookies, consent)
+47. ✅ Deployment verification
+48. ✅ Print
+49. ✅ Social profile links (⛔ Instagram handle to confirm)
+50. ✅ Maintainability (build-generated pages, docs)

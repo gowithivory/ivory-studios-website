@@ -336,7 +336,7 @@ async function runHealthChecks() {
       if (error || !user) throw error || new Error('No user');
       return ['pass', `Signed in as ${user.email}`];
     }],
-    ['Admin authorization', 'The database itself confirms admin rights (is_admin())', async () => {
+    ['Admin authorisation', 'The database itself confirms admin rights (is_admin())', async () => {
       const { data, error } = await supabase.rpc('is_admin');
       if (error) throw error;
       return data ? ['pass', 'is_admin() returned true'] : ['fail', 'is_admin() returned false for this account'];
