@@ -1511,3 +1511,4 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 /* The logotype reads IVORYSTUDIOS, but its text is "Ivory Studios": the
    space is real (for search engines and screen readers) and zero-width. */
 .logo-gap { font-size: 0; letter-spacing: 0; }
+.portal-empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; }

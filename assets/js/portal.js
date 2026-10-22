@@ -51,7 +51,8 @@ async function init() {
   }
 
   if (profErr && !profile) {
-    $('#portal-root').innerHTML = `<div class="portal-empty-card"><h3>Couldn't load your account</h3><p>${esc(friendly(profErr))}</p><a href="/" class="btn-primary">← Back home</a></div>`;
+    $('#portal-root').innerHTML = `<div class="portal-empty-card"><h3>Couldn't load your account</h3><p>${esc(friendly(profErr))}</p><div class="portal-empty-actions"><button type="button" class="btn-primary" id="portal-retry">Try again</button><a href="/" class="btn-ghost">← Back home</a></div></div>`;
+    $('#portal-retry').addEventListener('click', () => location.reload());
     return;
   }
 
