@@ -6,7 +6,8 @@ const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matc
 // Mouse/trackpad users only: touch screens keep native behaviour.
 const FINE_POINTER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const RICH_POINTER = FINE_POINTER && !REDUCE_MOTION;
-const CALENDLY_URL = 'https://calendly.com/ammar-ivorystudios/30min';
+// Same settings as the inline calendar on /contact (no Calendly cookie banner).
+const CALENDLY_URL = 'https://calendly.com/ammar-ivorystudios/30min?hide_gdpr_banner=1';
 
 // Hide reveal targets only once we know this script runs, so the page is
 // fully readable without JavaScript.
@@ -106,6 +107,14 @@ document.addEventListener('click', e => {
 document.addEventListener('pointerover', e => {
   if (e.target.closest?.('[data-calendly]')) loadCalendly().catch(() => {});
 }, { passive: true });
+
+// Escape closes the booking popup, like any other dialog. (Once focus is
+// inside the calendar frame, Calendly's own close button handles it.)
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const close = document.querySelector('.calendly-overlay .calendly-popup-close, .calendly-overlay .calendly-close-overlay');
+  if (close) { e.preventDefault(); close.click(); }
+});
 
 // Inline booking panel on /contact, loaded when it nears the viewport.
 (function inlineCalendly() {
@@ -214,6 +223,7 @@ document.addEventListener('pointerover', e => {
       render();
     });
   });
+  document.getElementById('cl-print')?.addEventListener('click', () => window.print());
   document.getElementById('cl-reset')?.addEventListener('click', () => {
     boxes.forEach(b => { b.checked = false; });
     saved = {};

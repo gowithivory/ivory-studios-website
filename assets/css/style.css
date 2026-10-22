@@ -1407,6 +1407,8 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .cl-progress p { font-size: 15px; color: var(--text-muted); }
 .cl-progress strong { font-family: var(--font-body); font-variant-numeric: tabular-nums; color: var(--ivory); font-size: 20px; }
 .cl-hint { margin-top: 8px; font-size: 13px !important; color: var(--text-dim) !important; line-height: 1.5; }
+.cl-actions { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; }
+.cl-actions .cl-reset { margin-top: 0; }
 .cl-reset { margin-top: 12px; font-size: 13px; color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px; }
 .cl-reset:hover { color: var(--ivory); }
 .cl-steps { display: grid; gap: 0; }
@@ -1431,7 +1433,7 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
   .cl-progress { top: 72px; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding: 14px 16px; }
   .cl-progress-bar { flex-basis: 100%; margin-bottom: 6px; }
   .cl-hint { display: none; }
-  .cl-reset { margin: 0 0 0 auto; }
+  .cl-actions { margin: 0 0 0 auto; }
   .cl-step { grid-template-columns: 1fr; gap: 6px; }
 }
 .text-inline-link { color: var(--ivory); text-decoration: underline; text-decoration-color: rgba(200,164,110,.5); text-underline-offset: 3px; }
@@ -1473,3 +1475,25 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .guide-prose p + p { margin-top: 14px; }
 .guide .cl-end { margin-top: clamp(48px, 7vw, 80px); }
 @media (max-width: 600px) { .guide-drivers li { padding-left: 44px; } }
+
+/* Guides print as clean black-on-white pages */
+@media print {
+  @page { margin: 16mm 14mm; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  html, body { background: #fff !important; color: #111 !important; }
+  .js .reveal-up, .reveal-up { opacity: 1 !important; transform: none !important; clip-path: none !important; filter: none !important; }
+  #site-nav, .skip-link, #site-footer, footer, .mcta, .cursor-dot, .cursor-ring, .hero-grid-bg, .crumbs, .cl-progress, .cl-end, .consent { display: none !important; }
+  .page-hero { padding: 0 0 8mm !important; min-height: 0 !important; background: none !important; }
+  .page-hero-title, .page-hero-title .accent, .cl-step h2, .guide-h2, .guide-drivers h3 { color: #111 !important; -webkit-text-fill-color: #111 !important; }
+  .page-hero-title { font-size: 28pt !important; }
+  .section-label, .cl-num, .guide-drivers li::before { color: #8a6a35 !important; }
+  .page-hero-sub, .cl-step p, .cl-list span, .guide-drivers p, .guide-prose p, .guide-lead p { color: #222 !important; }
+  .section { padding: 0 !important; }
+  .cl-wrap { display: block !important; }
+  .cl-step { break-inside: avoid; padding: 6mm 0 !important; border-color: #ccc !important; }
+  .cl-list label { padding: 2mm 0 !important; }
+  .cl-list input { border-color: #555 !important; }
+  .cl-list li.is-done span { text-decoration: none !important; color: #222 !important; }
+  .guide-drivers li { break-inside: avoid; border-color: #ccc !important; }
+  a { color: #111 !important; }
+}
