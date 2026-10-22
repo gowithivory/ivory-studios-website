@@ -892,6 +892,9 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 @media (max-width: 900px) { .facts-grid { grid-template-columns: 1fr 1fr; } .fact:nth-child(3) { border-left: 0; padding-left: 0; } .fact:nth-child(n+3) { border-top: 1px solid var(--border); } }
 @media (max-width: 420px) { .fact-num { font-size: 40px; } .fact-label { font-size: 14px; } }
 [data-count] { display: inline-block; text-align: right; }
+/* A counter that is itself a flex item would stretch to the cell and push its digits to the far edge. */
+.fact > [data-count] { align-self: flex-start; }
+.fact [data-count] { text-align: left; }
 
 /* Footer sign-off */
 .footer-sign {
@@ -1304,3 +1307,7 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
   /* The stage name is spelled out above the track, so the dots carry it alone. */
   .phase-track .phase-label { display: none; }
 }
+
+/* Service pages: up to three related projects in one row */
+.work-grid--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 860px) { .work-grid--three { grid-template-columns: 1fr; } }

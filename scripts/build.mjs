@@ -174,10 +174,10 @@ function img(slug, name, { alt, sizes, eager = false, cls = '' }) {
 }
 
 // Project cards (work page + home page)
-function workCard(slug, p, { large = false, heading = 'h3' } = {}) {
+function workCard(slug, p, { large = false, heading = 'h3', sizes = '' } = {}) {
   const label = p.concept ? 'Concept study' : 'Client project';
   return `<a href="/case-studies/${slug}" class="work-card${large ? ' work-card--large' : ''}${p.concept ? ' is-concept' : ''} reveal-up">
-  <div class="wc-img">${img(slug, 'cover', { alt: p.photoAlt, sizes: large ? '(max-width: 900px) 100vw, 1200px' : '(max-width: 900px) 100vw, 600px' })}</div>
+  <div class="wc-img">${img(slug, 'cover', { alt: p.photoAlt, sizes: sizes || (large ? '(max-width: 900px) 100vw, 800px' : '(max-width: 900px) 100vw, 600px') })}</div>
   <div class="wc-body">
     <div class="wc-meta"><span class="wc-badge${p.concept ? '' : ' wc-badge--client'}">${label}</span><span>${esc(p.kind)}</span></div>
     <${heading} class="wc-title">${esc(p.title)}</${heading}>
@@ -290,6 +290,30 @@ const ctaBand = (title, sub, reassure) => `<section class="section cta-band">
 const CTA_REASSURE = 'Free 30-minute call · Fixed-price proposal within 48 hours · No obligation';
 
 // Service pages
+// Which project services count as examples of each service page. Matched
+// against projects[*].services; client work is listed before concept studies.
+const SERVICE_EXAMPLES = {
+  'web-design': ['Web Design', 'UI/UX Design'],
+  'web-development': ['Development', 'Web App'],
+  'brand-identity': ['Branding'],
+  'business-systems': ['Web App', 'Membership Portal', 'Booking Platform', 'Booking Engine', 'Learning Platform'],
+  'seo-growth': ['SEO', 'Local SEO', 'Content Strategy'],
+};
+function serviceWork(slug) {
+  const match = SERVICE_EXAMPLES[slug] || [];
+  const picks = [...clientSlugs, ...conceptSlugs].filter(k => projects[k].services.some(x => match.includes(x))).slice(0, 3);
+  if (!picks.length) return '';
+  return `<section class="section">
+    <div class="container">
+      <div class="section-header reveal-up"><div class="section-label">See it in practice</div><h2 class="section-title">Related <span class="accent">work</span></h2></div>
+      <div class="work-grid work-grid--three">
+        ${picks.map(k => workCard(k, projects[k], { sizes: '(max-width: 860px) 100vw, 420px' })).join('\n        ')}
+      </div>
+      <div class="section-cta reveal-up"><a href="/work" class="btn-ghost">See all work ${ICON.arrow}</a></div>
+    </div>
+  </section>`;
+}
+
 function servicePage(slug, s) {
   const url = `${ORIGIN}/${slug}`;
   const ld = {
@@ -353,6 +377,8 @@ function servicePage(slug, s) {
       ${s.proof ? `<p class="svc-proof reveal-up">${esc(s.proof)} <a href="/case-studies/apadel" class="text-link">Read the APadel case study ${ICON.arrow}</a></p>` : ''}
     </div>
   </section>
+
+  ${serviceWork(slug)}
 
   <section class="section">
     <div class="container">
