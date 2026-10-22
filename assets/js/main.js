@@ -123,7 +123,11 @@ document.addEventListener('pointerover', e => {
   const io = new IntersectionObserver(entries => {
     if (entries.some(e => e.isIntersecting)) { io.disconnect(); start(); }
   }, { rootMargin: '0px' });
-  io.observe(slot);
+  // Calendly sets third-party cookies, so nothing loads until the visitor
+  // engages with the page (scroll, pointer, touch or keyboard).
+  const engage = ['scroll', 'pointermove', 'pointerdown', 'touchstart', 'keydown', 'wheel'];
+  const go = () => { engage.forEach(t => removeEventListener(t, go)); io.observe(slot); };
+  engage.forEach(t => addEventListener(t, go, { passive: true }));
 })();
 
 // Phones: a slim booking bar once the visitor is past the first screen. It
