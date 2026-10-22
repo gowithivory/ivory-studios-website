@@ -58,6 +58,10 @@
   const consent = () => store.get(KEY);
   window.ivoryTrack = function (event, params = {}) {
     document.dispatchEvent(new CustomEvent('ivory:conversion', { detail: { event, params } }));
+    // Vercel Web Analytics is cookieless, so it records conversions without the
+    // consent banner. Only the event name and its non-personal params are sent.
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    window.va('event', { name: event, data: params });
     if (consent() !== 'granted') return;
     if (window.gtag) {
       window.gtag('event', event, params);

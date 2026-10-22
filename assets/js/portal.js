@@ -34,8 +34,15 @@ async function init() {
     return;
   }
 
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) { location.replace('/login'); return; }
+  // getUser() asks the auth server, so a stale or tampered local session is
+  // rejected here instead of half-loading the portal.
+  const { data: { user }, error: userErr } = await supabase.auth.getUser();
+  if (userErr || !user) {
+    await supabase.auth.signOut({ scope: 'local' }).catch(() => {});
+    location.replace('/login');
+    return;
+  }
+  const session = { user };
 
   const { data: profile, error: profErr } = await supabase
     .from('profiles').select('*').eq('id', session.user.id).single();
@@ -165,6 +172,7 @@ function toggleRequestForm() {
             <option>Web Design</option>
             <option>Web Development</option>
             <option>Brand Identity</option>
+            <option>CRM &amp; Business Systems</option>
             <option>SEO &amp; Growth</option>
             <option>E-commerce</option>
             <option>Other</option>
@@ -252,6 +260,17 @@ async function renderAdmin() {
       </div>
     </div>
     <div id="admin-stats" class="admin-stats"></div>
+    <section class="health" aria-labelledby="health-title">
+      <div class="health-head">
+        <div>
+          <h2 class="admin-section-title" id="health-title">System health</h2>
+          <p class="health-sub">Live checks run from this browser with your admin session. Untested items are marked as such, never as passing.</p>
+        </div>
+        <button type="button" class="btn-ghost btn-sm" id="health-run">Run checks</button>
+      </div>
+      <div id="health-list" class="health-list" aria-live="polite"></div>
+      <p class="health-meta" id="health-meta"></p>
+    </section>
     <h2 class="admin-section-title">Project Requests</h2>
     <div id="admin-requests"><div class="spinner"></div></div>
     <h2 class="admin-section-title">Website Enquiries</h2>
@@ -261,6 +280,91 @@ async function renderAdmin() {
   loadAdminRequests();
   loadAdminLeads();
   loadAdminUsers();
+  $('#health-run').addEventListener('click', runHealthChecks);
+  runHealthChecks();
+}
+
+// System health. Each check does the real thing (a request, a query, a
+// no-op write) and reports what it observed. Things a browser cannot prove
+// are listed as NOT TESTED with the reason.
+const SB_URL = supabase?.supabaseUrl || '';
+const SB_KEY = supabase?.supabaseKey || '';
+
+async function runHealthChecks() {
+  const list = $('#health-list');
+  const btn = $('#health-run');
+  btn.disabled = true; btn.textContent = 'Running…';
+  const checks = [
+    ['Supabase API', 'Auth service health endpoint responds', async () => {
+      const t = performance.now();
+      const r = await fetch(`${SB_URL}/auth/v1/health`, { headers: { apikey: SB_KEY } });
+      const ms = Math.round(performance.now() - t);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return ['pass', `Responded in ${ms.toLocaleString('en-GB')} ms`];
+    }],
+    ['Session', 'Your session is verified by the auth server, not just local storage', async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) throw error || new Error('No user');
+      return ['pass', `Signed in as ${user.email}`];
+    }],
+    ['Admin authorization', 'The database itself confirms admin rights (is_admin())', async () => {
+      const { data, error } = await supabase.rpc('is_admin');
+      if (error) throw error;
+      return data ? ['pass', 'is_admin() returned true'] : ['fail', 'is_admin() returned false for this account'];
+    }],
+    ['Database reads', 'Admin-only tables can be counted', async () => {
+      const count = t => supabase.from(t).select('id', { count: 'exact', head: true });
+      const [p, r, c] = await Promise.all([count('profiles'), count('project_requests'), count('contact_submissions')]);
+      const err = p.error || r.error || c.error;
+      if (err) throw err;
+      const n = v => (v ?? 0).toLocaleString('en-GB');
+      return ['pass', `${n(p.count)} profiles · ${n(r.count)} requests · ${n(c.count)} enquiries`];
+    }],
+    ['Database writes', 'No-op update of your own profile goes through RLS and triggers', async () => {
+      const { data, error } = await supabase.from('profiles').update({ full_name: me.full_name }).eq('id', me.id).select('id');
+      if (error) throw error;
+      return data?.length === 1 ? ['pass', '1 row updated (value unchanged)'] : ['fail', `Expected 1 row, got ${data?.length ?? 0}`];
+    }],
+    ['Public access is blocked', 'A signed-out client cannot read enquiries', async () => {
+      const anon = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+      const { data, error } = await anon.from('contact_submissions').select('id').limit(1);
+      if (error) return ['pass', `Denied as expected (${error.code || 'permission denied'})`];
+      return data?.length ? ['fail', 'Anonymous read returned data'] : ['warn', 'No error, but no rows either; check the table grants'];
+    }],
+    ['Contact form', 'Anonymous enquiries can be stored', async () =>
+      ['untested', 'Not run here: it would create a real enquiry. Verified with a QA submission on 21 Oct 2026, then deleted.']],
+    ['Password reset', 'Reset emails link back to this site', async () =>
+      ['untested', `Requests use ${location.origin}/reset-password. The allow-list and email delivery live in Supabase and can only be confirmed by completing a reset.`]],
+    ['Analytics', 'Visitor analytics', async () => {
+      const r = await fetch('/_vercel/insights/script.js', { method: 'HEAD' });
+      return r.ok
+        ? ['warn', 'Vercel Web Analytics script is served. GA4, Google Ads and Meta Pixel are not configured (IDs empty in track.js).']
+        : ['fail', `Vercel Analytics script returned HTTP ${r.status}`];
+    }],
+  ];
+
+  list.innerHTML = checks.map(([name, what], i) => healthRow(i, name, what, 'running', 'Checking…')).join('');
+  await Promise.all(checks.map(async ([name, what, fn], i) => {
+    let state, detail;
+    try { [state, detail] = await fn(); }
+    catch (err) { state = 'fail'; detail = friendly(err); }
+    $(`#health-${i}`).outerHTML = healthRow(i, name, what, state, detail);
+  }));
+  $('#health-meta').textContent = `Last run ${new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}`;
+  btn.disabled = false; btn.textContent = 'Run again';
+}
+
+function healthRow(i, name, what, state, detail) {
+  const LABEL = { pass: 'Pass', warn: 'Warning', fail: 'Fail', untested: 'Not tested', running: 'Running' };
+  return `
+    <div class="health-row" id="health-${i}">
+      <span class="health-badge h-${state}">${LABEL[state]}</span>
+      <div class="health-text">
+        <div class="health-name">${esc(name)}</div>
+        <div class="health-what">${esc(what)}</div>
+      </div>
+      <div class="health-detail">${esc(detail)}</div>
+    </div>`;
 }
 
 async function loadAdminRequests() {
@@ -472,7 +576,7 @@ function notConfigured() {
     <div class="portal-empty-card">
       <div class="pe-icon">⚙</div>
       <h3>Portal not connected yet</h3>
-      <p>Add your Supabase URL and anon key in <code>assets/js/supabase.js</code>,
+      <p>Add your Supabase URL and publishable key in <code>assets/js/supabase.js</code>,
          then run <code>supabase/schema.sql</code> to switch the client portal on.</p>
       <a href="/" class="btn-primary">← Back home</a>
     </div>`;

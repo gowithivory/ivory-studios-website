@@ -102,6 +102,17 @@ if (loginForm) {
 const requestForm = $('#request-form');
 const newpassForm = $('#newpass-form');
 if (requestForm || newpassForm) {
+  // An expired or already-used link comes back with the error in the hash
+  // (e.g. #error=access_denied&error_code=otp_expired). Say so plainly and
+  // leave the request form showing so a new link is one step away.
+  const hash = new URLSearchParams(location.hash.slice(1));
+  if (hash.get('error')) {
+    const expired = /expired|otp/i.test(`${hash.get('error_code')} ${hash.get('error_description')}`);
+    notify($('#auth-note'), expired
+      ? 'That reset link has expired or was already used. Enter your email to get a new one.'
+      : "That reset link isn't valid. Enter your email to get a new one.");
+    history.replaceState(null, '', location.pathname);
+  }
   if (isConfigured) {
     supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') showNewPassStep();
