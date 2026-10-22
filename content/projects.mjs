@@ -33,6 +33,14 @@ export default {
       { value: '1', label: 'Platform replacing chats and spreadsheets' },
     ],
     stack: ['HTML5', 'JavaScript', 'Supabase', 'PostgreSQL', 'Row-level security'],
+    features: [
+      'Live player rankings, with points calculated automatically after each event',
+      'Doubles tournament registration with shareable team codes',
+      'An organiser back-office for registrations and results',
+      'Separate access for players, organisers and admins',
+      'Mobile-first, because players register and check results on their phones',
+      'Row-level security, so each person sees only their own data',
+    ],
   },
 
   novatech: {
