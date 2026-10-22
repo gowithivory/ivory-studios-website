@@ -1433,3 +1433,5 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 }
 .text-inline-link { color: var(--ivory); text-decoration: underline; text-decoration-color: rgba(200,164,110,.5); text-underline-offset: 3px; }
 .text-inline-link:hover { text-decoration-color: var(--gold); }
+.about-services a { color: var(--ivory); text-decoration: underline; text-decoration-color: rgba(200,164,110,.5); text-underline-offset: 3px; transition: text-decoration-color var(--dur-s); }
+.about-services a:hover { text-decoration-color: var(--gold); }
