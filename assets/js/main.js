@@ -126,6 +126,67 @@ document.addEventListener('pointerover', e => {
   io.observe(slot);
 })();
 
+// Phones: a slim booking bar once the visitor is past the first screen. It
+// steps aside wherever the page already offers the same action (the closing
+// call-to-action band, the footer) and on /contact, where booking is the page.
+(function mobileCta() {
+  if (document.body.dataset.page === 'contact' || !document.getElementById('site-nav') && !document.querySelector('.nav')) return;
+  const phone = window.matchMedia('(max-width: 760px)');
+  const bar = document.createElement('div');
+  bar.className = 'mcta';
+  bar.innerHTML = '<a href="/contact" class="btn-primary" data-calendly>Book a free discovery call <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>';
+  document.body.appendChild(bar);
+  const link = bar.firstChild;
+  const covered = new Set();
+  const update = () => {
+    const show = phone.matches && scrollY > innerHeight * 0.9 && !covered.size && !document.body.style.overflow;
+    bar.classList.toggle('is-on', show);
+    link.tabIndex = show ? 0 : -1;
+    bar.setAttribute('aria-hidden', String(!show));
+  };
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => e.isIntersecting ? covered.add(e.target) : covered.delete(e.target));
+      update();
+    });
+    document.querySelectorAll('.cta-band, .proj-next, footer, #site-footer').forEach(el => io.observe(el));
+  }
+  addEventListener('scroll', update, { passive: true });
+  phone.addEventListener?.('change', update);
+  new MutationObserver(update).observe(document.body, { attributes: true, attributeFilter: ['style'] });
+  update();
+})();
+
+// Work page: filter concept studies by service. Hidden without JS, where
+// every study simply shows.
+(function workFilter() {
+  const bar = document.querySelector('[data-work-filter]');
+  const grid = bar?.parentElement.querySelector('.work-grid');
+  if (!bar || !grid) return;
+  const cards = [...grid.querySelectorAll('.work-card')];
+  const status = bar.querySelector('.work-filter-status');
+  bar.querySelectorAll('button').forEach(btn => {
+    const f = btn.dataset.filter;
+    const n = f ? cards.filter(c => c.dataset.services.split(' ').includes(f)).length : cards.length;
+    btn.insertAdjacentHTML('beforeend', ` <span class="wf-count">${n}</span>`);
+    if (!n || (f && n === cards.length)) btn.remove(); // a filter that narrows nothing is noise
+  });
+  bar.hidden = false;
+  bar.addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const f = btn.dataset.filter;
+    bar.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    let shown = 0;
+    cards.forEach(c => {
+      const hit = !f || c.dataset.services.split(' ').includes(f);
+      c.hidden = !hit;
+      if (hit) { shown++; c.classList.add('visible'); }
+    });
+    status.textContent = f ? `Showing ${shown} of ${cards.length} studies` : '';
+  });
+})();
+
 // Scroll reveals. Siblings in the same row are staggered slightly.
 (function scrollReveal() {
   const els = [...document.querySelectorAll('.reveal-up, .footer-sign, .proj-shot')];

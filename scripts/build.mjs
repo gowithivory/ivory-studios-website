@@ -173,10 +173,20 @@ function img(slug, name, { alt, sizes, eager = false, cls = '' }) {
   return `<img src="${src(widths[0])}" srcset="${widths.map(x => `${src(x)} ${x}w`).join(', ')}" sizes="${sizes}" alt="${esc(alt)}" width="${w}" height="${h}"${cls ? ` class="${cls}"` : ''}${eager ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async">`;
 }
 
+// Project services that have a page of their own, for links from case studies.
+const SERVICE_LINK = {
+  'Web Design': 'web-design', 'UI/UX Design': 'web-design',
+  'Development': 'web-development', 'Web App': 'web-development', 'E-commerce': 'web-development',
+  'Branding': 'brand-identity',
+  'SEO': 'seo-growth', 'Local SEO': 'seo-growth', 'Content Strategy': 'seo-growth',
+  'Membership Portal': 'business-systems', 'Booking Platform': 'business-systems', 'Booking Engine': 'business-systems', 'Learning Platform': 'business-systems',
+};
+
 // Project cards (work page + home page)
 function workCard(slug, p, { large = false, heading = 'h3', sizes = '' } = {}) {
   const label = p.concept ? 'Concept study' : 'Client project';
-  return `<a href="/case-studies/${slug}" class="work-card${large ? ' work-card--large' : ''}${p.concept ? ' is-concept' : ''} reveal-up">
+  const svc = [...new Set(p.services.map(x => SERVICE_LINK[x]).filter(Boolean))].join(' ');
+  return `<a href="/case-studies/${slug}" class="work-card${large ? ' work-card--large' : ''}${p.concept ? ' is-concept' : ''} reveal-up" data-services="${svc}">
   <div class="wc-img">${img(slug, 'cover', { alt: p.photoAlt, sizes: sizes || (large ? '(max-width: 900px) 100vw, 800px' : '(max-width: 900px) 100vw, 600px') })}</div>
   <div class="wc-body">
     <div class="wc-meta"><span class="wc-badge${p.concept ? '' : ' wc-badge--client'}">${label}</span><span>${esc(p.kind)}</span></div>
@@ -438,14 +448,6 @@ function trim(text, max = 155) {
 }
 
 const listJoin = xs => xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} and ${xs[xs.length - 1]}`;
-// Project services that have a page of their own, for links from case studies.
-const SERVICE_LINK = {
-  'Web Design': 'web-design', 'UI/UX Design': 'web-design',
-  'Development': 'web-development', 'Web App': 'web-development', 'E-commerce': 'web-development',
-  'Branding': 'brand-identity',
-  'SEO': 'seo-growth', 'Local SEO': 'seo-growth', 'Content Strategy': 'seo-growth',
-  'Membership Portal': 'business-systems', 'Booking Platform': 'business-systems', 'Booking Engine': 'business-systems', 'Learning Platform': 'business-systems',
-};
 
 function caseStudy(slug, p) {
   const url = `${ORIGIN}/case-studies/${slug}`;
