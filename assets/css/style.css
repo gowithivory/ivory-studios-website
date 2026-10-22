@@ -95,6 +95,7 @@ ul, ol { list-style: none; }
 .skip-link:focus { top: 16px; }
 :focus-visible { outline: 2px solid var(--ivory); outline-offset: 3px; border-radius: 4px; }
 [tabindex="-1"]:focus { outline: none; }
+iframe:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
 /* Navigation */
 .nav {
@@ -719,7 +720,7 @@ ul, ol { list-style: none; }
 }
 .iform-group textarea { resize: vertical; min-height: 140px; }
 .iform-group input::placeholder, .iform-group textarea::placeholder { color: var(--text-dim); }
-.iform-group input:not([type=checkbox]):focus, .iform-group select:focus, .iform-group textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,164,110,.18); }
+.iform-group input:not([type=checkbox]):focus, .iform-group select:focus, .iform-group textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,164,110,.32); }
 .inquiry-form .iform-group [aria-invalid="true"] { border-color: #d4877c; }
 .iform-err { font-size: 13px; color: #e0a59c; min-height: 0; }
 .iform-err:empty { display: none; }
@@ -1002,7 +1003,7 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
   transition: border-color .2s, background .2s;
 }
 .field input:focus, .req-form input:focus, .req-form select:focus, .req-form textarea:focus {
-  outline: none; border-color: var(--ivory); background: var(--surface);
+  outline: none; border-color: var(--gold); background: var(--surface); box-shadow: 0 0 0 3px rgba(200,164,110,.32);
 }
 .field input::placeholder { color: var(--text-dim); }
 .btn-primary.full-w { width: 100%; justify-content: center; margin-top: 6px; }
@@ -1066,7 +1067,9 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
   margin-bottom: 20px;
   animation: fadeUp .5s var(--ease-spring) both;
 }
-.req-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.req-card-top { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px 16px; margin-bottom: 24px; }
+.req-card-top > div { flex: 1 1 220px; min-width: 0; }
+.req-card-top > .status-pill { flex-shrink: 0; white-space: nowrap; }
 .req-name { font-family: var(--font-head); font-size: 22px; font-weight: 700; text-transform: uppercase; color: var(--text); margin-bottom: 8px; }
 .req-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 .req-tags span {
@@ -1155,7 +1158,7 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
   flex: 1; background: var(--bg-card2); border: 1px solid var(--border2); border-radius: var(--radius);
   padding: 8px 12px; color: var(--text); font-size: 13px; font-family: inherit;
 }
-.admin-post input:focus { outline: none; border-color: var(--ivory); }
+.admin-post input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,164,110,.32); }
 /* Portal: completion %, lead contact, users */
 
 /* Completion bar in the phase tracker */
@@ -1237,6 +1240,11 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 /* Portal: project tracking */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .phase-flag.feedback { background: rgba(200,164,110,.12); color: var(--gold); border: 1px solid rgba(200,164,110,.3); }
+.phase-flag-note { margin: 0 0 20px; padding: 14px 18px; border-left: 2px solid var(--gold); background: rgba(200,164,110,.06); border-radius: 0 var(--radius) var(--radius) 0; font-size: 14px; line-height: 1.6; color: var(--text-muted); }
+.phase-flag-note.on_hold { border-color: #d6bd7a; }
+.phase-flag-note.declined { border-color: #dba29a; background: rgba(200,90,80,.06); }
+.phase-flag-note.new, .phase-flag-note.reviewing { border-color: #9fb0e0; background: rgba(120,140,200,.06); }
+.phase-flag-note a { color: var(--ivory); text-decoration: underline; text-underline-offset: 3px; }
 .phase-flag.new, .phase-flag.reviewing { background: rgba(120,140,200,.1); color: #a9b8e3; border: 1px solid rgba(120,140,200,.3); }
 .status-pill.s-feedback { background: rgba(200,164,110,.12); border-color: rgba(200,164,110,.3); color: var(--gold); }
 .proj-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 18px 0 4px; }
@@ -1254,7 +1262,7 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .admin-edit { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 12px; align-items: end; margin-top: 16px; padding: 16px; background: var(--bg-card2); border: 1px solid var(--border); border-radius: var(--radius); }
 .admin-edit label { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--text-muted); }
 .admin-edit select, .admin-edit input, .admin-ms input[type=date] { background: var(--bg); border: 1px solid var(--border2); border-radius: var(--radius); padding: 8px 10px; color: var(--text); font: inherit; font-size: 13px; min-height: 38px; color-scheme: dark; }
-.admin-edit select:focus, .admin-edit input:focus { outline: none; border-color: var(--gold); }
+.admin-edit select:focus, .admin-edit input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,164,110,.32); }
 .row-note { font-size: 13px; margin-top: 10px; min-height: 1em; }
 .row-note.ok { color: #a8d2a0; }
 .row-note.err { color: #e8b0a7; }
@@ -1276,6 +1284,6 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 }
 @media (max-width: 520px) {
   .portal-nav .nav-logo > span { display: none; }
-  .phase-node:not(.active) .phase-label { visibility: hidden; }
-  .phase-node.active .phase-label { position: relative; }
+  /* The stage name is spelled out above the track, so the dots carry it alone. */
+  .phase-track .phase-label { display: none; }
 }

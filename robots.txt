@@ -1,10 +1,8 @@
 User-agent: *
 Allow: /
 
-# Private client-portal pages
-Disallow: /dashboard
-Disallow: /login
-Disallow: /signup
-Disallow: /reset-password
+# Client-portal pages (/dashboard, /login, /signup, /reset-password) stay
+# crawlable on purpose: they send noindex, and a crawler has to fetch a page
+# to see that. Blocking them here would let bare URLs show up in results.
 
 Sitemap: https://ivorystudios.io/sitemap.xml

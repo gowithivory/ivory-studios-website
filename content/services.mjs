@@ -44,7 +44,7 @@ export default {
     name: 'Web Development',
     num: '02',
     short: 'Fast, accessible, search-ready builds you can edit and grow without starting over.',
-    title: 'Web Development Agency | Fast, Search-Ready Websites | Ivory Studios',
+    title: 'Web Development | Fast, Search-Ready Websites | Ivory Studios',
     description: 'Fast, accessible websites and web apps built with clean code, a CMS your team can use and solid technical SEO. Fixed-price proposals from Ivory Studios.',
     h1: 'Engineered to load fast and <span class="accent">scale with you.</span>',
     lead: 'We turn approved designs into fast, accessible, search-ready websites and web apps, with clean code your business can build on.',

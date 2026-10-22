@@ -77,7 +77,7 @@ async function renderClient() {
     <div class="portal-head">
       <div>
         <h1 class="portal-h1">Welcome back${me.full_name ? ', ' + esc(me.full_name.split(' ')[0]) : ''}.</h1>
-        <p class="portal-sub">Track every project you've started with us, in real time.</p>
+        <p class="portal-sub">Follow the progress of every project you have with us.</p>
       </div>
       <button class="btn-primary" id="new-req-btn">+ New Request</button>
     </div>
@@ -146,7 +146,7 @@ function clientCard(r, updates, milestones = []) {
                 <div class="ru-dot"></div>
                 <div>
                   <div class="ru-msg">${esc(u.message)}</div>
-                  <div class="ru-time">${u.phase ? esc(PHASE_LABEL[u.phase] || u.phase) + ' · ' : ''}${fmtDate(u.created_at)}</div>
+                  <div class="ru-time">${u.phase && !u.message.includes(PHASE_LABEL[u.phase]) ? esc(PHASE_LABEL[u.phase] || u.phase) + ' · ' : ''}${fmtDate(u.created_at)}</div>
                 </div>
               </div>`).join('')
           : `<p class="ru-empty">No updates yet. We'll post here as work progresses.</p>`}
@@ -351,7 +351,7 @@ async function runHealthChecks() {
   await Promise.all(checks.map(async ([name, what, fn], i) => {
     let state, detail;
     try { [state, detail] = await fn(); }
-    catch (err) { state = 'fail'; detail = friendly(err); }
+    catch (err) { state = 'fail'; detail = String(err?.message || err); } // admins need the real error here
     $(`#health-${i}`).outerHTML = healthRow(i, name, what, state, detail);
   }));
   $('#health-meta').textContent = `Last run ${new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}`;
@@ -679,19 +679,19 @@ async function toggleAdminProjectForm() {
 // Helpers
 function phaseTracker(r) {
   const status = r.status;
-  // Off the main path: shown as a clear flag, not a position on the bar.
-  if (['on_hold', 'declined', 'feedback', 'new', 'reviewing'].includes(status)) {
-    return `<div class="phase-flag ${status}">${PHASE_LABEL[status]}</div>`;
+  // Off the main path: shown as a clear flag with what happens next, not a
+  // position on the bar.
+  if (OFF_PATH.includes(status)) {
+    return `<p class="phase-flag-note ${status}">${FLAG_NOTE[status]}</p>`;
   }
   const done = status === 'completed' ? PHASES.length : PHASES.indexOf(status);
   const current = PHASES.indexOf(status);
   return `
-    ${r.progress != null ? `
     <div class="phase-pct-row">
-      <span class="phase-pct-label">Current stage: <strong>${PHASE_LABEL[status]}</strong></span>
-      <span class="phase-pct-val" title="Share of the agreed scope delivered">${r.progress}%</span>
+      <span class="phase-pct-label">${status === 'completed' ? 'All stages complete' : `Current stage: <strong>${PHASE_LABEL[status]}</strong>`}</span>
+      ${r.progress != null ? `<span class="phase-pct-val" title="Share of the agreed scope delivered">${r.progress}%</span>` : ''}
     </div>
-    <div class="phase-pct-bar" role="progressbar" aria-valuenow="${r.progress}" aria-valuemin="0" aria-valuemax="100" aria-label="Scope delivered"><span style="width:${r.progress}%"></span></div>` : ''}
+    ${r.progress != null ? `<div class="phase-pct-bar" role="progressbar" aria-valuenow="${r.progress}" aria-valuemin="0" aria-valuemax="100" aria-label="Scope delivered"><span style="width:${r.progress}%"></span></div>` : ''}
     <div class="phase-track">
       ${PHASES.map((ph, i) => {
         const state = i < current ? 'done' : i === current ? 'active' : (status === 'completed' ? 'done' : '');
@@ -705,12 +705,22 @@ function phaseTracker(r) {
     </div>`;
 }
 
+const OFF_PATH = ['on_hold', 'declined', 'feedback', 'new', 'reviewing'];
+const FLAG_NOTE = {
+  new: "We've received your request and will reply within one working day.",
+  reviewing: "We're reviewing your brief and will be in touch about next steps.",
+  feedback: 'Something is ready for your review. Reply to our latest email, or write to <a href="mailto:teams@ivorystudios.io">teams@ivorystudios.io</a>, so we can move to the next step.',
+  on_hold: 'This project is paused. Write to <a href="mailto:teams@ivorystudios.io">teams@ivorystudios.io</a> whenever you’re ready to pick it up again.',
+  declined: 'We weren’t able to take this project on. Write to <a href="mailto:teams@ivorystudios.io">teams@ivorystudios.io</a> if you’d like to talk it through.',
+};
+
 function projectFacts(r, milestones) {
   const facts = [];
   if (r.start_date) facts.push(['Started', fmtDate(r.start_date)]);
   if (r.target_date) facts.push(['Target delivery', fmtDate(r.target_date)]);
   if (milestones.length) facts.push(['Milestones', `${milestones.filter(m => m.done).length} of ${milestones.length} complete`]);
-  if (r.progress != null) facts.push(['Scope delivered', `${r.progress}%`]);
+  // On the main path the progress bar above already shows the percentage.
+  if (r.progress != null && OFF_PATH.includes(r.status)) facts.push(['Scope delivered', `${r.progress}%`]);
   return facts.length ? `<dl class="proj-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>` : '';
 }
 

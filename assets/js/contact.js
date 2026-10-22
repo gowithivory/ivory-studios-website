@@ -79,8 +79,10 @@ if (form) {
     } catch (err) {
       const body = `${row.message}\n\n— ${name}${row.company ? ', ' + row.company : ''}\n${email}${services ? '\nInterested in: ' + services : ''}`;
       const href = `mailto:${EMAIL}?subject=${encodeURIComponent('Project enquiry from ' + name)}&body=${encodeURIComponent(body)}`;
-      const reason = isConfigured && !/fetch|network|load failed/i.test(String(err?.message || err)) ? friendly(err) + ' ' : '';
-      say(`${reason}We couldn't send this from the website, so we're opening your email app with your brief filled in. If nothing opens, email ${EMAIL}.`);
+      const reason = isConfigured && !/fetch|network|load failed/i.test(String(err?.message || err)) ? friendly(err) : '';
+      say(reason
+        ? `${reason} Your email app is opening with your brief filled in, so nothing is lost.`
+        : `We couldn't send this from the website, so we're opening your email app with your brief filled in. If nothing opens, email ${EMAIL}.`);
       window.location.href = href;
     } finally {
       btn.disabled = false;

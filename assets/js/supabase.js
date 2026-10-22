@@ -16,11 +16,16 @@ export const supabase = isConfigured
     })
   : null;
 
-// Readable message for network failures.
+// Readable message for an error. Only wording written for people is shown:
+// network trouble, Supabase Auth's own messages, and the ones our database
+// raises on purpose (P0001). Anything else can name tables or constraints,
+// so it stays generic.
 export function friendly(error) {
   const m = String(error?.message || error || '');
   if (/failed to fetch|network|load failed|fetch/i.test(m)) {
     return "We can't reach the server right now. Please try again in a moment, or email teams@ivorystudios.io.";
   }
-  return m || 'Something went wrong. Please try again.';
+  const authMessage = (error?.__isAuthError || /^Auth/.test(error?.name || '')) && !(error?.status >= 500);
+  if (m && (error?.code === 'P0001' || authMessage)) return m;
+  return 'Something went wrong on our side. Please try again, or email teams@ivorystudios.io.';
 }
