@@ -262,7 +262,10 @@ ${STEPS.map(([n, t, d, tag]) => `  <li class="process-step reveal-up"><span clas
 <p class="process-note">Typical timeline for a marketing website. Brand and systems projects are scoped individually.</p>`;
 
 // Shared <head>
-function head({ title, description, url, type = 'website', extra = '', preloadImg = '' }) {
+// Page-specific share card from assets/img/og, if one has been rendered.
+const ogCard = name => fs.existsSync(path.join(ROOT, `assets/img/og/${name}.jpg`)) ? `${ORIGIN}/assets/img/og/${name}.jpg` : OG_IMAGE;
+
+function head({ title, description, url, type = 'website', extra = '', preloadImg = '', ogImage = OG_IMAGE, ogAlt = 'Ivory Studios: Your Vision, Brought to Life.' }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -277,14 +280,14 @@ function head({ title, description, url, type = 'website', extra = '', preloadIm
   <meta property="og:site_name" content="Ivory Studios">
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
-  <meta property="og:image" content="${OG_IMAGE}">
+  <meta property="og:image" content="${ogImage}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Ivory Studios: Your Vision, Brought to Life.">
+  <meta property="og:image:alt" content="${esc(ogAlt)}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(title)}">
   <meta name="twitter:description" content="${esc(description)}">
-  <meta name="twitter:image" content="${OG_IMAGE}">
+  <meta name="twitter:image" content="${ogImage}">
   <meta name="theme-color" content="#080706">
 ${extra}  <link rel="icon" href="/favicon.ico" sizes="48x48">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
@@ -356,7 +359,7 @@ function servicePage(slug, s) {
     ],
   };
   const others = s.related.map(r => [r, services[r]]);
-  return `${head({ title: s.title, description: s.description, url, extra: `  <script type="application/ld+json">${JSON.stringify(ld)}</script>\n` })}
+  return `${head({ title: s.title, description: s.description, url, ogImage: ogCard(slug), ogAlt: `${s.name} by Ivory Studios`, extra: `  <script type="application/ld+json">${JSON.stringify(ld)}</script>\n` })}
 <body data-page="services">
 
 <div id="site-nav"></div>
@@ -472,7 +475,7 @@ function caseStudy(slug, p) {
     ],
   };
   const gallery = p.photos.gallery.map((_, i) => `<figure class="proj-shot">${img(slug, String(i + 1), { alt: `${p.title}: supporting image`, sizes: p.photos.gallery.length > 1 ? '(max-width: 768px) 100vw, 600px' : '(max-width: 1200px) 100vw, 1200px' })}</figure>`);
-  return `${head({ title, description: desc, url, type: 'article',
+  return `${head({ title, description: desc, url, type: 'article', ogImage: ogCard(`case-${slug}`), ogAlt: `${p.title}: ${p.concept ? 'concept study' : 'case study'} by Ivory Studios`,
     extra: `  <script type="application/ld+json">${JSON.stringify(ld)}</script>\n`,
     preloadImg: `  <link rel="preload" as="image" href="/assets/img/work/${slug}-cover-1600.webp" imagesrcset="/assets/img/work/${slug}-cover-800.webp 800w, /assets/img/work/${slug}-cover-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">\n` })}
 <body data-page="work">
