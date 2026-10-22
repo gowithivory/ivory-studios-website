@@ -475,7 +475,7 @@ function caseStudy(slug, p) {
         keywords: p.services.join(', '), creator: { '@id': `${ORIGIN}/#org` } },
     ],
   };
-  const gallery = p.photos.gallery.map((_, i) => `<figure class="proj-shot">${img(slug, String(i + 1), { alt: `${p.title}: supporting image`, sizes: p.photos.gallery.length > 1 ? '(max-width: 768px) 100vw, 600px' : '(max-width: 1200px) 100vw, 1200px' })}</figure>`);
+  const gallery = p.photos.gallery.map((_, i) => `<figure class="proj-shot">${img(slug, String(i + 1), { alt: p.galleryAlt?.[i] || `${p.title}: supporting image`, sizes: p.photos.gallery.length > 1 ? '(max-width: 768px) 100vw, 600px' : '(max-width: 1200px) 100vw, 1200px' })}</figure>`);
   return `${head({ title, description: desc, url, type: 'article', ogImage: ogCard(`case-${slug}`), ogAlt: `${p.title}: ${p.concept ? 'concept study' : 'case study'} by Ivory Studios`,
     extra: `  <script type="application/ld+json">${JSON.stringify(ld)}</script>\n`,
     preloadImg: `  <link rel="preload" as="image" href="/assets/img/work/${slug}-cover-1600.webp" imagesrcset="/assets/img/work/${slug}-cover-800.webp 800w, /assets/img/work/${slug}-cover-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">\n` })}
