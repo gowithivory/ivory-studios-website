@@ -459,4 +459,4 @@ Each phase reviewed again from a different angle: real visitor journeys instead 
 | 5 | Landmarks, live regions, labels, autocomplete, ids on 14 page types | No <main> on guides/legal; sign-up/reset messages not announced | 🔧 6cf5a3a (visual delta ≤1/255) |
 | 5 | In-content internal links per page | About had none | 🔧 3458aa9 ("Meet the studio"; check now requires one <main>) |
 | 6 | Real throttling (slow 4G, 4× CPU) | LCP 1.2–1.6 s, CLS 0 on home, work, APadel, services, contact (one 2.3 s outlier did not repeat) | ✅ |
-| 7 | Full regression on production | see below | ⏳ running |
+| 7 | Full regression on production | npm run check (29 pages, 101 links); RLS 54/54; 3 phone journeys; transitions 6/6 + reduced motion off, 0 errors; landmarks (auth pages have no footer by design); auth flows 7/7; cursor 210 presses 0.00 px; portal 4/4 | ✅ |
