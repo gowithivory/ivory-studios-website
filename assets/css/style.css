@@ -240,10 +240,11 @@ iframe:focus-within { outline: 2px solid var(--gold); outline-offset: 2px; }
   text-wrap: balance; max-width: 18ch;
 }
 .section-title .accent, .page-hero-title .accent, .cta-band-title .accent { color: var(--gold); }
-.section-sub { font-size: 17px; color: var(--text-muted); line-height: 1.7; max-width: 46ch; }
+.section-sub { font-size: 17px; color: var(--text-muted); line-height: 1.7; max-width: 46ch; text-wrap: pretty; }
 .section-header { margin-bottom: clamp(40px, 5vw, 64px); }
 .section-header--split { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); align-items: end; gap: 24px clamp(32px, 6vw, 96px); }
 .section-header--split .section-sub { justify-self: end; }
+.section-header:not(.section-header--split) .section-sub { margin-top: clamp(16px, 2vw, 24px); }
 @media (max-width: 900px) { .section-header--split { grid-template-columns: 1fr; } .section-header--split .section-sub { justify-self: start; } }
 .section-cta { display: flex; justify-content: center; margin-top: 48px; }
 .muted-inline { color: var(--text-muted); }

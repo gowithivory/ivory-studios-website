@@ -461,7 +461,7 @@ function caseStudy(slug, p) {
   const title = `${p.title}${p.concept ? ' Concept Study' : ' Case Study'} | Ivory Studios`;
   // Whole sentences only: the tagline, then what the page is and the main services.
   const label = p.concept ? 'Concept study' : 'Case study';
-  const desc = [3, 2, 1, 0].map(n => `${p.tagline} ${label} by Ivory Studios${n ? `: ${listJoin(p.services.slice(0, n))}` : ''}.`).find(d => d.length <= 160) || trim(p.tagline);
+  const desc = p.metaDescription || [3, 2, 1, 0].map(n => `${p.tagline} ${label} by Ivory Studios${n ? `: ${listJoin(p.services.slice(0, n))}` : ''}.`).find(d => d.length <= 160) || trim(p.tagline);
   const keys = [...clientSlugs, ...conceptSlugs];
   const next = keys[(keys.indexOf(slug) + 1) % keys.length];
   const ld = {

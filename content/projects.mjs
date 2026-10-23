@@ -15,6 +15,7 @@ export default {
     title: 'APadel',
     kind: 'Sports platform',
     tagline: "One home for Egypt’s competitive padel scene: rankings, registration and results.",
+    metaDescription: 'How we turned Egypt’s scattered padel tournaments into one ranked circuit: live rankings, team registration and an organiser back-office. See the build.',
     summary: 'Rankings, tournament registration and an organiser back-office in one platform.',
     tags: ['Web App', 'UI/UX', 'Development'],
     photos: { cover: 'https://images.pexels.com/photos/35248470/pexels-photo-35248470.jpeg', gallery: [
