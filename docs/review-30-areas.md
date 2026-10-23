@@ -435,3 +435,28 @@ Priority: P1 broken/insecure · P2 real user impact · P3 polish.
 | 30.8 | Regression test scripts in repo | `npm run check` | 🔧 e05de65 |
 | 30.9 | Monitoring/alerts | Vercel runtime errors: none; scheduled check proposed | ⛔ owner approval |
 | 30.10 | Final cross-page regression | npm run check (prod) pass; RLS 54/54; auth flows Chrome+Firefox; cursor 210 presses 0.00 px; portal harness; Lighthouse home 99/100/100/100, contact/work 100×4, APadel 99/100×3, login 100/100/100/54 (noindex) | ✅ |
+
+---
+
+## Round 2: second pass through all seven phases (2026-10-23)
+
+Each phase reviewed again from a different angle: real visitor journeys instead of single pages, attacker probes, claim origins, desktop density, screen-reader structure, real throttling.
+
+| Phase | Pass | Evidence | Result |
+|---|---|---|---|
+| 1 | Analytics since the first round | Vercel: visitors reached every service page, Work, About, Contact | ✅ |
+| 1 | Three phone journeys (hire, portfolio, not-ready) by tapping real links | All complete on production, no errors | ✅ |
+| 1 | Page transitions on real link clicks | Never ran: opt-in late in the stylesheet, every navigation aborted with an uncaught error | 🔧 380d5df (6/6 transition, 0 errors, reduced motion off) |
+| 1 | Contact on a phone: are the actions on the first screen? | Calendar and form both below a 3-step explainer | 🔧 a60bd7d (Pick a time / Send a brief) |
+| 2 | Private files reachable? (.git, .env, configs, schema, docs) | 13 paths 404; vendor dir → 404 | ✅ |
+| 2 | Form limits vs database constraints | 4000-char message + prefixes < 4500 DB limit; other fields match | ✅ |
+| 2 | Public auth configuration | Email only, confirmation required, anonymous sign-in off | ✅ |
+| 2 | Backend latency | Auth ~0.2 s, REST ~0.2–0.6 s, site TTFB ~0.2 s; project active | ✅ |
+| 3 | Where did each capability claim come from? | 6 from the original site; several from the 21 Oct rewrite | ⛔ docs/confirm-claims.md sent to owner |
+| 4 | Services overview density at desktop | List columns 228 px, items wrapping every 3–4 words | 🔧 6a1ff46 |
+| 4 | Regression from that change | Audit caught clipped "Development" at 1440 | 🔧 25854d9 (titles sized to column; Firefox verified) |
+| 4 | Featured APadel card on desktop | Facts squeezed to ~110 px, labels 4 lines | 🔧 3825482 (rows; ≤2 lines) |
+| 5 | Landmarks, live regions, labels, autocomplete, ids on 14 page types | No <main> on guides/legal; sign-up/reset messages not announced | 🔧 6cf5a3a (visual delta ≤1/255) |
+| 5 | In-content internal links per page | About had none | 🔧 3458aa9 ("Meet the studio"; check now requires one <main>) |
+| 6 | Real throttling (slow 4G, 4× CPU) | LCP 1.2–1.6 s, CLS 0 on home, work, APadel, services, contact (one 2.3 s outlier did not repeat) | ✅ |
+| 7 | Full regression on production | see below | ⏳ running |
