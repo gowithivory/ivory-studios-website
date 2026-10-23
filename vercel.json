@@ -16,7 +16,9 @@
     { "source": "/service.html", "has": [{ "type": "query", "key": "slug", "value": "brand-identity" }],  "destination": "/brand-identity",  "permanent": true },
     { "source": "/service.html", "has": [{ "type": "query", "key": "slug", "value": "seo" }],             "destination": "/seo-growth",      "permanent": true },
     { "source": "/", "has": [{ "type": "host", "value": "www.ivorystudios.io" }], "destination": "https://ivorystudios.io/", "permanent": true },
-    { "source": "/:path*", "has": [{ "type": "host", "value": "www.ivorystudios.io" }], "destination": "https://ivorystudios.io/:path*", "permanent": true }
+    { "source": "/:path*", "has": [{ "type": "host", "value": "www.ivorystudios.io" }], "destination": "https://ivorystudios.io/:path*", "permanent": true },
+    { "source": "/", "has": [{ "type": "host", "value": "ivory-studioss.vercel.app" }], "destination": "https://ivorystudios.io/", "permanent": true },
+    { "source": "/:path*", "has": [{ "type": "host", "value": "ivory-studioss.vercel.app" }], "destination": "https://ivorystudios.io/:path*", "permanent": true }
   ],
 
   "headers": [
