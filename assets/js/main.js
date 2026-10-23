@@ -125,7 +125,7 @@ document.addEventListener('keydown', e => {
     slot.classList.add('loaded');
   }).catch(() => {
     const p = slot.querySelector('.calendly-placeholder p');
-    if (p) p.textContent = "The booking calendar couldn't load here.";
+    if (p) p.textContent = "The booking calendar couldn’t load here.";
     slot.querySelector('.spinner')?.remove();
   });
   if (!('IntersectionObserver' in window)) return start();
@@ -147,7 +147,7 @@ document.addEventListener('keydown', e => {
   const phone = window.matchMedia('(max-width: 760px)');
   const bar = document.createElement('div');
   bar.className = 'mcta';
-  bar.innerHTML = '<a href="/contact" class="btn-primary" data-calendly>Book a free discovery call <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>';
+  bar.innerHTML = '<a href="/contact" class="btn-primary" data-calendly>Book a Discovery Call <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>';
   document.body.appendChild(bar);
   const link = bar.firstChild;
   const covered = new Set();

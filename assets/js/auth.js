@@ -34,7 +34,7 @@ async function handleConfirmation() {
     const expired = /expired|otp/i.test(`${authHash.get('error_code')} ${authHash.get('error_description')}`);
     notify(note, expired
       ? 'That confirmation link has expired or was already used. Enter your email below and send yourself a new one.'
-      : "We couldn't confirm your email with that link. Enter your email below and send yourself a new one.");
+      : "We couldn’t confirm your email with that link. Enter your email below and send yourself a new one.");
     $('#resend-wrap')?.removeAttribute('hidden');
     return;
   }
@@ -46,10 +46,10 @@ async function handleConfirmation() {
     await supabase.auth.signOut({ scope: 'local' });
     const field = $('#li-email');
     if (field) field.value = email;
-    notify(note, 'Your email is confirmed. Sign in with your password to open your workspace.', true);
+    notify(note, 'Your email is confirmed. Log in with your password to open your workspace.', true);
     $('#li-pass')?.focus();
   } else {
-    notify(note, "We couldn't confirm your email with that link. Enter your email below and send yourself a new one.");
+    notify(note, "We couldn’t confirm your email with that link. Enter your email below and send yourself a new one.");
     $('#resend-wrap')?.removeAttribute('hidden');
   }
 }
@@ -113,7 +113,7 @@ if (signupForm) {
       location.replace('/dashboard');
     } else {
       // Confirmation on → user must click the email link before logging in.
-      notify(note, 'Account created. We have sent a confirmation link to your email; open it to activate your account, then sign in.', true);
+      notify(note, 'Account created. We have sent a confirmation link to your email; open it to activate your account, then log in.', true);
       signupForm.reset();
     }
   });
@@ -163,7 +163,7 @@ if (requestForm || newpassForm) {
     const expired = /expired|otp/i.test(`${hash.get('error_code')} ${hash.get('error_description')}`);
     notify($('#auth-note'), expired
       ? 'That reset link has expired or was already used. Enter your email to get a new one.'
-      : "That reset link isn't valid. Enter your email to get a new one.");
+      : "That reset link isn’t valid. Enter your email to get a new one.");
     history.replaceState(null, '', location.pathname);
   }
   if (isConfigured) {

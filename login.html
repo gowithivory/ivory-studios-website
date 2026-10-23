@@ -9,6 +9,8 @@
   <link rel="icon" href="/favicon.ico" sizes="48x48">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#080706">
   <link rel="preload" href="/assets/fonts/syne-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/assets/css/style.css">
@@ -27,15 +29,15 @@
     <form id="login-form" novalidate>
       <label class="field">
         <span>Email</span>
-        <input id="li-email" type="email" autocomplete="email" placeholder="you@company.com" required>
+        <input id="li-email" type="email" autocomplete="email" maxlength="200" spellcheck="false" placeholder="you@company.com" required>
       </label>
       <label class="field">
         <span>Password</span>
         <input id="li-pass" type="password" autocomplete="current-password" placeholder="Your password" required>
       </label>
-      <button type="submit" class="btn-primary full-w">Log In</button>
+      <button type="submit" class="btn-primary full-w">Log in</button>
       <div id="auth-note" class="auth-note" style="display:none" role="status" aria-live="polite"></div>
-      <p class="auth-resend" id="resend-wrap" hidden>Didn't get it, or the link expired? <button type="button" class="auth-link-btn" id="resend-btn">Send a new confirmation email</button></p>
+      <p class="auth-resend" id="resend-wrap" hidden>Didn’t get it, or the link expired? <button type="button" class="auth-link-btn" id="resend-btn">Send a new confirmation email</button></p>
     </form>
 
     <p class="auth-switch">Forgot your password? <a href="/reset-password">Reset it →</a></p>

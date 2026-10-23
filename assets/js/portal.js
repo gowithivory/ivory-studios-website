@@ -51,7 +51,7 @@ async function init() {
   }
 
   if (profErr && !profile) {
-    $('#portal-root').innerHTML = `<div class="portal-empty-card"><h3>Couldn't load your account</h3><p>${esc(friendly(profErr))}</p><div class="portal-empty-actions"><button type="button" class="btn-primary" id="portal-retry">Try again</button><a href="/" class="btn-ghost">← Back home</a></div></div>`;
+    $('#portal-root').innerHTML = `<div class="portal-empty-card"><h3>Couldn’t load your account</h3><p>${esc(friendly(profErr))}</p><div class="portal-empty-actions"><button type="button" class="btn-primary" id="portal-retry">Try again</button><a href="/" class="btn-ghost">← Back home</a></div></div>`;
     $('#portal-retry').addEventListener('click', () => location.reload());
     return;
   }
@@ -80,7 +80,7 @@ async function renderClient() {
         <h1 class="portal-h1">Welcome back${me.full_name ? ', ' + esc(me.full_name.split(' ')[0]) : ''}.</h1>
         <p class="portal-sub">Follow the progress of every project you have with us.</p>
       </div>
-      <button class="btn-primary" id="new-req-btn">+ New Request</button>
+      <button class="btn-primary" id="new-req-btn">+ New request</button>
     </div>
     <div id="new-req-panel" class="req-form-panel" hidden></div>
     <div id="client-requests"><div class="spinner"></div></div>`;
@@ -94,14 +94,14 @@ async function loadClientRequests() {
   const { data: all, error } = await supabase
     .from('project_requests').select('*').order('created_at', { ascending: false });
 
-  if (error) { wrap.innerHTML = `<p class="portal-empty">Couldn't load requests: ${esc(friendly(error))}</p>`; return; }
+  if (error) { wrap.innerHTML = `<p class="portal-empty">Couldn’t load requests: ${esc(friendly(error))}</p>`; return; }
   const reqs = (all || []).filter(r => !r.archived);
   if (!reqs?.length) {
     wrap.innerHTML = `
       <div class="portal-empty-card">
         <div class="pe-icon">✦</div>
         <h3>No projects yet</h3>
-        <p>Start your first request and we'll take it from there.</p>
+        <p>Start your first request and we’ll take it from there.</p>
       </div>`;
     return;
   }
@@ -150,7 +150,7 @@ function clientCard(r, updates, milestones = []) {
                   <div class="ru-time">${u.phase && !u.message.includes(PHASE_LABEL[u.phase]) ? esc(PHASE_LABEL[u.phase] || u.phase) + ' · ' : ''}${fmtDate(u.created_at)}</div>
                 </div>
               </div>`).join('')
-          : `<p class="ru-empty">No updates yet. We'll post here as work progresses.</p>`}
+          : `<p class="ru-empty">No updates yet. We’ll post here as work progresses.</p>`}
       </div>
     </div>`;
 }
@@ -200,10 +200,10 @@ function toggleRequestForm() {
           </select>
         </label>
         <label>Company (optional)
-          <input id="rf-company" type="text" placeholder="Your company or brand" maxlength="120">
+          <input id="rf-company" type="text" autocomplete="organization" placeholder="Your company or brand" maxlength="120">
         </label>
         <label>Phone (optional)
-          <input id="rf-phone" type="tel" placeholder="So we can reach you quickly" maxlength="40">
+          <input id="rf-phone" type="tel" autocomplete="tel" placeholder="So we can reach you quickly" maxlength="40">
         </label>
       </div>
       <label>Tell us about it
@@ -211,7 +211,7 @@ function toggleRequestForm() {
       </label>
       <div class="rf-actions">
         <button type="button" class="btn-ghost" id="rf-cancel">Cancel</button>
-        <button type="submit" class="btn-primary">Submit Request</button>
+        <button type="submit" class="btn-primary">Submit request</button>
       </div>
       <div id="rf-note" class="auth-note" style="display:none"></div>
     </form>`;
@@ -242,7 +242,7 @@ async function submitRequest(e) {
 
   btn.disabled = true; btn.textContent = 'Submitting…';
   const { error } = await supabase.from('project_requests').insert(payload);
-  btn.disabled = false; btn.textContent = 'Submit Request';
+  btn.disabled = false; btn.textContent = 'Submit request';
 
   if (error) {
     note.style.display = 'block'; note.className = 'auth-note err'; note.textContent = friendly(error); return;
@@ -735,8 +735,8 @@ function phaseTracker(r) {
 
 const OFF_PATH = ['on_hold', 'declined', 'feedback', 'new', 'reviewing'];
 const FLAG_NOTE = {
-  new: "We've received your request and will reply within one working day.",
-  reviewing: "We're reviewing your brief and will be in touch about next steps.",
+  new: "We’ve received your request and will reply within one working day.",
+  reviewing: "We’re reviewing your brief and will be in touch about next steps.",
   feedback: 'Something is ready for your review. Reply to our latest email, or write to <a href="mailto:teams@ivorystudios.io">teams@ivorystudios.io</a>, so we can move to the next step.',
   on_hold: 'This project is paused. Write to <a href="mailto:teams@ivorystudios.io">teams@ivorystudios.io</a> whenever you’re ready to pick it up again.',
   declined: 'We weren’t able to take this project on. Write to <a href="mailto:teams@ivorystudios.io">teams@ivorystudios.io</a> if you’d like to talk it through.',
@@ -791,7 +791,7 @@ function notConfigured() {
       <h3>Portal not connected yet</h3>
       <p>Add your Supabase URL and publishable key in <code>assets/js/supabase.js</code>,
          then run <code>supabase/schema.sql</code> to switch the client portal on.</p>
-      <a href="/" class="btn-primary">← Back home</a>
+      <a href="/" class="btn-primary">← Back to home</a>
     </div>`;
 }
 
@@ -800,9 +800,9 @@ function schemaNeeded() {
     <div class="portal-empty-card">
       <div class="pe-icon">⚙</div>
       <h3>One step left: run the database setup</h3>
-      <p>You're signed in, but the project tables don't exist yet. Open your
+      <p>You’re logged in, but the project tables don’t exist yet. Open your
          Supabase project → SQL Editor → paste <code>supabase/schema.sql</code> → Run.
          Then refresh this page.</p>
-      <a href="/" class="btn-primary">← Back home</a>
+      <a href="/" class="btn-primary">← Back to home</a>
     </div>`;
 }

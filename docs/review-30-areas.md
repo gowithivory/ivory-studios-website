@@ -460,3 +460,20 @@ Each phase reviewed again from a different angle: real visitor journeys instead 
 | 5 | In-content internal links per page | About had none | 🔧 3458aa9 ("Meet the studio"; check now requires one <main>) |
 | 6 | Real throttling (slow 4G, 4× CPU) | LCP 1.2–1.6 s, CLS 0 on home, work, APadel, services, contact (one 2.3 s outlier did not repeat) | ✅ |
 | 7 | Full regression on production | npm run check (29 pages, 101 links); RLS 54/54; 3 phone journeys; transitions 6/6 + reduced motion off, 0 errors; landmarks (auth pages have no footer by design); auth flows 7/7; cursor 210 presses 0.00 px; portal 4/4 | ✅ |
+
+## Round 3: micro-details (2026-10-23)
+
+| Phase | Check | Found | Result |
+|---|---|---|---|
+| 1 | Button labels across site, auth and portal | Mixed Title Case and sentence case ("Send Reset Link", "Submit Request") | 🔧 sentence case everywhere; "Book a Discovery Call" kept as the brand CTA |
+| 1 | Typographic punctuation in visible text | 50 straight apostrophes, 14 straight double quotes | 🔧 0 straight left in text (attributes, code and JSON-LD validity checked) |
+| 2 | Form fields: autocomplete, length limits, spellcheck | Emails spell-checked; sign-up name unbounded; portal phone/company had no autocomplete | 🔧 |
+| 2 | External links and mailto | All `_blank` links have `noopener`; one mailto address throughout | ✅ |
+| 3 | Terminology | "Sign in" in 4 messages vs "Log in" on buttons | 🔧 "log in" everywhere |
+| 3 | Typography scan (repeated words, double spaces, number-range hyphens, stray spaces before punctuation) | None | ✅ |
+| 4 | Tap targets at 390 px (WCAG 2.5.8, 24 px) | Breadcrumbs 21 px, project-scope links 19 px, checklist buttons 21 px, logo 23 px | 🔧 all ≥ 24 px without moving layout |
+| 4 | Focus indicator on every tab stop | 426 stops on 11 pages | ✅ all visible |
+| 5 | Title length | 4 titles 61–65 chars, cutting "Ivory Studios" in results | 🔧 52–58 chars (homepage kept: only "Cairo" at risk) |
+| 5 | Head tags | Portal pages had no theme-color/manifest; no og:locale anywhere | 🔧 |
+| 5 | Images | 77/77 have width, height, loading hint and async decoding | ✅ |
+| 6 | Cache headers | Unversioned CSS/JS revalidate; fonts immutable; images 7 days | ✅ deliberate |

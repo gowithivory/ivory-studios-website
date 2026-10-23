@@ -120,7 +120,7 @@ iframe:focus-within { outline: 2px solid var(--gold); outline-offset: 2px; }
   font-family: var(--font-head); font-size: 17px; font-weight: 800;
   letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
   color: var(--text-muted);
-  flex-shrink: 0;
+  flex-shrink: 0; min-height: 26px;
   transition: color .2s;
 }
 .nav-logo .logo-accent { color: var(--ivory); }
@@ -541,7 +541,7 @@ iframe:focus-within { outline: 2px solid var(--gold); outline-offset: 2px; }
 .page-hero-inner > *:nth-child(3) { animation-delay: .12s; }
 .page-hero-inner > *:nth-child(n+4) { animation-delay: .18s; }
 .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
-.crumbs a { color: var(--text-muted); transition: color .2s; }
+.crumbs a { color: var(--text-muted); transition: color .2s; padding-block: 3px; margin-block: -3px; }
 .crumbs a:hover { color: var(--ivory); }
 .crumbs span { color: var(--text-dim); }
 .crumbs .crumbs-current { color: var(--ivory); }
@@ -1321,7 +1321,7 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .work-grid--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 @media (max-width: 860px) { .work-grid--three { grid-template-columns: 1fr; } }
 /* Case-study scope items that have a service page link to it */
-.pm-link { color: inherit; text-decoration: underline; text-decoration-color: rgba(200,164,110,.45); text-underline-offset: 4px; text-decoration-thickness: 1px; transition: text-decoration-color var(--dur-s), color var(--dur-s); }
+.pm-link { padding-block: 3px; color: inherit; text-decoration: underline; text-decoration-color: rgba(200,164,110,.45); text-underline-offset: 4px; text-decoration-thickness: 1px; transition: text-decoration-color var(--dur-s), color var(--dur-s); }
 .pm-link:hover { color: var(--ivory); text-decoration-color: var(--gold); }
 
 /* Why Ivory: side-by-side comparison */
@@ -1386,7 +1386,7 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .cl-hint { margin-top: 8px; font-size: 13px !important; color: var(--text-dim) !important; line-height: 1.5; }
 .cl-actions { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; }
 .cl-actions .cl-reset { margin-top: 0; }
-.cl-reset { margin-top: 12px; font-size: 13px; color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px; }
+.cl-reset { margin-top: 8px; padding-block: 4px; font-size: 13px; color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px; }
 .cl-reset:hover { color: var(--ivory); }
 .cl-steps { display: grid; gap: 0; }
 .cl-step { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 16px; padding: 36px 0; border-top: 1px solid var(--border); }

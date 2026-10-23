@@ -245,7 +245,7 @@ const SERVICES_DETAIL = Object.entries(services).map(([slug, s]) => `<article id
     <a href="/${slug}" class="text-link">How we approach ${esc(s.nav || s.name)} ${ICON.arrow}</a>
   </div>
   <div class="svc-panel">
-    <div class="svc-panel-block"><h3 class="svc-panel-title">Who it's for</h3><ul class="tick-list">${s.forWho.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
+    <div class="svc-panel-block"><h3 class="svc-panel-title">Who it’s for</h3><ul class="tick-list">${s.forWho.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
     <div class="svc-panel-block"><h3 class="svc-panel-title">What you receive</h3><ul class="dot-list">${s.deliverables.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>
   </div>
 </article>`).join('\n');
@@ -280,6 +280,7 @@ function head({ title, description, url, type = 'website', extra = '', preloadIm
   <meta property="og:type" content="${type}">
   <meta property="og:url" content="${url}">
   <meta property="og:site_name" content="Ivory Studios">
+  <meta property="og:locale" content="en_US">
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(description)}">
   <meta property="og:image" content="${ogImage}">
@@ -386,10 +387,10 @@ function servicePage(slug, s) {
       <div class="svc-detail-main reveal-up">
         <h2 class="svc-h2">${esc(s.problemTitle)}</h2>
         <p class="svc-intro-lead">${esc(s.problem)}</p>
-        <h3 class="svc-panel-title">Who it's for</h3>
+        <h3 class="svc-panel-title">Who it’s for</h3>
         <ul class="tick-list">${s.forWho.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
       </div>
-      <aside class="svc-detail-side reveal-up" aria-label="What's included">
+      <aside class="svc-detail-side reveal-up" aria-label="What’s included">
         <div class="svc-deliverables">
           <h2 class="svc-deliverables-title">What you receive</h2>
           <ul class="dot-list">${s.deliverables.map(x => `<li>${esc(x)}</li>`).join('')}</ul>

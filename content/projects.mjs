@@ -14,7 +14,7 @@ export default {
   apadel: {
     title: 'APadel',
     kind: 'Sports platform',
-    tagline: "One home for Egypt's competitive padel scene: rankings, registration and results.",
+    tagline: "One home for Egypt’s competitive padel scene: rankings, registration and results.",
     summary: 'Rankings, tournament registration and an organiser back-office in one platform.',
     tags: ['Web App', 'UI/UX', 'Development'],
     photos: { cover: 'https://images.pexels.com/photos/35248470/pexels-photo-35248470.jpeg', gallery: [
@@ -25,7 +25,7 @@ export default {
     year: '2026',
     client: 'APadel',
     services: ['Web App', 'UI/UX Design', 'Development', 'Branding'],
-    intro: "APadel came to us with a spreadsheet and a clear idea: turn Egypt's scattered club tournaments into one ranked, trackable circuit. We designed and built the whole platform: the public site, player rankings, tournament registration and an organiser back-office.",
+    intro: "APadel came to us with a spreadsheet and a clear idea: turn Egypt’s scattered club tournaments into one ranked, trackable circuit. We designed and built the whole platform: the public site, player rankings, tournament registration and an organiser back-office.",
     challenge: "Padel was growing fast locally but had no central home. Players competed without unified rankings or match history, and organisers ran registration, draws and results by hand across chats and spreadsheets.",
     solution: "A single platform with live rankings, automatic point calculation, doubles registration with shareable team codes and a role-based admin panel. It was designed mobile-first, because players register and check results from their phones.",
     metrics: [
@@ -141,7 +141,7 @@ export default {
     year: '2024',
     client: 'Concept (Ivory Studios)',
     services: ['Web Design', 'Development', 'Lead Generation'],
-    intro: "A concept study for agencies and developers: a working listings portal with real search and a pipeline that captures enquiries while they're warm.",
+    intro: "A concept study for agencies and developers: a working listings portal with real search and a pipeline that captures enquiries while they’re warm.",
     challenge: "Listings often live in a third-party iframe with no search, no filters and no way to see which properties drive enquiries.",
     solution: "A custom portal with map and filter search, saved-property accounts, lead capture on every listing and analytics that show the team what is converting.",
     metrics: [
@@ -411,7 +411,7 @@ export default {
     client: 'Concept (Ivory Studios)',
     services: ['Web Design', 'Development', 'Content Strategy'],
     intro: "A concept study for contractors and developers: project portfolios with real scope data, certifications up front and a tender path that makes procurement easy.",
-    challenge: "Construction firms win work on trust and track record, but most sites show three photos and a phone number. Procurement teams can't shortlist what they can't verify.",
+    challenge: "Construction firms win work on trust and track record, but most sites show three photos and a phone number. Procurement teams can’t shortlist what they can’t verify.",
     solution: "Project pages with scope, timeline and delivery data, a certifications and safety section built for due diligence, team pages and a structured tender enquiry flow.",
     metrics: [
       { value: '25+', label: 'Project template capacity' },

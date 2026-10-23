@@ -90,14 +90,14 @@ if (form) {
       if (error) throw error;
       window.ivoryTrack?.('generate_lead', { form: 'contact' });
       form.reset();
-      say(`Thanks, ${name.split(' ')[0]}. Your brief is in and we'll reply within one working day.`, true);
+      say(`Thanks, ${name.split(' ')[0]}. Your brief is in and we’ll reply within one working day.`, true);
     } catch (err) {
       const body = `${row.message}\n\n— ${name}${row.company ? ', ' + row.company : ''}\n${email}${services ? '\nInterested in: ' + services : ''}`;
       const href = `mailto:${EMAIL}?subject=${encodeURIComponent('Project enquiry from ' + name)}&body=${encodeURIComponent(body)}`;
       const reason = lib?.isConfigured && !/fetch|network|load failed/i.test(String(err?.message || err)) ? lib.friendly(err) : '';
       say(reason
         ? `${reason} Your email app is opening with your brief filled in, so nothing is lost.`
-        : `We couldn't send this from the website, so we're opening your email app with your brief filled in. If nothing opens, email ${EMAIL}.`);
+        : `We couldn’t send this from the website, so we’re opening your email app with your brief filled in. If nothing opens, email ${EMAIL}.`);
       window.location.href = href;
     } finally {
       btn.disabled = false;
