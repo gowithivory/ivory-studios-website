@@ -117,15 +117,15 @@ Priority: P1 broken/insecure · P2 real user impact · P3 polish.
 ## 8. Responsive design
 | # | Question | Evidence | Status |
 |---|---|---|---|
-| 8.1 | 12 viewports × all pages: overflow/clip/collide | Full audit (running) | ⏳ |
+| 8.1 | 12 viewports × all pages: overflow/clip/collide | 34 pages × 12 sizes on production: no overflow, clipping or collisions | ✅ |
 | 8.2 | Heading fits at 320–375 | "difference" fix | 🔧 c4f2843 |
 | 8.3 | Portal at 375 | Tracker/pill fixes | 🔧 29fea20 |
 | 8.4 | Comparison stacks on phones | Screens | ✅ |
 | 8.5 | Large screens (1800+) | Container 1440 | ✅ |
 | 8.6 | Hero assurance on phones | Two-line split | 🔧 532a50e |
 | 8.7 | Phone booking bar doesn't cover key UI | States test | ✅ |
-| 8.8 | Landscape phones (844×390) | Audit includes | ⏳ |
-| 8.9 | Tablet (768/1024) | Audit includes | ⏳ |
+| 8.8 | Landscape phones (844×390) | Included in the 34-page audit: clean | ✅ |
+| 8.9 | Tablet (768/1024) | Included in the 34-page audit: clean | ✅ |
 | 8.10 | Calendar sizes on phone | 640 px | 🔧 59ced89 |
 
 ## 9. Interactions and functionality
@@ -425,7 +425,7 @@ Priority: P1 broken/insecure · P2 real user impact · P3 polish.
 ## 30. QA and maintenance
 | # | Question | Evidence | Status |
 |---|---|---|---|
-| 30.1 | Full layout audit | Running | ⏳ |
+| 30.1 | Full layout audit | Found uncaught view-transition error on /dashboard (fixed 3212b89, verified live); /services timeouts were test load, re-tested clean | 🔧 3212b89 |
 | 30.2 | Link check | 104 internal, 0 bad | ✅ |
 | 30.3 | Lighthouse sweep | 19 runs | ✅ |
 | 30.4 | RLS tests | 54/54 | ✅ |
@@ -434,4 +434,4 @@ Priority: P1 broken/insecure · P2 real user impact · P3 polish.
 | 30.7 | Runbook for owner | off-site guide, SETUP.md | ✅ |
 | 30.8 | Regression test scripts in repo | `npm run check` | 🔧 e05de65 |
 | 30.9 | Monitoring/alerts | Vercel runtime errors: none; scheduled check proposed | ⛔ owner approval |
-| 30.10 | Final cross-page regression | ⏳ | ⏳ |
+| 30.10 | Final cross-page regression | npm run check (prod) pass; RLS 54/54; auth flows Chrome+Firefox; cursor 210 presses 0.00 px; portal harness; Lighthouse home 99/100/100/100, contact/work 100×4, APadel 99/100×3, login 100/100/100/54 (noindex) | ✅ |
