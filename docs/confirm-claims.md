@@ -10,7 +10,7 @@ Already confirmed from your original site (no action): 48-hour fixed-price propo
 - [x] **"Reply within one working day"**: Contact page, the contact form's success message, About page, and the client portal's "new request" note.
 - [x] **"Three to six weeks" for a marketing website**: homepage FAQ, and the process timeline (Week 1 / Weeks 2–3 / Weeks 3–6) on Home, About, Services and every service page.
 - [x] **"English and Arabic"** as working languages: About facts card, Contact page, homepage FAQ, Services page, structured data.
-- [x] **"50+ projects delivered"**: homepage stats, About facts card. (Your figure, not verified by us.)
+- [x] **"50+ projects delivered by the team"**: homepage stats, About facts card. Owner clarified 2026-10-23 that it includes the team's work before the studio was founded in 2026; wording changed from "for clients" / "Projects delivered".
 - [x] **"The designers and developers building your project" / no account managers**: homepage comparison table.
 
 ## Service deliverables (the "What you receive" lists)
