@@ -4,7 +4,7 @@
 
 Everything below is live on ivorystudios.io but was **not** in your original site (it came from the 21 Oct 2026 rewrite, commit 1ae8a06) or is your own figure that we haven't verified. Tick what is true. For anything that isn't, tell us and we'll remove or reword it everywhere it appears.
 
-Already confirmed from your original site (no action): 48-hour fixed-price proposal · free 30-minute call · founded 2022 · Cairo, working worldwide · Next.js among build options.
+Already confirmed from your original site (no action): 48-hour fixed-price proposal · free 30-minute call · founded 2026 (owner corrected from 2022 on 2026-10-23) · Cairo, working worldwide · Next.js among build options.
 
 ## Promises a client could hold you to
 - [x] **"Reply within one working day"**: Contact page, the contact form's success message, About page, and the client portal's "new request" note.
