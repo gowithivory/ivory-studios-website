@@ -559,7 +559,7 @@ iframe:focus-within { outline: 2px solid var(--gold); outline-offset: 2px; }
 
 /* Services overview */
 .svc-row {
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(32px, 6vw, 96px);
+  display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(32px, 4vw, 64px);
   padding: clamp(40px, 5vw, 64px) 0; border-bottom: 1px solid var(--border2);
 }
 .svc-row:first-child { padding-top: 0; }
@@ -568,7 +568,7 @@ iframe:focus-within { outline: 2px solid var(--gold); outline-offset: 2px; }
 .svc-title { font-family: var(--font-head); font-size: clamp(28px, 3.2vw, 44px); font-weight: 800; line-height: 1.05; letter-spacing: -.01em; color: var(--text); margin-bottom: 18px; text-wrap: balance; }
 .svc-title a:hover { color: var(--ivory); }
 .svc-lead { font-size: 17px; color: var(--text-muted); line-height: 1.7; margin-bottom: 24px; max-width: 36em; }
-.svc-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: clamp(24px, 3vw, 36px); background: var(--bg-card); border: 1px solid var(--border2); border-radius: var(--radius-xl); align-self: start; }
+.svc-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; padding: clamp(24px, 3vw, 36px); background: var(--bg-card); border: 1px solid var(--border2); border-radius: var(--radius-xl); align-self: start; }
 .svc-panel-title { font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
 @media (max-width: 900px) { .svc-row { grid-template-columns: 1fr; } }
 @media (max-width: 600px) { .svc-panel { grid-template-columns: 1fr; } }
