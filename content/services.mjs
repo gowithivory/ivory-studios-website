@@ -114,7 +114,7 @@ export default {
 
   'business-systems': {
     name: 'CRM & Business Systems',
-    nav: 'Business Systems',
+    nav: 'CRM & Business Systems',
     num: '04',
     short: 'Custom CRMs, portals and internal tools that replace spreadsheets and scattered chats.',
     title: 'Custom CRM & Business Systems Development | Ivory Studios',
@@ -139,7 +139,7 @@ export default {
     outcomes: [
       ['One source of truth', 'Leads, clients and jobs in one place, with the history your team needs.'],
       ['Less admin', 'Automations handle the repetitive steps so people can focus on the work.'],
-      ['Secure by design', 'Role-based access and row-level security, so each person sees only what they should.'],
+      ['Secure by design', 'Each person sees only what their role allows, enforced by the database itself rather than just hidden on screen.'],
     ],
     proof: 'APadel’s organiser back-office and our own client portal are built this way: role-based dashboards on Supabase and PostgreSQL with row-level security.',
     faq: [

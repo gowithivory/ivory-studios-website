@@ -84,7 +84,7 @@ if (signupForm) {
     const note = $('#auth-note');
     const btn  = signupForm.querySelector('button[type=submit]');
 
-    if (!isConfigured) return notify(note, 'Sign-in is temporarily unavailable. Please email teams@ivorystudios.io.');
+    if (!isConfigured) return notify(note, 'Logging in is temporarily unavailable. Please email teams@ivorystudios.io.');
 
     const name  = $('#su-name').value.trim();
     const email = $('#su-email').value.trim();
@@ -127,7 +127,7 @@ if (loginForm) {
     const note = $('#auth-note');
     const btn  = loginForm.querySelector('button[type=submit]');
 
-    if (!isConfigured) return notify(note, 'Sign-in is temporarily unavailable. Please email teams@ivorystudios.io.');
+    if (!isConfigured) return notify(note, 'Logging in is temporarily unavailable. Please email teams@ivorystudios.io.');
 
     const email = $('#li-email').value.trim();
     const pass  = $('#li-pass').value;
@@ -143,7 +143,7 @@ if (loginForm) {
         $('#resend-wrap')?.removeAttribute('hidden');
         return notify(note, 'Please confirm your email first. Check your inbox for the link.');
       }
-      if (m.includes('invalid'))            return notify(note, 'Wrong email or password.');
+      if (m.includes('invalid'))            return notify(note, 'That email and password don’t match. Try again, or reset your password below.');
       return notify(note, friendly(error));
     }
     location.replace('/dashboard');
@@ -187,7 +187,7 @@ if (requestForm) {
     e.preventDefault();
     const note = $('#auth-note');
     const btn  = requestForm.querySelector('button[type=submit]');
-    if (!isConfigured) return notify(note, 'Sign-in is temporarily unavailable. Please email teams@ivorystudios.io.');
+    if (!isConfigured) return notify(note, 'Logging in is temporarily unavailable. Please email teams@ivorystudios.io.');
 
     const email = $('#rp-email').value.trim();
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return notify(note, 'Enter a valid email address.');
@@ -208,7 +208,7 @@ if (newpassForm) {
     e.preventDefault();
     const note = $('#auth-note');
     const btn  = newpassForm.querySelector('button[type=submit]');
-    if (!isConfigured) return notify(note, 'Sign-in is temporarily unavailable.');
+    if (!isConfigured) return notify(note, 'Logging in is temporarily unavailable.');
 
     const pass = $('#rp-pass').value;
     if (pass.length < 8) return notify(note, 'Password must be at least 8 characters.');
