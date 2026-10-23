@@ -34,3 +34,8 @@ Hero (owner-provided slogan and brand line), comparison table, process steps, FA
 
 ## Verification
 npm run check (29 pages, 101 links); layout audit on home, contact, CRM, about, services at 12 sizes: 0 issues; login flow shows the new message; rewritten text confirmed in the rendered pages.
+
+## Bold persuasion pass (owner request, 2026-10-23)
+Owner asked for much bolder, hook-first copy that sells the studio hard. Applied everywhere visitors decide: homepage hero line, intro statement, section leads, the comparison table (now "The usual agency" vs "With Ivory", 8 rows incl. quote speed and after-launch), closing CTAs, Services and Contact openings, About opening and CTA, and every service page's short pitch, lead, problem headline + story and three benefit cards. Every search snippet now opens with the searcher's problem.
+Guardrail kept: no unverifiable superlatives ("#1", "best in Egypt") or invented results; every promise is an owner-confirmed fact (48-hour fixed-price proposal, fixed price in writing, direct access to the team, client portal, post-launch support, full ownership, one-working-day reply).
+Hero photo replaced with a real capture of the live APadel site (apadel.net, mobile), instead of a stock image.

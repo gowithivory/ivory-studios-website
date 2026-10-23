@@ -437,7 +437,7 @@ function servicePage(slug, s) {
     </div>
   </section>
 
-  ${ctaBand('Let’s talk about <span class="accent">your project.</span>', 'Tell us where you are and where you want to be. We’ll come back with a clear plan and a fixed-price proposal.', CTA_REASSURE)}
+  ${ctaBand('Let’s talk about <span class="accent">your project.</span>', 'Tell us where you are and where you want to be. Within 48 hours you’ll have a clear plan and a fixed price, with no obligation.', CTA_REASSURE)}
 </main>
 
 <div id="site-footer"></div>
