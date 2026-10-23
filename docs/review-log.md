@@ -7,6 +7,7 @@ Status key: ✅ done and verified live · 🔁 checked, no change needed · ⏳ 
 
 | # | Issue | Evidence | Change | Checks | Deployed |
 |---|---|---|---|---|---|
+| 45 | Owner confirmed all live claims; price range is $85–$15,000 across all services | Owner reply 2026-10-23 | Homepage FAQ (+FAQPage), Services FAQ, cost guide updated; Services line implying what the lowest price buys removed | Site check, audit | ✅ (this commit) |
 | 44 | "ivory studios" (with a space) doesn't find the site first; "ivorystudios" does | Owner report; web search shows ivorystudios.ca (music school), Ivory (London agency), Ivorie Studios, Ann Ivory Studios competing for the spaced name | Logotype text "Ivory Studios" with a zero-width real space (was one word to crawlers on every page); homepage h1 is the brand line (slogan restyled as paragraph, pixel-identical); footer tagline opens "Ivory Studios:" with services and city | Pixel diff 0; audit; LH 100×4 live | ✅ 6ad2f20 |
 | 43 | Brand line on first screen lacked the name | Visible-text count | Eyebrow "Ivory Studios · Design & technology studio in Cairo, working worldwide" (became the h1 in 44) | Wrap at 320/390/1440 | ✅ 6ad2f20 |
 | 42 | Heading hierarchy | Script over 31 pages | None needed: one h1 per page, no skipped levels (dashboard h1 is script-rendered; reset page's two h1s are alternate steps) | Scan | 🔁 |
@@ -42,7 +43,7 @@ Status key: ✅ done and verified live · 🔁 checked, no change needed · ⏳ 
 - ⛔ **Admin→client portal test** needs a second account the owner signs up.
 - ⛔ **Calendly event name** is "Free Strategy Call"; the site says "Discovery Call". Rename in Calendly or tell us to change the site.
 - ✅ **Social links** (owner-confirmed 2026-10-22): Instagram https://www.instagram.com/gowithivory/, LinkedIn https://www.linkedin.com/company/130014150/ (public page for the admin URL supplied), on all pages and in Organization sameAs.
-- ⏳ "50+ projects delivered" is the owner's figure, not independently verified.
+- ✅ "50+ projects delivered" and all other listed claims confirmed by the owner (2026-10-23).
 - ⏳ Recommend (needs owner approval, account setting): set Supabase Auth minimum password length to 8 to match the sign-up form (server default is 6).
 - ⛔ **Ranking for "Ivory Studios" (spaced) is mostly off-site now.** Owner actions, in order of impact: (1) Google Business Profile named exactly "Ivory Studios", Cairo, category Website designer, linking ivorystudios.io; (2) Search Console: request indexing of the homepage; (3) social profile display names exactly "Ivory Studios" with the site link; (4) consistent listings (Clutch, DesignRush, Sortlist, GoodFirms); (5) a "Website by Ivory Studios" credit link on the APadel site, with the client's permission. No ranking can be guaranteed.
 - ⏳ Recommend (needs Search Console access): submit https://ivorystudios.io/sitemap.xml and request indexing for the two new guides.
