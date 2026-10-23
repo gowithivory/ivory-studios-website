@@ -8,9 +8,17 @@ const ORIGIN = 'https://ivorystudios.io';
 const fails = [];
 const fail = (where, msg) => fails.push(`${where}: ${msg}`);
 
+// Network blips are retried; a page that still can't be reached is reported, not thrown.
 const get = async (path, opts = {}) => {
-  const res = await fetch(BASE + path, { redirect: 'manual', ...opts });
-  return { status: res.status, headers: res.headers, text: opts.method === 'HEAD' ? '' : await res.text() };
+  for (let attempt = 1; ; attempt++) {
+    try {
+      const res = await fetch(BASE + path, { redirect: 'manual', signal: AbortSignal.timeout(20000), ...opts });
+      return { status: res.status, headers: res.headers, text: opts.method === 'HEAD' ? '' : await res.text() };
+    } catch (err) {
+      if (attempt < 3) { await new Promise(r => setTimeout(r, 1500 * attempt)); continue; }
+      return { status: `unreachable (${err.cause?.code || err.name})`, headers: new Headers(), text: '' };
+    }
+  }
 };
 
 // 1. Every page in the sitemap loads and has the basics.
