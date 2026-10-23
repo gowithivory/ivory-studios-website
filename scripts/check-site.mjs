@@ -41,6 +41,8 @@ for (const path of pages) {
   else if (desc.length > 165) fail(path, `description ${desc.length} chars`);
   else if (/…$/.test(desc)) fail(path, 'description cut off with an ellipsis');
   if (canonical !== ORIGIN + (path === '/' ? '/' : path)) fail(path, `canonical ${canonical}`);
+  const mains = (text.match(/<main[\s>]/g) || []).length;
+  if (mains !== 1) fail(path, `${mains} <main> landmarks`);
   const h1s = (text.match(/<h1[\s>]/g) || []).length;
   if (h1s !== 1) fail(path, `${h1s} h1 elements`);
   if (!text.includes('<span>Ivory<span class="logo-gap"> </span>')) fail(path, 'logo text is not "Ivory Studios"');
