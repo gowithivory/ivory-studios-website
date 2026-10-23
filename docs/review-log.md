@@ -39,15 +39,16 @@ Status key: ✅ done and verified live · 🔁 checked, no change needed · ⏳ 
 
 ## Open items and blockers
 
-- ⛔ **DMARC record missing** for ivorystudios.io. DNS is hosted at Squarespace (nameservers nsb1–4.squarespacedns.com); no access from here. SPF (`include:_spf.google.com ~all`) and DKIM (`google._domainkey`) are present. Suggested TXT at host `_dmarc`: `v=DMARC1; p=none; rua=mailto:teams@ivorystudios.io` (monitor only, blocks nothing).
-- ⛔ **Branded Supabase emails** need a custom SMTP sender (templates ready in `supabase/email-templates/`).
+- ⏳ **DMARC record missing** for ivorystudios.io (owner approved adding it 2026-10-23; Squarespace asks the owner to re-verify with Google before DNS edits). DNS is hosted at Squarespace (nameservers nsb1–4.squarespacedns.com). SPF (`include:_spf.google.com ~all`) and DKIM (`google._domainkey`) are present. Suggested TXT at host `_dmarc`: `v=DMARC1; p=none; rua=mailto:teams@ivorystudios.io` (monitor only, blocks nothing).
+- ⏳ **Branded Supabase emails**: owner chose Google Workspace SMTP (smtp.gmail.com:587, user ammar@, sender "Ivory Studios" <teams@>). Form filled; waiting on the owner to paste a Google app password and save. Templates ready in `supabase/email-templates/`.
 - ⛔ **Admin→client portal test** needs a second account the owner signs up.
-- ⛔ **Calendly event name** is "Free Strategy Call"; the site says "Discovery Call". Rename in Calendly or tell us to change the site.
+- ✅ **Calendly event renamed to "Discovery Call"** (2026-10-23); public link /ammar-ivorystudios/30min unchanged and verified. ⚠️ Calendly shows a **Zoom connection error** on the event location: reconnect Zoom in Calendly or bookings may have no meeting link.
 - ✅ **Social links** (owner-confirmed 2026-10-22): Instagram https://www.instagram.com/gowithivory/, LinkedIn https://www.linkedin.com/company/130014150/ (public page for the admin URL supplied), on all pages and in Organization sameAs.
 - ✅ "50+ projects delivered" and all other listed claims confirmed by the owner (2026-10-23).
 - ⏳ Recommend (needs owner approval, account setting): set Supabase Auth minimum password length to 8 to match the sign-up form (server default is 6).
 - ⛔ **Ranking for "Ivory Studios" (spaced) is mostly off-site now.** Owner actions, in order of impact: (1) Google Business Profile named exactly "Ivory Studios", Cairo, category Website designer, linking ivorystudios.io; (2) Search Console: request indexing of the homepage; (3) social profile display names exactly "Ivory Studios" with the site link; (4) consistent listings (Clutch, DesignRush, Sortlist, GoodFirms); (5) a "Website by Ivory Studios" credit link on the APadel site, with the client's permission. No ranking can be guaranteed.
-- ⏳ Recommend (needs Search Console access): submit https://ivorystudios.io/sitemap.xml and request indexing for the two new guides.
+- ✅ **Search Console** (domain property already verified): sitemap resubmitted 2026-10-23 and read the same day (it had last been read 21 Oct with 10 pages; now 29). Index status: 1 indexed; 2 redirects and 1 canonical alternate are expected (www/http); 9 "Discovered – currently not indexed". ⏳ Request indexing for /services, the five service pages, /work, /about, /contact: the daily quota was exhausted on 2026-10-23.
+- ✅ **Supabase pausing**: free keep-alive GitHub Action (`.github/workflows/supabase-keepalive.yml`), read-only ping every 3 days, active since 2026-10-23. Backups remain the free-plan limitation.
 
 ## Coverage checklist
 
