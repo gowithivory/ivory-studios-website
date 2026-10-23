@@ -71,3 +71,8 @@ npm run check (local and production), database rules 54/54, portal harness 4/4, 
 
 - Per-sentence × 50 copy passes were not done; the site copy was rewritten and reviewed in earlier rounds and re-scanned here.
 - INP is field data; Speed Insights collects it, lab TBT is 0 ms on all measured pages.
+
+## Production verification (after ba6596f)
+
+- Live within 5 s; `npm run check https://ivorystudios.io` passed (29 pages, 101 links); docs/ not public (404).
+- Lighthouse mobile: home 100/100/100/100 (LCP 1.7 s, CLS 0); checklist 100 ×4 (CLS 0); cost guide 100 ×4 in 4 of 5 runs (CLS 0). The first run right after deploy measured CLS 0.226 / Performance 89 with the CDN cache cold; it did not reproduce in 4 further runs. Recorded, not hidden.
