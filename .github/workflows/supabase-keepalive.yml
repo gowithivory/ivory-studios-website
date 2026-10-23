@@ -1,0 +1,26 @@
+# Free Supabase projects pause after 7 days without database activity.
+# This sends one read-only request every 3 days. Anonymous reads are denied by
+# the database (Postgres 42501), which still counts as activity and changes nothing.
+# The key below is the publishable (public) key already shipped in the site's JS.
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: '17 6 */3 * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping the database
+        run: |
+          body=$(curl -sS --retry 3 --max-time 30 \
+            "https://lpsixmkqeaydxpqytuiw.supabase.co/rest/v1/profiles?select=id&limit=1" \
+            -H "apikey: sb_publishable_MwooCsC-ND_9mi5_9BWswg_i45I_XzN")
+          echo "$body" | head -c 200; echo
+          # 42501 = reached Postgres and was refused by the access rules (expected).
+          echo "$body" | grep -q '"42501"\|^\[' || { echo "::error::Database did not answer as expected (paused or down?)"; exit 1; }
