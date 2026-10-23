@@ -1427,16 +1427,14 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .proj-features li::before { content: ''; position: absolute; left: 0; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--gold) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23080706' stroke-width='3.5'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center / 11px no-repeat; }
 @media (max-width: 760px) { .proj-features ul { grid-template-columns: 1fr; } }
 
-/* Page-to-page: a quick crossfade where the browser supports cross-document
-   view transitions. Ignored elsewhere. */
-@view-transition { navigation: auto; }
+/* Page-to-page crossfade. The opt-in (@view-transition) sits in a small
+   <style> at the top of each public page: inside this large stylesheet Chrome
+   saw it too late on the incoming page and aborted every transition. */
 ::view-transition-old(root) { animation: vtOut .22s var(--ease-out) both; }
 ::view-transition-new(root) { animation: vtIn .38s var(--ease-out) both; }
 @keyframes vtOut { to { opacity: 0; } }
 @keyframes vtIn { from { opacity: 0; transform: translateY(10px); } }
-@media (prefers-reduced-motion: reduce) {
-  @view-transition { navigation: none; }
-}
+
 
 /* Long-form guides */
 .guide > * { max-width: 860px; }

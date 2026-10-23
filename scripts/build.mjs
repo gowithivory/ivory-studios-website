@@ -271,6 +271,7 @@ function head({ title, description, url, type = 'website', extra = '', preloadIm
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
