@@ -39,7 +39,7 @@ Status key: ✅ done and verified live · 🔁 checked, no change needed · ⏳ 
 
 ## Open items and blockers
 
-- ⏳ **DMARC record missing** for ivorystudios.io (owner approved adding it 2026-10-23; Squarespace asks the owner to re-verify with Google before DNS edits). DNS is hosted at Squarespace (nameservers nsb1–4.squarespacedns.com). SPF (`include:_spf.google.com ~all`) and DKIM (`google._domainkey`) are present. Suggested TXT at host `_dmarc`: `v=DMARC1; p=none; rua=mailto:teams@ivorystudios.io` (monitor only, blocks nothing).
+- ✅ **DMARC added 2026-10-23** (owner-approved): TXT `_dmarc` = `v=DMARC1; p=none; rua=mailto:teams@ivorystudios.io`, verified on Squarespace's nameservers and Google public DNS; SPF, DKIM, MX and site verification unchanged. Next step after a few weeks of clean reports: consider `p=quarantine`. DNS is hosted at Squarespace (nameservers nsb1–4.squarespacedns.com). SPF (`include:_spf.google.com ~all`) and DKIM (`google._domainkey`) are present. Suggested TXT at host `_dmarc`: `v=DMARC1; p=none; rua=mailto:teams@ivorystudios.io` (monitor only, blocks nothing).
 - ⏳ **Branded Supabase emails**: owner chose Google Workspace SMTP (smtp.gmail.com:587, user ammar@, sender "Ivory Studios" <teams@>). Form filled; waiting on the owner to paste a Google app password and save. Templates ready in `supabase/email-templates/`.
 - ⛔ **Admin→client portal test** needs a second account the owner signs up.
 - ✅ **Calendly event renamed to "Discovery Call"** (2026-10-23); public link /ammar-ivorystudios/30min unchanged and verified. ⚠️ Calendly shows a **Zoom connection error** on the event location: reconnect Zoom in Calendly or bookings may have no meeting link.
