@@ -55,7 +55,7 @@ const NAV_LINKS = [
 ];
 
 const navHtml = page => `<!--nav:start-->
-<div class="intro-overlay" aria-hidden="true"><span class="nav-logo intro-logo">${LOGO}<span>Ivory<span class="logo-gap"> </span><span class="logo-accent">Studios</span></span></span></div>
+<div class="intro-overlay" aria-hidden="true"><div class="intro-bg"></div><span class="nav-logo intro-logo">${LOGO}<span>Ivory<span class="logo-gap"> </span><span class="logo-accent">Studios</span></span></span></div>
 <a href="#main" class="skip-link">Skip to content</a>
 <div id="site-nav">
   <header class="nav" id="nav">

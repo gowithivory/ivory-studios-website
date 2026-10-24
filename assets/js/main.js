@@ -10,50 +10,80 @@ const RICH_POINTER = FINE_POINTER && !REDUCE_MOTION;
 const CALENDLY_URL = 'https://calendly.com/ammar-ivorystudios/30min?hide_gdpr_banner=1';
 
 // First-visit logo intro. The head script adds html.intro (once per session, never
-// for reduced motion); CSS draws the mark, types the name and blinks the cursor.
-// Here we fly the logo onto the nav logo's exact spot, then hand over to the page.
+// for reduced motion). One continuous sequence on the Web Animations API, using
+// transform and opacity only: the mark rises in, the name flows in letter by
+// letter, the gold cursor breathes once, then the logo glides onto the nav logo's
+// exact spot while the backdrop dissolves. The logo is drawn large and scaled
+// *down* in flight, so it stays sharp. Any tap, key or scroll skips ahead.
 (function introLogo() {
   const root = document.documentElement;
   if (!root.classList.contains('intro')) return;
   try { sessionStorage.setItem('ivory-intro', '1'); } catch { /* storage blocked */ }
   const overlay = document.querySelector('.intro-overlay');
-  const logo = overlay && overlay.querySelector('.intro-logo');
-  const target = document.querySelector('#nav .nav-logo');
+  const logo = overlay?.querySelector('.intro-logo');
+  const bg = overlay?.querySelector('.intro-bg');
+  const nav = document.getElementById('nav');
+  const target = nav?.querySelector('.nav-logo');
   let finished = false;
   const finish = () => {
     if (finished) return; finished = true;
-    const nav = document.getElementById('nav');
-    if (nav) nav.style.animation = 'none'; // it already faded in; don't replay navIn
-    root.classList.remove('intro', 'intro-hold', 'intro-out');
+    if (nav) { nav.getAnimations().forEach(a => a.cancel()); nav.style.animation = 'none'; }
+    root.classList.remove('intro', 'intro-hold');
     overlay?.remove();
   };
-  if (!overlay || !logo || !target) return finish();
+  if (!overlay || !logo || !bg || !target || !logo.animate) return finish();
 
-  // Big enough to own the screen, never wider than ~70% of it. The width comes from
-  // the font size (the logo is ~16.2em wide), not a live measurement, so the size is
-  // the same whether or not the web font has finished loading yet.
-  const natural = parseFloat(getComputedStyle(logo).fontSize) * 16.2 || 280;
-  const scale = Math.max(1.3, Math.min(3.2, Math.min(innerWidth * 0.7, 620) / natural));
-  logo.style.setProperty('--intro-s', scale.toFixed(3));
+  const EASE_OUT = 'cubic-bezier(.16, 1, .3, 1)';   // long, soft settle
+  const GLIDE = 'cubic-bezier(.65, 0, .2, 1)';      // gentle start, gentle landing
+
+  // Draw the logo at its intro size (sized from the font, so it is the same
+  // before and after the web font loads): ~70% of the screen, at most 620px.
+  const baseSize = parseFloat(getComputedStyle(target).fontSize) || 17;
+  const scale = Math.max(1.3, Math.min(3.4, Math.min(innerWidth * 0.7, 620) / (baseSize * 16.2)));
+  logo.style.fontSize = `${baseSize * scale}px`;
+
+  // Split the name into letters (the overlay is aria-hidden; the real logo keeps its text).
+  const word = logo.querySelector(':scope > span');
+  const letters = [];
+  const split = node => [...node.childNodes].forEach(n => {
+    if (n.nodeType === 3) {
+      const frag = document.createDocumentFragment();
+      [...n.textContent].forEach(ch => { const s = document.createElement('span'); s.className = 'intro-ch'; s.textContent = ch; frag.append(s); if (ch.trim()) letters.push(s); });
+      n.replaceWith(frag);
+    } else if (!n.classList.contains('logo-gap')) split(n);
+  });
+  split(word);
+
+  const mark = logo.querySelector('.logo-mark');
+  const caret = logo.querySelector('.logo-caret');
+  const anims = [];
+  const run = (el, frames, opts) => { const a = el.animate(frames, { fill: 'both', ...opts }); anims.push(a); return a; };
+
+  run(mark, [{ opacity: 0, transform: 'translateY(14%) scale(.92)' }, { opacity: 1, transform: 'none' }], { duration: 900, easing: EASE_OUT });
+  letters.forEach((el, i) => run(el, [{ opacity: 0, transform: 'translateY(.42em)' }, { opacity: 1, transform: 'none' }],
+    { duration: 700, delay: 320 + i * 38, easing: EASE_OUT }));
+  const breath = run(caret, [{ opacity: 1 }, { opacity: .15, offset: .5 }, { opacity: 1 }],
+    { duration: 700, delay: 320 + letters.length * 38 + 260, easing: 'ease-in-out' });
 
   let flying = false;
-  const fly = (quick) => {
+  const fly = quick => {
     if (flying) return; flying = true;
+    anims.forEach(a => a.finish());
     const r = target.getBoundingClientRect();
-    logo.style.setProperty('--intro-fly', quick ? '.5s' : '.9s');
-    logo.classList.add('is-flying');
-    root.classList.remove('intro-hold'); // page entrance plays as the logo lifts
-    root.classList.add('intro-out');
-    // Untransformed, the logo's top-left sits at the viewport centre; land it on the nav logo.
-    logo.style.transform = `translate(${r.left - innerWidth / 2}px, ${r.top - innerHeight / 2}px) scale(1)`;
-    logo.addEventListener('transitionend', e => { if (e.propertyName === 'transform') finish(); }, { once: true });
-    setTimeout(finish, 1400);
+    const dur = quick ? 600 : 1150;
+    // Untransformed, the logo's top-left sits at the viewport centre (left/top 50%,
+    // origin 0 0). Land its top-left on the nav logo and shrink it to nav size.
+    const flight = logo.animate(
+      [{ transform: 'translate(-50%, -50%)' }, { transform: `translate(${r.left - innerWidth / 2}px, ${r.top - innerHeight / 2}px) scale(${1 / scale})` }],
+      { duration: dur, easing: GLIDE, fill: 'forwards' });
+    bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: dur * .75, delay: dur * .2, easing: 'cubic-bezier(.4, 0, .2, 1)', fill: 'forwards' });
+    nav.animate([{ opacity: 0 }, { opacity: 1 }], { duration: dur * .45, delay: dur * .55, easing: 'ease-out', fill: 'forwards' });
+    flight.finished.then(() => { root.classList.remove('intro-hold'); finish(); }, finish);
+    setTimeout(finish, dur + 600);
   };
 
-  // Fly after the cursor's blink; any input skips ahead.
-  const caret = logo.querySelector('.logo-caret');
-  caret?.addEventListener('animationend', () => fly(false), { once: true });
-  setTimeout(() => fly(false), 2000);
+  breath.finished.then(() => fly(false), () => {});
+  setTimeout(() => fly(false), 2600);
   ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(ev =>
     addEventListener(ev, () => fly(true), { once: true, passive: true }));
 })();
