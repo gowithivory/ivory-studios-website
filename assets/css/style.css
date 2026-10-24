@@ -1496,3 +1496,28 @@ html.cursor-down .cursor-ring-shape { scale: .82; }
 .contact-jump { margin-top: 28px; margin-bottom: 0; }
 @media (max-width: 600px) { .contact-jump .btn-primary, .contact-jump .btn-ghost { flex: 1 1 0; justify-content: center; } }
 .intro-about { margin-top: 20px; }
+
+/* ---------- First-visit logo intro ----------
+   The mark appears, "Ivory Studios" types out from the gold cursor, the cursor
+   blinks, then the logo glides into its place in the nav while the page fades
+   in underneath. Plays once per session; skipped for reduced motion; any tap,
+   key or scroll finishes it early. Transform/opacity/clip-path only. */
+.intro-overlay { display: none; }
+html.intro .intro-overlay { display: block; position: fixed; inset: 0; z-index: 1000; pointer-events: auto; }
+html.intro .intro-overlay::before { content: ''; position: absolute; inset: 0; background: radial-gradient(60% 50% at 50% 50%, rgba(200,164,110,.07), transparent 70%), var(--bg); transition: opacity .65s cubic-bezier(.4,0,.2,1) .3s; }
+html.intro-out .intro-overlay::before { opacity: 0; }
+html.intro-out .intro-overlay { pointer-events: none; }
+.intro-logo { position: absolute; left: 50%; top: 50%; margin: 0; transform: translate(-50%, -50%) scale(var(--intro-s, 2)); transform-origin: 50% 50%; will-change: transform; pointer-events: none; backface-visibility: hidden; }
+.intro-logo .logo-mark { animation: introMark .6s cubic-bezier(.16,1,.3,1) .05s both; }
+.intro-logo > span { clip-path: inset(-30% 100% -30% 0); animation: introType .6s cubic-bezier(.65,0,.35,1) .38s forwards; }
+.intro-logo .logo-caret { animation: introCaret .46s steps(1, end) .98s 1 both; }
+.intro-logo.is-flying { transition: transform var(--intro-fly, .9s) cubic-bezier(.7,0,.16,1); }
+@keyframes introMark { from { opacity: 0; transform: translateY(8%) scale(.92); } to { opacity: 1; transform: none; } }
+@keyframes introType { to { clip-path: inset(-30% -4% -30% 0); } }
+@keyframes introCaret { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+/* The real nav waits invisibly (no movement, so the landing spot is exact) and fades in as the logo arrives */
+html.intro .nav { animation: none; opacity: 0; }
+html.intro .nav .nav-logo { visibility: hidden; }
+html.intro-out .nav { opacity: 1; transition: opacity .6s ease .35s; }
+/* Page entrance animations wait for the intro, then play as it lifts (measured: no LCP cost) */
+html.intro-hold main, html.intro-hold main * { animation-play-state: paused !important; }

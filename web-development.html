@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
+  <script>(function(){try{var d=document.documentElement;if(sessionStorage.getItem("ivory-intro")||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("intro","intro-hold");setTimeout(function(){d.classList.remove("intro","intro-hold","intro-out")},4500)}catch(e){}})();</script>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Web Development | Fast, Search-Ready Sites | Ivory Studios</title>
   <meta name="description" content="Slow site that needs a developer for every change? We build fast, accessible websites and web apps your team can edit. Fixed-price proposals, worldwide.">
@@ -24,7 +25,9 @@
   <meta name="twitter:image" content="https://ivorystudios.io/assets/img/og/web-development.jpg">
   <meta name="theme-color" content="#080706">
   <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ivorystudios.io/"},{"@type":"ListItem","position":2,"name":"Services","item":"https://ivorystudios.io/services"},{"@type":"ListItem","position":3,"name":"Web Development","item":"https://ivorystudios.io/web-development"}]},{"@type":"Service","@id":"https://ivorystudios.io/web-development#service","name":"Web Development","description":"Slow site that needs a developer for every change? We build fast, accessible websites and web apps your team can edit. Fixed-price proposals, worldwide.","url":"https://ivorystudios.io/web-development","provider":{"@id":"https://ivorystudios.io/#org"},"areaServed":"Worldwide"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What technology do you build with?","acceptedAnswer":{"@type":"Answer","text":"Whatever fits the job. Marketing sites are often lean static builds; products and portals typically use Next.js or a custom stack with Supabase or PostgreSQL. We explain the choice in the proposal."}},{"@type":"Question","name":"Will I be able to edit the site myself?","acceptedAnswer":{"@type":"Answer","text":"Yes. We set up a CMS or editing workflow suited to your team and walk you through it at handover."}},{"@type":"Question","name":"Do you build web apps as well as websites?","acceptedAnswer":{"@type":"Answer","text":"Yes. Dashboards, member areas, client portals and booking tools are a regular part of our work. See CRM & Business Systems for more."}}]}]}</script>
-  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" href="/assets/img/favicon-96.png" sizes="96x96" type="image/png">
+  <link rel="icon" href="/assets/img/favicon-144.png" sizes="144x144" type="image/png">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
@@ -35,6 +38,7 @@
 <body data-page="services">
 
 <!--nav:start-->
+<div class="intro-overlay" aria-hidden="true"><span class="nav-logo intro-logo"><svg class="logo-mark" viewBox="26 26 64 68" aria-hidden="true" focusable="false"><rect x="30" y="30" width="42" height="8" rx="4" fill="currentColor"/><rect x="47" y="38" width="8" height="44" rx="2" fill="currentColor"/><rect x="30" y="82" width="42" height="8" rx="4" fill="currentColor"/><rect class="logo-caret" x="78" y="32" width="8" height="56" rx="4" fill="#C19A5B"/></svg><span>Ivory<span class="logo-gap"> </span><span class="logo-accent">Studios</span></span></span></div>
 <a href="#main" class="skip-link">Skip to content</a>
 <div id="site-nav">
   <header class="nav" id="nav">

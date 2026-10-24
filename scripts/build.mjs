@@ -55,6 +55,7 @@ const NAV_LINKS = [
 ];
 
 const navHtml = page => `<!--nav:start-->
+<div class="intro-overlay" aria-hidden="true"><span class="nav-logo intro-logo">${LOGO}<span>Ivory<span class="logo-gap"> </span><span class="logo-accent">Studios</span></span></span></div>
 <a href="#main" class="skip-link">Skip to content</a>
 <div id="site-nav">
   <header class="nav" id="nav">
@@ -272,6 +273,7 @@ function head({ title, description, url, type = 'website', extra = '', preloadIm
 <head>
   <meta charset="UTF-8">
   <style>@media (prefers-reduced-motion: no-preference) { @view-transition { navigation: auto; } }</style>
+  <script>(function(){try{var d=document.documentElement;if(sessionStorage.getItem("ivory-intro")||matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("intro","intro-hold");setTimeout(function(){d.classList.remove("intro","intro-hold","intro-out")},4500)}catch(e){}})();</script>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>${esc(title)}</title>
   <meta name="description" content="${esc(description)}">
@@ -292,7 +294,9 @@ function head({ title, description, url, type = 'website', extra = '', preloadIm
   <meta name="twitter:description" content="${esc(description)}">
   <meta name="twitter:image" content="${ogImage}">
   <meta name="theme-color" content="#080706">
-${extra}  <link rel="icon" href="/favicon.ico" sizes="48x48">
+${extra}  <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" href="/assets/img/favicon-96.png" sizes="96x96" type="image/png">
+  <link rel="icon" href="/assets/img/favicon-144.png" sizes="144x144" type="image/png">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
