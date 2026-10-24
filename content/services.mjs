@@ -155,10 +155,10 @@ export default {
     num: '05',
     short: 'Get found by the customers who are already searching for you.',
     title: 'SEO & Growth | Technical & Local SEO | Ivory Studios',
-    description: 'A great site nobody finds? We fix technical SEO, shape content around real searches and track which visits turn into enquiries, with plain monthly reports.',
+    description: 'Are competitors taking your search traffic? We fix technical SEO, shape content around real searches and track which visits become enquiries, every month.',
     h1: 'Get found by the people <span class="accent">looking for you.</span>',
     lead: 'Your customers are searching right now. We make sure they find you, with technical SEO, content built around real searches and tracking that shows exactly what turns into enquiries.',
-    problemTitle: 'A great site nobody can find',
+    problemTitle: 'Your competitors are getting your clicks',
     problem: 'A website only works if the right people reach it. Most searchers never look past the first page of results; if you’re not there, they find a competitor instead. We fix the technical foundations, shape content around what your customers actually search for and track what works, so every month you know what is bringing in business.',
     forWho: [
       'Businesses with a good site but little search traffic',
